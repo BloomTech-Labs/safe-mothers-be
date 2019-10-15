@@ -21,9 +21,7 @@ router.get('/:id', (req, res) => {
     })
     .then(users => {
       if (users.length === 0) {
-        return res
-          .status(404)
-          .json({ message: `No user with the ID of ${id}` })
+        return res.status(404).json({ message: `No user with the ID of ${id}` })
       }
 
       const user = users[0]
