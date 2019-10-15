@@ -30,7 +30,7 @@ exports.up = function(knex) {
 
     })
 
-    //drivers
+    //drivers--> village_id may need to be put as obsolete. The drivers that I have plotted (only two) seem to be at crossroads that are not connected to a village
     .createTable("drivers", drivers => {
         //primary key
         drivers.increments();
