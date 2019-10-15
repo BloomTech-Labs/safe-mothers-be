@@ -1,3 +1,10 @@
 /node_modules
 data/dev.sqlite3
 .env
+
+#Webstorm
+.idea
+
+#TestDB
+data/test.sqlite3
+
