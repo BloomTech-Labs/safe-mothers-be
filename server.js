@@ -1,23 +1,26 @@
-const express = require('express')
-const cors = require('cors')
-const helmet = require('helmet')
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
 
+const authRouter = require("./auth/authRouter");
+const restricted = require("./auth/restrictedMiddleware");
+const usersRouter = require("./users/usersRouter");
+const mothersRouter = require("./mothers/mothersRouter");
+const driversRouter = require("./drivers/driversRouter");
 
-const authRouter = require('./auth/authRouter')
-const restricted = require('./auth/restrictedMiddleware')
-const usersRouter = require('./users/usersRouter')
+const server = express();
 
-const server = express()
+server.use(helmet());
+server.use(cors());
+server.use(express.json());
 
-server.use(helmet())
-server.use(cors())
-server.use(express.json())
+server.use("/auth", authRouter);
+server.use("/users", restricted, usersRouter);
+server.use("/mothers", restricted, mothersRouter);
+server.use("/drivers", restricted, driversRouter);
 
-server.use('/auth', authRouter)
-server.use('/users', restricted, usersRouter)
+server.get("/", (req, res) => {
+  res.json({ api: "safe mothers" });
+});
 
-server.get('/', (req, res) => {
-  res.json({ api: 'safe mothers' })
-})
-
-module.exports = server
+module.exports = server;
