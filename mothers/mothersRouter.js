@@ -20,7 +20,7 @@ router.get("/all", (req, res) => {
     .then(mothers => {
       res.status(200).json(mothers);
     })
-    .catch(err => res.status(400).json(err));
+    .catch(err => res.status(500).json(err));
 });
 
 // edit a mother based on ID
