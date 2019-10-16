@@ -15,7 +15,7 @@ router.post("/register", (req, res) => {
 });
 
 // get all mothers
-router.get("/all", (req, res) => {
+router.get("/", (req, res) => {
   Mothers.getMothers()
     .then(mothers => {
       res.status(200).json(mothers);

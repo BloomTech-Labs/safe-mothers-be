@@ -15,7 +15,7 @@ router.post("/register", (req, res) => {
 });
 
 // get all the drivers
-router.get("/all", (req, res) => {
+router.get("/", (req, res) => {
   Drivers.getDrivers()
     .then(drivers => {
       res.status(200).json(drivers);
