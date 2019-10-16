@@ -4,7 +4,8 @@ module.exports = {
   getDrivers,
   addDriver,
   updateDriver,
-  deleteDriver
+  deleteDriver,
+  getDriverById
 };
 
 function addDriver(data) {
@@ -13,6 +14,11 @@ function addDriver(data) {
 
 function getDrivers() {
   return db("drivers").select("*");
+}
+
+function getDriverById(id) {
+  return db("drivers")
+  .where({ id })
 }
 
 function updateDriver(id, data) {
