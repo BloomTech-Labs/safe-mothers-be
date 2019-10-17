@@ -1,10 +1,10 @@
 /node_modules
-data/dev.sqlite3
+
+# Protect the secrets!
 .env
 
 #Webstorm
 .idea
 
-#TestDB
-data/test.sqlite3
-
+#All sqlite databases
+*.sqlite3
