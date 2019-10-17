@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Drivers = require("./driversHelper");
 
 // register driver
-router.post("/register", (req, res) => {
+router.post("/auth/register", (req, res) => {
   let data = req.body;
 
   Drivers.addDriver(data)
