@@ -4,7 +4,8 @@ module.exports = {
   addMother,
   updateMother,
   deleteMother,
-  getMothers
+  getMothers,
+  getMotherById
 };
 
 function addMother(data) {
@@ -14,6 +15,12 @@ function addMother(data) {
 function getMothers() {
   return db("mothers").select("*");
 }
+
+function getMotherById(id) {
+  return db("mothers")
+  .where({ id })
+}
+
 
 function updateMother(id, data) {
   return db("mothers")

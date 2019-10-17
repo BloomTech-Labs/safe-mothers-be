@@ -7,6 +7,7 @@ const restricted = require("./auth/restrictedMiddleware");
 const usersRouter = require("./users/usersRouter");
 const mothersRouter = require("./mothers/mothersRouter");
 const driversRouter = require("./drivers/driversRouter");
+const smsRouter = require("./sms/smsRouter");
 
 const server = express();
 
@@ -18,6 +19,8 @@ server.use("/auth", authRouter);
 server.use("/users", restricted, usersRouter);
 server.use("/mothers", restricted, mothersRouter);
 server.use("/drivers", restricted, driversRouter);
+//Unprotected
+server.use("/sms", smsRouter);
 
 server.get("/", (req, res) => {
   res.json({ api: "safe mothers" });
