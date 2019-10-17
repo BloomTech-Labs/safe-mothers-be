@@ -12,50 +12,89 @@
 
 To get the server running locally:
 
-🚫 adjust these scripts to match your project
+localhost:5000
 
 - Clone this repo
-- **yarn install** to install all required dependencies
-- **yarn server** to start the local server
-- **yarn test** to start server using testing environment
+- **npm install** to install all required dependencies
+- **npm run server** to start the local server
+- **npm test** to start server using testing environment
 
-### Backend framework goes here
-
-🚫 Why did you choose this framework?
-
--    Point One
--    Point Two
--    Point Three
--    Point Four
+### Our backend was built using:
+Node JS
+For the following reasons:
+-    Familiarity across team.
+-    Scalibility.
+-    Works with SMS messaging technology.
+-    A number of JS libraries to aid in our vision. 
 
 ## 2️⃣ Endpoints
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+#### Base URLS
+| Access        | Endpoint                | Access Control | 
+| ------------- | ----------------------- | -------------- | 
+| Authentication| `/auth`                 | Restricted     |
+| Mothers       | `/mothers`              | Restricted     | 
+| Drivers       | `/drivers`              | Restricted     | 
+| Sms           | `/sms`                  | Unrestricted   | 
+
 
 #### Organization Routes
 
 | Method | Endpoint                | Access Control | Description                                  |
 | ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
+| GET    | `/auth/`                | owners         | Returns admin users of the organization      |
+| PUT    | `/auth/:id`             | owners         | Modify an existing admin member.             |
+| DELETE | `/auth/:id`             | owners         | Delete an organization.                      |
 
-#### User Routes
+#### Organization User Routes
 
 | Method | Endpoint                | Access Control      | Description                                        |
 | ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
-| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
-| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
-| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
-| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
-| DELETE | `/users/:userId`        | owners, supervisors |                                                    |
+| GET    | `/mothers/`             | owners              | Returns all mothers in the DB.                     |
+| GET    | `/mothers/:id`          | owners              | Returns all mothers with the specified Id.         |
+| GET    | `/drivers/`             | owners              | Returns all drivers in the DB.                     |
+| GET    | `/drivers/:id`          | owners              | Returns info for a single driver.                  |
+| POST   | `/mothers/register`     | owners              | Creates a new mother.                              |
+| POST   | `/drivers/register`     | owners              | Creates a new driver.                              |
+| PUT    | `/mothers/:id`          | owners              | Edit information of a mother with provided id.     |
+| PUT    | `/drivers/:id`          | owners              | Edit information of a mother with provided id.     |
+| DELETE | `/mothers/:id`          | owners              | Deletes a mother's info from the DB                |
+| DELETE | `/drivers/:id`          | owners              | Deletes a driver's info from the DB                |
+
+#### SMS User Routes
+
+| Method | Endpoint                | Access Control      | Description                                        |
+| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
+| GET    | `/mothers/`             | sms                 | Returns all mothers in the DB.                     |
+| GET    | `/mothers/:id`          | sms                 | Returns all mothers with the specified Id.         |
+| GET    | `/drivers/`             | sms                 | Returns all drivers in the DB.                     |
+| GET    | `/drivers/:id`          | sms                 | Returns info for a single driver.                  |
+| POST   | `/mothers/register`     | sms                 | Creates a new mother.                              |
+| POST   | `/drivers/register`     | sms                 | Creates a new driver.                              |
+| PUT    | `/mothers/:id`          | sms                 | Edit information of a mother with provided id.     |
+| PUT    | `/drivers/:id`          | sms                 | Edit information of a mother with provided id.     |
+| DELETE | `/mothers/:id`          | sms                 | Deletes a mother's info from the DB                |
+| DELETE | `/drivers/:id`          | sms                 | Deletes a driver's info from the DB                |
 
 # Data Model
 
-🚫This is just an example. Replace this with your data model
 
-#### 2️⃣ ORGANIZATIONS
+
+#### Users
+
+---
+
+```
+{
+  id: UUID
+  username: STRING
+  first_name: STRING
+  last_name: STRING
+  password: STRING
+}
+```
+
+#### Villages
 
 ---
 
@@ -63,30 +102,73 @@ To get the server running locally:
 {
   id: UUID
   name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  lat: STRING
+  long: STRING
 }
 ```
 
-#### USERS
+#### Drivers
 
 ---
 
 ```
 {
   id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
   first_name: STRING
   last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
-  email: STRING
-  phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+  lat: STRING
+  long: STRING 
+  phone_number: STRING
+  villiage_id: UUID foreign key in VILLIAGE table
+  availability: BOOLEAN
+  reliability: INTEGER
+}
+```
+
+#### Mothers
+
+---
+
+```
+{
+  id: UUID
+  first_name: STRING
+  last_name: STRING
+  age: INTEGER
+  phone_number: STRING
+  emergency_contact: STRING
+  villiage_id: UUID foreign key in VILLIAGE  table
+  health_center: STRING
+  lat: STRING
+  long: STRING
+}
+```
+
+#### Scores
+
+---
+
+```
+{
+  id: UUID
+  rating: STRING
+  driver_id: UUID foreign key in DRIVERS  table
+  mother_id: UUID foreign key in MOTHERS  table
+}
+```
+
+#### Rides
+
+---
+
+```
+{
+  id: UUID
+  mother_id: UUID foreign key in MOTHERS  table
+  driver_id: UUID foreign key in DRIVERS  table
+  initiated: DATETIME
+  ended: DATETIME
+  completed: BINARY
 }
 ```
 
