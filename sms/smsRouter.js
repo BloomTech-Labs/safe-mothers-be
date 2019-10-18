@@ -88,7 +88,7 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
     apiKey: process.env.FRONTLINE_KEY,
     payload: {
       message: message,
-      recipients: [{ type: "mobile", value: message }]
+      recipients: [{ type: "mobile", value: phone_number }]
     }
   };
   let url = "https://cloud.frontlinesms.com/api/1/webhook";
