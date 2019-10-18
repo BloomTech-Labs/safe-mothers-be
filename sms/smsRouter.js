@@ -88,22 +88,7 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
     apiKey: process.env.FRONTLINE_KEY,
     payload: {
       message: message,
-      recipients: [{ type: "mobile", value: phone_number }]
-    }
-  };
-  let url = "https://cloud.frontlinesms.com/api/1/webhook";
-  axios.post(url, payload);
-});
-
-router.get("/mothers/register/:phone_number", (req, res) => {
-  let phone_number = req.params.phone_number;
-  let message =
-    "Hi there! This are the number of village that you will need to fill up.. lol";
-  let payload = {
-    apiKey: process.env.FRONTLINE_KEY,
-    payload: {
-      message: message,
-      recipients: [{ type: "mobile", value: phone_number }]
+      recipients: [{ type: "mobile", value: +699699699 }]
     }
   };
   let url = "https://cloud.frontlinesms.com/api/1/webhook";
