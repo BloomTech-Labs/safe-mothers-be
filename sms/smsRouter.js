@@ -83,11 +83,10 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
       res.status(500).json(err);
     });
 
-  let message = "This is just a test so dont worry!";
   let payload = {
     apiKey: process.env.FRONTLINE_KEY,
     payload: {
-      message: message,
+      message: "Hi people!",
       recipients: [{ type: "mobile", value: +699699699 }]
     }
   };
