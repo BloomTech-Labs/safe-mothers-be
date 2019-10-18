@@ -8,7 +8,7 @@
 
 #### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
 
-## 1️⃣ Getting started
+## Getting started
 
 To get the server running locally:
 
@@ -27,7 +27,7 @@ For the following reasons:
 -    Works with SMS messaging technology.
 -    A number of JS libraries to aid in our vision. 
 
-## 2️⃣ Endpoints
+## Endpoints
 
 #### Base URLS
 | Access        | Endpoint                | Access Control | 
@@ -77,8 +77,6 @@ For the following reasons:
 | DELETE | `/drivers/:id`          | sms                 | Deletes a driver's info from the DB                |
 
 # Data Model
-
-
 
 #### Users
 
@@ -168,35 +166,41 @@ For the following reasons:
   driver_id: UUID foreign key in DRIVERS  table
   initiated: DATETIME
   ended: DATETIME
-  completed: BINARY
+  initiated: DATETIME
 }
 ```
 
-## 2️⃣ Actions
+## DB Helpers
 
-🚫 This is an example, replace this with the actions that pertain to your backend
+### Mothers
 
-`getOrgs()` -> Returns all organizations
+`getMothers()` -> Returns all mothers
 
-`getOrg(orgId)` -> Returns a single organization by ID
+`getMotherById(id)` -> Returns a single mother by ID
 
-`addOrg(org)` -> Returns the created org
+`addMother(data)` -> Creates a single mother.
 
-`updateOrg(orgId)` -> Update an organization by ID
+`updateMother(id, data)` -> Updates mother by provided id. 
 
-`deleteOrg(orgId)` -> Delete an organization by ID
+`deleteMother(id)` -> Delete an organization by ID
+
 <br>
+
+### Drivers
+
+`getDrivers()` -> Returns all Drivers
+
+`getDriverById(id)` -> Returns a single driver by ID
+
+`addDriver(data)` -> Creates a single driver.
+
+`updateDriver(id, data)` -> Updates driver by provided id. 
+
+`deleteDriver(id)` -> Delete an organization by ID
+
+
 <br>
-<br>
-`getUsers(orgId)` -> if no param all users
 
-`getUser(userId)` -> Returns a single user by user ID
-
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
-
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
 
 ## 3️⃣ Environment Variables
 
