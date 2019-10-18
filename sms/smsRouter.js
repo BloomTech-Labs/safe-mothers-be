@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const axios = require("axios");
 const Drivers = require("../drivers/driversHelper");
 const Mothers = require("../mothers/mothersHelper");
 
@@ -81,6 +82,17 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
     .catch(err => {
       res.status(500).json(err);
     });
+
+  let message = "This is just a test so dont worry!";
+  let payload = {
+    apiKey: process.env.FRONTLINE_KEY,
+    payload: {
+      message: message,
+      recipients: [{ type: "mobile", value: message }]
+    }
+  };
+  let url = "https://cloud.frontlinesms.com/api/1/webhook";
+  axios.post(url, payload);
 });
 
 // get all mothers
