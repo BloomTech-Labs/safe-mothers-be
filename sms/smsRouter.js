@@ -74,7 +74,7 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
   let village_id = parseInt(req.params.village_id);
 
   let data = { phone_number: phone_number, village_id: village_id };
-
+  console.log(phone_number);
   Mothers.addMother(data)
     .then(mother => {
       res.status(201).json({ message: "Added a mother" });
@@ -84,6 +84,21 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
     });
 
   let message = "This is just a test so dont worry!";
+  let payload = {
+    apiKey: process.env.FRONTLINE_KEY,
+    payload: {
+      message: message,
+      recipients: [{ type: "mobile", value: phone_number }]
+    }
+  };
+  let url = "https://cloud.frontlinesms.com/api/1/webhook";
+  axios.post(url, payload);
+});
+
+router.get("/mothers/register/:phone_number", (req, res) => {
+  let phone_number = req.params.phone_number;
+  let message =
+    "Hi there! This are the number of village that you will need to fill up.. lol";
   let payload = {
     apiKey: process.env.FRONTLINE_KEY,
     payload: {
