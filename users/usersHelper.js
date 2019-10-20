@@ -4,6 +4,7 @@ module.exports = {
   getUsers,
   addUser,
   findBy,
+  updateUser,
   deleteUser
 };
 
@@ -19,6 +20,12 @@ async function addUser(user) {
 
 function findBy(filter) {
   return db("users").where(filter);
+}
+
+function updateUser(id, data) {
+  return db("users")
+    .where({ id: id })
+    .update(data);
 }
 
 function deleteUser(id) {

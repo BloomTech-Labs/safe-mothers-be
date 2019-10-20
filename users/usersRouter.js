@@ -34,6 +34,18 @@ router.get("/:id", (req, res) => {
     });
 });
 
+// edit a user based on ID
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  Users.updateUser(id, data)
+    .then(users => {
+      res.status(200).json({ message: 'user edited' });
+    })
+    .catch(err => res.status(500).json(err));
+});
+
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   Users.deleteUser(id)

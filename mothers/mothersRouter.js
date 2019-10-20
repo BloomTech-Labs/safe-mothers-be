@@ -23,6 +23,8 @@ router.get("/", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+
+
 // edit a mother based on ID
 router.put("/:id", (req, res) => {
   const { id } = req.params;
@@ -30,7 +32,7 @@ router.put("/:id", (req, res) => {
 
   Mothers.updateMother(id, data)
     .then(mothers => {
-      res.status(200).json(mothers);
+      res.status(200).json({message: 'mother edited'});
     })
     .catch(err => res.status(500).json(err));
 });
