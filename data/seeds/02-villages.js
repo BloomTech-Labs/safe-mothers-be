@@ -2,30 +2,35 @@
 exports.seed = function(knex) {
   return knex('villages').insert([
     {
-      name: "Kiwanyi",
-      lat: "0.802500",
-      long:"33.433889"
+      name: "Bugambo",
+      lat: "0.8970166000000022",
+      long:"33.39893489999997"
     },
     {
       name: "Buganza",
-      lat: "-0.857099",
-      long:"30.917860"
+      lat: "0.8453280000000231",
+      long:"33.433343899999954"
     },
     {
-      name: "Ikumbya",
-      lat: "0.974722",
-      long:"33.316944"
+      name: "Bugole A",
+      lat: "0.8683849999999976",
+      long:"33.382454999999936"
     },
     {
-      name: "Namusiisi",
-      lat: "0.853462",
-      long:"33.427212"
+      name: "Bugole B",
+      lat: "0.8527656000000022",
+      long:"33.373872000000006"
     },
     {
-      name: "Bugono",
-      lat: "0.816431",
-      long:"33.453356"
-    }
+      name: "Bugongo A",
+      lat: "0.8630280000000112",
+      long:"33.39781700000003"
+    },
+    {
+      name: "Bugongo A",
+      lat: "0.8630280000000112",
+      long:"33.39781700000003"
+    },
     
   ])
     
