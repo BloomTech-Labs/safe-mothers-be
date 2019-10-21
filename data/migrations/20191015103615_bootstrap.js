@@ -64,7 +64,10 @@ exports.up = function(knex) {
     .createTable("mothers", mothers => {
         // primary key
         mothers.increments();
+        mothers.string("survey_day");
         //**identification
+        mothers.integer("interviewer");
+        mothers.string("interviewer_other")
         //introduction
         mothers.integer("current_pg");
         mothers.integer("due_now");
@@ -74,6 +77,7 @@ exports.up = function(knex) {
         mothers.integer("current_multip");
         //registration
         mothers.string("name");
+        //data type Date-time?
         mothers.string("edd");
         mothers.integer("age");
         mothers.integer("home_village_id")
@@ -83,16 +87,87 @@ exports.up = function(knex) {
         .inTable('home_village')
         .onDelete('CASCADE')
         .onUpdate('CASCADE');
+        //Does this need to be changed to home_village_other. In excel it is: village_other
+        mothers.string("village_other");
         mothers.integer("own_phone");
         mothers.string("other_phone");
-        
-
-        //complications
+        mothers.string("phone_number");
+        mothers.integer("carrier");
+        mothers.integer("owner_phone");
+        mothers.string("owner_phone_other");
+        mothers.string("carrier_other");
+        mothers.integer("want_education");
+       //complications
+       mothers.string("complications_note");
+       mothers.integer("anemia");
+       mothers.integer("malaria");
+       mothers.integer("obstructed_labor");
+       mothers.integer("malpresent");
+       mothers.integer("aph");
+       mothers.integer("pph");
+       mothers.integer("ret_placenta");
+       mothers.integer("placenta_previa");
+       mothers.integer("hx_stillbirth");
+       mothers.integer("no_stillbirths");
+       mothers.integer("other_complication");
+       mothers.string("complication_specify")
         //Birth_Preparedness
+        mothers.string("BP_note");
+        mothers.integer("no_anc");
+        mothers.integer("deliver_place");
+        mothers.string("deliver_place_other");
+        mothers.string("deliver_specific");
+        mothers.integer("plan_transport");
+        mothers.string("plan_transport_other");
+        mothers.integer("purchase_supplies");
+        mothers.integer("name_supplies");
+        mothers.string("supplies_other");
+        mothers.integer("mama_kit");
+        mothers.integer("mackintosh");
+        mothers.integer("razor");
+        mothers.integer("pad");
+        mothers.integer("cotton");
+        mothers.integer("soap");
+        mothers.integer("gloves");
+        mothers.integer("medication");
+        mothers.integer("baby_clothes");
+        mothers.integer("blanket");
+        mothers.integer("sheets");
+        mothers.integer("other_supply");
+        mothers.integer("saving_money");
+        mothers.integer("amt_saved");
+        mothers.integer("amt_saved_range");
         //Pregnancy_History
+        mothers.string("PH_note");
+        mothers.integer("no_pg");
+        mothers.integer("no_birth");
+        mothers.integer("no_children");
+        mothers.integer("no_under5");
+        mothers.integer("hx_childdeath");
+        mothers.integer("no_childdeath");
         //Demographics
+        mothers.integer("attend_school");
+        mothers.integer("education");
+        mothers.integer("money_control");
+        mothers.integer("total_house");
+        mothers.integer("marital_status");
+        mothers.string("marital_status_other");
+        mothers.integer("spouse_school");
+        mothers.integer("spouse_education");
+        mothers.integer("polygamy");
+        mothers.integer("no_wives");
+        mothers.string("no_wives_other");
+        mothers.integer("wife_order");
+        mothers.string("wife_order_other");
+        mothers.integer("insurance");
+        mothers.integer("insurance_type");
+        mothers.string("insurance_type_other");
+        mothers.integer("insurance_CBO");
+        mothers.integer("insurance_private");
+        mothers.integer("insurance_other");
+        mothers.integer("sell_asset");
         //**Conclusions
-
+        mothers.string("notes")
 
     })
     //scores (Many to many relationship)
@@ -155,6 +230,6 @@ exports.down = function(knex) {
     .dropTableIfExists("scores")
     .dropTableIfExists("mothers")
     .dropTableIfExists("drivers")
-    .dropTableIfExists("villages")
+    .dropTableIfExists("home_village")
     .dropTableIfExists("users")
 };
