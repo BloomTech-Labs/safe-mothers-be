@@ -63,31 +63,6 @@ exports.up = function(knex) {
     .createTable("mothers", mothers => {
         // primary key
         mothers.increments();
-        // firstname
-        mothers.string("first_name", 255);
-        // lastname
-        mothers.string("last_name", 255);
-        // age
-        mothers.integer("age");
-        // phone number
-        mothers.string("phone_number", 255);
-        // emergency contact
-        mothers.string("emergency_contact", 255);
-        // village
-        mothers
-        .integer("village_id")
-        .unsigned()
-        .notNullable()
-        .references('id')
-        .inTable('villages')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
-        // health center
-        mothers.string("health_center", 255);
-        // lat
-        mothers.string("lat", 255);
-        // long
-        mothers.string("long", 255);
 
 
     })
