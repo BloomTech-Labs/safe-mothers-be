@@ -7,7 +7,7 @@ exports.seed = function(knex) {
       lat: "0.7954328",
       long:"33.4547664",
       phone_number: "+256782407942",
-      village_id: 1,
+      home_village_id: 1,
       availability: true,
       reliability: 4
     },
@@ -18,7 +18,7 @@ exports.seed = function(knex) {
       lat: "0.7954328",
       long:"33.4547664",
       phone_number: "+256777634545",
-      village_id: 2,
+      home_village_id: 2,
       availability: true,
       reliability: 5
     },
@@ -29,7 +29,7 @@ exports.seed = function(knex) {
       lat: "-0.847919",
       long:"30.905961",
       phone_number: "+256777634545",
-      village_id: 1,
+      home_village_id: 1,
       availability: false,
       reliability: 5
     },
