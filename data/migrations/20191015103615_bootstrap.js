@@ -19,7 +19,7 @@ exports.up = function(knex) {
     })
     
     //villages
-    .createTable("home_village", villages => {
+    .createTable("home_village", home_village => {
         //pk
         home_village.increments();
         //name
