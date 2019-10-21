@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Mothers = require("./mothersHelper");
 
 // register mother
-router.post("/register", (req, res) => {
+router.post("/auth/register", (req, res) => {
   let data = req.body;
 
   Mothers.addMother(data)

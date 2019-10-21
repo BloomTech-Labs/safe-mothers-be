@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
-const Users = require("./usersHelper");
+const users = require("./usersHelper");
+
 
 
 // get users
@@ -69,3 +70,4 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
+
