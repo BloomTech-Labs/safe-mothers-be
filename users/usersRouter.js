@@ -2,6 +2,8 @@ const router = require("express").Router();
 
 const Users = require("./usersHelper");
 
+
+// get users
 router.get("/", (req, res) => {
   Users.getUsers()
     .catch(err => {
@@ -12,6 +14,7 @@ router.get("/", (req, res) => {
     });
 });
 
+// get single user
 router.get("/:id", (req, res) => {
   let { id } = req.params;
 

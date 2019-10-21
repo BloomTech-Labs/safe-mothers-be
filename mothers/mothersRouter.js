@@ -23,7 +23,19 @@ router.get("/", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-
+// get mothers by id
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  Mothers.getMotherById(id)
+    .then(mothers => {
+      if (mothers) {
+        res.status(200).json(mothers);
+      } else {
+        res.status(404).json({ message: 'Could not find mother with associated id.' });
+      }
+    })
+    .catch(err => res.status(500).json(err));
+});
 
 // edit a mother based on ID
 router.put("/:id", (req, res) => {
