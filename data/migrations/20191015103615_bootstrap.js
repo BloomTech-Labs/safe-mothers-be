@@ -7,6 +7,7 @@ exports.up = function(knex) {
         //username
         users
         .string("username", 255)
+
         .notNullable()
         .unique();
         //firstname
@@ -18,15 +19,15 @@ exports.up = function(knex) {
     })
     
     //villages
-    .createTable("villages", villages => {
+    .createTable("home_village", villages => {
         //pk
-        villages.increments();
+        home_village.increments();
         //name
-        villages.string("name", 255);
+        home_village.string("name", 255);
         //lat 
-        villages.string("lat", 255).notNullable();
+        home_village.string("lat", 255).notNullable();
         //long
-        villages.string("long", 255).notNullable();
+        home_village.string("long", 255).notNullable();
 
     })
 
@@ -46,11 +47,11 @@ exports.up = function(knex) {
         drivers.string("phone_number", 255);
         //village -->FK
         drivers
-            .integer("village_id")
+            .integer("home_village_id")
             .unsigned()
             .notNullable()
             .references('id')
-            .inTable('villages')
+            .inTable('home_village')
             .onDelete('CASCADE')
             .onUpdate('CASCADE');
         //availability
@@ -63,6 +64,34 @@ exports.up = function(knex) {
     .createTable("mothers", mothers => {
         // primary key
         mothers.increments();
+        //**identification
+        //introduction
+        mothers.integer("current_pg");
+        mothers.integer("due_now");
+        mothers.integer("deliver_elsewhere");
+        mothers.integer("hx_cesarean");
+        mothers.integer("hx_complication");
+        mothers.integer("current_multip");
+        //registration
+        mothers.string("name");
+        mothers.string("edd");
+        mothers.integer("age");
+        mothers.integer("home_village_id")
+        .unsigned()
+        .notNullable()
+        .references('id')
+        .inTable('home_village')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE');
+        mothers.integer("own_phone");
+        mothers.string("other_phone");
+        
+
+        //complications
+        //Birth_Preparedness
+        //Pregnancy_History
+        //Demographics
+        //**Conclusions
 
 
     })
