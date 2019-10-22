@@ -2,18 +2,16 @@
 exports.seed = function (knex) {
   return knex("mothers").insert([
     {
-      //introduction
       current_pg: 1,
       due_now: 0,
       deliver_elsewhere: 0,
       hx_cesarean: 1,
       hx_complication: 1,
       current_multip: 0,
-      //registration
       name: "Jalen Dow",
       edd: "2019-12-19",
       age: 30,
-      home_village: 1,
+      village: 1,
       own_phone: 0,
       other_phone: 1,
       phone_number: "+2567032880888",
@@ -30,8 +28,32 @@ exports.seed = function (knex) {
       ret_placenta: 1,
       placenta_previa: 1,
       hx_stillbirth: 1,
-      no_stillbirths: "3",
-
+      no_stillbirths: 3,
+      BP_note: "",
+      no_anc: 2,
+      deliver_place: 4,
+      plan_transport: 1,
+      purchase_supplies: 1,
+      name_supplies: 5,
+      cotton: 1,
+      saving_money: 0,
+      PH_note: 1,
+      no_pg: 2,
+      no_birth: 1,
+      no_children: 1,
+      no_under5: 1,
+      hx_childdeath: 1,
+      no_childdeath: 1,
+      attend_school: 2,
+      money_control: 1,
+      total_house: 2,
+      marital_status: 2,
+      spouse_school: 0,
+      polygamy: 1,
+      no_wives: 2,
+      wife_order: 2,
+      insurance: 0,
+      sell_asset: 1,
     }
 
   ])

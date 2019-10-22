@@ -19,15 +19,15 @@ exports.up = function(knex) {
       })
       
       //villages
-      .createTable("home_village", home_village => {
+      .createTable("village", village => {
           //pk
-          home_village.integer("id").primary().unique();
+          village.integer("id").primary().unique();
           //name
-          home_village.string("name", 255);
+          village.string("name", 255);
           //lat 
-          home_village.string("lat", 255).notNullable();
+          village.string("lat", 255).notNullable();
           //long
-          home_village.string("long", 255).notNullable();
+          village.string("long", 255).notNullable();
   
       })
   
@@ -45,11 +45,11 @@ exports.up = function(knex) {
           drivers.string("phone_number", 255);
           //village -->FK
            drivers
-              .integer("home_village_id")
+              .integer("village_id")
               .unsigned()
               .notNullable()
               .references('id')
-              .inTable('home_village')
+              .inTable('village')
               .onDelete('CASCADE')
               .onUpdate('CASCADE');
           //availability
@@ -78,12 +78,12 @@ exports.up = function(knex) {
           //data type Date-time?
           mothers.string("edd");
           mothers.integer("age");
-          //FK
-          mothers.integer("home_village_id")
+          //FK---> cannot make the name village_id. Will not match data sent from odk
+          mothers.integer("village")
           .unsigned()
           .notNullable()
           .references('id')
-          .inTable('home_village')
+          .inTable('village')
           .onDelete('CASCADE')
           .onUpdate('CASCADE');
           //Does this need to be changed to home_village_other. In excel it is: village_other
@@ -229,7 +229,7 @@ exports.up = function(knex) {
       .dropTableIfExists("scores")
       .dropTableIfExists("mothers")
       .dropTableIfExists("drivers")
-      .dropTableIfExists("home_village")
+      .dropTableIfExists("village")
       .dropTableIfExists("users")
   };
   
