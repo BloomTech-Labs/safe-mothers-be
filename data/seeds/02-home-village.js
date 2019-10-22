@@ -1,6 +1,6 @@
 
 exports.seed = function(knex) {
-  return knex('villages').insert([
+  return knex('home_village').insert([
     {
       id:17,
       name: "Bugambo",
