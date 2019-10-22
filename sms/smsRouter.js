@@ -23,14 +23,39 @@ router.get("/mothers/help/:phone_number", (req, res) => {
         return (villageID = 0);
       }
     })
-    .then(motherInfo => {
-      console.log(motherInfo);
-    });
+    .then(mothers => {
+      mothers.map(mother => {
+        sms.findDriver(mother.village)
+        .then(driver => {
+          console.log(driver)
+          // let payload = {
+          //   apiKey: process.env.FRONTLINE_KEY,
+          //   payload: {
+          //     message: `Hi people!`,
+          //     recipients: [{ type: "mobile", value: "+699699699" }]
+          //   }
+          // };
+          // let url = "https://cloud.frontlinesms.com/api/1/webhook";
+          // axios.post(url, payload)
+          // .then(res => {
+          //   console.log(res)
+          // })
+          // .catch(console.log(err))
+        })
+        .catch(err => {
+          res.status(500).json(err)
+        })
+      })
+      console.log(mothers)
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })
 });
 
-function findDriver(id) {
-  return sms.findDriver(id);
-}
+// function findDriver(id) {
+//   return sms.findDriver(id);
+// }
 
 function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number
