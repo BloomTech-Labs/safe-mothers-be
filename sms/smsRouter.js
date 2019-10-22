@@ -14,20 +14,18 @@ router.get("/mothers/help/:phone_number", (req, res) => {
     .then(registered => {
       // if registered and there is an item in the array
       if (registered && registered.length !== 0) {
-        registered.map(mother => {
-          // get the village number
-          villageID = mother.village;
-          findDriver(mother.village).then(driver => {
-            console.log(driver);
-          });
-        });
+        // registered.map(mother => {
+        //   // get the village number
+        //   return (villageID = mother.village);
+        // });
+        return registered;
       } else {
-        res
-          .status(400)
-          .json({ message: "No phone number stored in the database" });
+        return (villageID = 0);
       }
     })
-    .catch(err => res.status(500).json(err));
+    .then(motherInfo => {
+      console.log(motherInfo);
+    });
 });
 
 function findDriver(id) {
