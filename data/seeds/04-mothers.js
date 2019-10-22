@@ -1,5 +1,4 @@
-
-exports.seed = function (knex) {
+exports.seed = function(knex) {
   return knex("mothers").insert([
     {
       current_pg: 1,
@@ -14,7 +13,7 @@ exports.seed = function (knex) {
       village: 1,
       own_phone: 0,
       other_phone: 1,
-      phone_number: "+2567032880888",
+      phone_number: "2567032880888",
       carrier: 2,
       owner_phone: 3,
       want_education: 1,
@@ -53,9 +52,7 @@ exports.seed = function (knex) {
       no_wives: 2,
       wife_order: 2,
       insurance: 0,
-      sell_asset: 1,
+      sell_asset: 1
     }
-
-  ])
-
+  ]);
 };
