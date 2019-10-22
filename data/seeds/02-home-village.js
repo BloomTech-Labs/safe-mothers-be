@@ -1,6 +1,6 @@
 
 exports.seed = function(knex) {
-  return knex('villages').insert([
+  return knex('home_village').insert([
     {
       name: "Bugambo",
       lat: "0.8970166000000022",
