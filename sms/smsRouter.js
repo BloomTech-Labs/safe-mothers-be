@@ -3,6 +3,7 @@ const axios = require("axios");
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
+const onChange = require("on-change");
 
 // HELP
 router.get("/mothers/help/:phone_number", (req, res) => {
@@ -46,23 +47,35 @@ function findDriver(motherVillage, motherPhone, motherName) {
   sms
     .findDriver(motherVillage)
     .then(drivers => {
-      drivers.forEach(driver => {
-        // make algorithm to check the status for availability in every 5 minutes
-        // Perhaps make use of the setTimeout() js function. You give it a time interval after which you can call a function.
-        // if there's no changes in the availability within 5 minutes, move to another index file
+      // iterate the driver
+      for (let i = 0; i < drivers.length; i++) {
+        console.log("*****There is a request that you need to respond*****");
 
-        setTimeout(function() {
-          console.log(driver);
-        }, 10 * 1000);
+        if (drivers[i].availability === 1) {
+          (function() {
+            var i = 0;
+            // send the information to the driver through sms
 
-        // let message = `Hi! your driver will be ${driver.name} and his number is ${driver.phone_number}`;
-        // console.log(message);
-        // sendDataToFrontlineSMS(message, motherPhone);
+            // store the interval id to clear in future
+            var intr = setInterval(function() {
+              if (drivers[i].availability === 1) {
+                console.log("*****this is in the set interval*****");
+              }
+              if (++i == 100) clearInterval(intr);
+            }, 5 * 1000);
+          })();
+        }
+      }
 
-        // let driverMessage = `Hi ${driver.name}, please pickup ${motherName} at ${motherVillage} please press 1 for yes and 0 for no. You have 5 minutes to response`;
-        // console.log(driverMessage);
-        // sendDataToFrontlineSMS(driverMessage, driver.phone_number);
-      });
+      // make algorithm to check the status for availability in every 5 minutes
+      // Perhaps make use of the setTimeout() js function. You give it a time interval after which you can call a function.
+      // if there's no changes in the availability within 5 minutes, move to another index file
+      // let message = `Hi! your driver will be ${driver.name} and his number is ${driver.phone_number}`;
+      // console.log(message);
+      // sendDataToFrontlineSMS(message, motherPhone);
+      // let driverMessage = `Hi ${driver.name}, please pickup ${motherName} at ${motherVillage} please press 1 for yes and 0 for no. You have 5 minutes to response`;
+      // console.log(driverMessage);
+      // sendDataToFrontlineSMS(driverMessage, driver.phone_number);
     })
     .catch(err => console.log(err));
 }

@@ -17,3 +17,7 @@ function findDriver(id) {
     .select("name", "phone_number", "availability", "reliability")
     .orderBy("reliability", "desc");
 }
+
+function checkAvailability(drive_id) {
+  return db("drivers").where({ availability: false });
+}
