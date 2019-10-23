@@ -14,6 +14,6 @@ function checkMotherRegistration(number) {
 function findDriver(id) {
   return db("drivers")
     .where({ village_id: id, availability: true })
-    .max("reliability as reliability")
-    .select("name", "phone_number", "availability");
+    .select("name", "phone_number", "availability", "reliability")
+    .orderBy("reliability", "desc");
 }

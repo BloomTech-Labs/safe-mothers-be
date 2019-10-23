@@ -13,7 +13,7 @@ exports.seed = function(knex) {
       village: 1,
       own_phone: 0,
       other_phone: 1,
-      phone_number: "2567032880888",
+      phone_number: "699699699",
       carrier: 2,
       owner_phone: 3,
       want_education: 1,
