@@ -19,7 +19,7 @@ exports.up = function(knex) {
       })
 
       //villages
-      .createTable("home_village", village => {
+      .createTable("village", village => {
         //pk
         village
           .integer("id")
@@ -171,6 +171,7 @@ exports.up = function(knex) {
         //**Conclusions
         mothers.string("notes");
       })
+
       //scores (Many to many relationship)
       .createTable("scores", scores => {
         // primary id
@@ -196,30 +197,32 @@ exports.up = function(knex) {
       .createTable("rides", rides => {
         //PK
         rides.increments();
-        //mothers --> FK
-        rides
-          .integer("mother_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("mothers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
-        //drivers --> FK
-        rides
-          .integer("driver_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("drivers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
+        //mothers
+        rides.integer("mother_id");
+
+        rides.string("mother_name");
+
+        rides.integer("mother_village_id");
+
+        rides.string("mother_phone_number");
+
+        //drivers
+        rides.integer("driver_id");
+
+        rides.string("driver_name");
+
+        rides.string("driver_village_id");
+
+        rides.string("driver_phone_number");
+
         //intiated
         rides.datetime("initiated");
         //ended
         rides.datetime("ended");
         //completed
-        rides.binary("completed");
+        rides.boolean("completed");
+        //assigned
+        rides.boolean("assigned");
       })
   );
 };

@@ -3,9 +3,9 @@ const axios = require("axios");
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
-const onChange = require("on-change");
-
+let RSVP = require("RSVP");
 // HELP
+
 router.get("/mothers/help/:phone_number", (req, res) => {
   // get the phone number from the link
   let { phone_number } = req.params;
@@ -14,11 +14,23 @@ router.get("/mothers/help/:phone_number", (req, res) => {
   sms
     .checkMotherRegistration(newNum)
     .then(registered => {
-      // if registered and there is an item in the array
       if (registered && registered.length !== 0) {
         registered.map(mother => {
-          // finding the driver and this is based from the availability, reliability, village_id
-          findDriver(mother.village, mother.phone_number, mother.name);
+          let data = {
+            mother_id: mother.id,
+            mother_name: mother.name,
+            mother_village_id: mother.village,
+            mother_phone_number: mother.phone_number,
+            completed: false,
+            assigned: false
+          };
+          addMotherRideRequest(data).then(request => {
+            return request;
+          });
+          let message = `You are registered! Type NEXT to continue`;
+          // sendDataToFrontlineSMS(message, phone_number);
+          console.log(message);
+
           res.status(200).json(mother);
         });
       } else {
@@ -35,49 +47,78 @@ router.get("/mothers/help/:phone_number", (req, res) => {
     });
 });
 
-router.post("/mothers/register/:phone_number/:name", (req, res) => {
-  const { phone_number, name } = req.params;
-
-  console.log(phone_number, name);
+// type next to continue
+router.get("/mothers/next/:phone_number", (req, res) => {
+  sms.checkPendingRequest().then(request => {
+    if (request[0].assigned === 0) {
+      request.map(driver => {
+        let i = 0;
+        promiseWhile(
+          function() {
+            return driver.assigned === 0;
+          },
+          function() {
+            return new RSVP.Promise(function(resolve, reject) {
+              setTimeout(function() {
+                i++;
+                findDriver(driver.mother_village_id).then(data => {
+                  let id = data[0].id;
+                  let availabilty = { availabilty: false };
+                  updateDriverAvailability(id, availabilty);
+                  let message = `Hi! ${data[0].name}! You have a pickup request. Do you want to accept request? Press 1 for Yes and 0 for No`;
+                  // sendDataToFrontlineSMS(message, phone_number);
+                  console.log(message);
+                });
+                resolve();
+              }, 5 * 1000);
+            });
+          }
+        ).then(function() {
+          alert("done");
+        });
+      });
+    }
+  });
 });
 
-/*** FUNCTIONS */
+function updateDriverAvailability(id, data) {
+  return sms.updateDriverAvailability(id, data).then(results => {
+    return results;
+  });
+}
 
-function findDriver(motherVillage, motherPhone, motherName) {
-  sms
-    .findDriver(motherVillage)
-    .then(drivers => {
-      // iterate the driver
-      for (let i = 0; i < drivers.length; i++) {
-        console.log("*****There is a request that you need to respond*****");
-
-        if (drivers[i].availability === 1) {
-          (function() {
-            var i = 0;
-            // send the information to the driver through sms
-
-            // store the interval id to clear in future
-            var intr = setInterval(function() {
-              if (drivers[i].availability === 1) {
-                console.log("*****this is in the set interval*****");
-              }
-              if (++i == 100) clearInterval(intr);
-            }, 5 * 1000);
-          })();
+function promiseWhile(condition, body) {
+  return new RSVP.Promise(function(resolve, reject) {
+    function loop() {
+      RSVP.Promise.resolve(condition()).then(function(result) {
+        // When the result of calling `condition` is no longer true, we are done.
+        if (!result) {
+          resolve();
+        } else {
+          // When it completes loop again otherwise, if it fails, reject
+          RSVP.Promise.resolve(body()).then(loop, reject);
         }
-      }
+      });
+    }
 
-      // make algorithm to check the status for availability in every 5 minutes
-      // Perhaps make use of the setTimeout() js function. You give it a time interval after which you can call a function.
-      // if there's no changes in the availability within 5 minutes, move to another index file
-      // let message = `Hi! your driver will be ${driver.name} and his number is ${driver.phone_number}`;
-      // console.log(message);
-      // sendDataToFrontlineSMS(message, motherPhone);
-      // let driverMessage = `Hi ${driver.name}, please pickup ${motherName} at ${motherVillage} please press 1 for yes and 0 for no. You have 5 minutes to response`;
-      // console.log(driverMessage);
-      // sendDataToFrontlineSMS(driverMessage, driver.phone_number);
-    })
-    .catch(err => console.log(err));
+    // Start running the loop
+    loop();
+  });
+}
+
+/*** FUNCTIONS */
+function addMotherRideRequest(id) {
+  return sms.addMotherRideRequest(id);
+}
+
+function addDriverRideRequest(id, driver_id) {
+  sms.addDriverRideRequest(id, driver_id).then(driver => driver);
+}
+
+function findDriver(mother_village_id) {
+  return sms.findDriver(mother_village_id).then(driver => {
+    return driver;
+  });
 }
 
 function removeSpecialChar(num) {
@@ -114,6 +155,13 @@ router.get("/drivers", (req, res) => {
     .then(drivers => {
       res.status(200).json(drivers);
     })
+    .catch(err => res.status(500).json(err));
+});
+
+router.get("/rides", (req, res) => {
+  sms
+    .getRideRequest()
+    .then(rides => res.status(200).json(rides))
     .catch(err => res.status(500).json(err));
 });
 
