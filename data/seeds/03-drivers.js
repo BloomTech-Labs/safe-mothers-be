@@ -58,7 +58,7 @@ exports.seed = function(knex) {
       name: "Dembe Erifazi",
       lat: "-0.847919",
       long: "30.905961",
-      phone_number: "699699699",
+      phone_number: "699699679",
       village_id: 1,
       availability: false,
       reliability: 5

@@ -3,7 +3,7 @@ const axios = require("axios");
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
-let RSVP = require("RSVP");
+
 // HELP
 
 router.get("/mothers/help/:phone_number", (req, res) => {
@@ -47,62 +47,131 @@ router.get("/mothers/help/:phone_number", (req, res) => {
     });
 });
 
-// type next to continue
-router.get("/mothers/next/:phone_number", (req, res) => {
-  sms.checkPendingRequest().then(request => {
-    if (request[0].assigned === 0) {
-      request.map(driver => {
-        let i = 0;
-        promiseWhile(
-          function() {
-            return driver.assigned === 0;
-          },
-          function() {
-            return new RSVP.Promise(function(resolve, reject) {
-              setTimeout(function() {
-                i++;
-                findDriver(driver.mother_village_id).then(data => {
-                  let id = data[0].id;
-                  let availabilty = { availabilty: false };
-                  updateDriverAvailability(id, availabilty);
-                  let message = `Hi! ${data[0].name}! You have a pickup request. Do you want to accept request? Press 1 for Yes and 0 for No`;
-                  // sendDataToFrontlineSMS(message, phone_number);
-                  console.log(message);
-                });
-                resolve();
-              }, 5 * 1000);
-            });
-          }
-        ).then(function() {
-          alert("done");
-        });
-      });
-    }
-  });
-});
+// router.post(
+//   "/drivers/assign/:phone_number/:answer/:request_id",
+//   async (req, res) => {
+//     /**
+//      * 1. phone_number, assigned (0-1)
+//      * 2. find the driver in teh drivers table using the phone number
+//      * 2. checkPendingRequest -> rides table
+//      * 3. if/else (1 -> updatePendingRequest -> rides table)
+//      * 4. if press 1 -> updateDriverAvailability -> false
+//      * 5. text about mothers information
+//      */
+//     try {
+//       let { answer, request_id, phone_number } = req.params;
+//       phone_number = removeSpecialChar(phone_number);
+//       answer = answer.toLowerCase();
+//       request_id = parseInt(request_id);
 
-function updateDriverAvailability(id, data) {
-  return sms.updateDriverAvailability(id, data).then(results => {
-    return results;
-  });
-}
+//       let data = {
+//         phone_number: phone_number
+//       };
+//       if (answer === "yes") {
+//         let ridesRequest = await sms.checkPendingRequest();
+//         let driverInfo = await sms.findDriverPhone(data);
+
+//         driverInfo.map(driver => {
+//           let updateDriver = {
+//             availability: false
+//           };
+
+//           sms.updateDriverAvailability(driver.id, updateDriver);
+//           let updateDriverData = {};
+//           sms.updatePendingRequest(request_id);
+//         });
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   let data = {
+
+//     phone_number: phone_number
+//   };
+//   let ridesRequest = await sms.checkPendingRequest();
+//   let driverPhone = await sms.findDriverPhone(data);
+
+//   ridesRequest.forEach(request => {
+//     driverPhone.map();
+//     if (num === 1) {
+//       // sms.updatePendingRequest(request.id, )
+//     }
+//   });
+// } catch (error) {
+//   console.log(error);
+// }
+//   }
+// );
+
+/** LOOP SEQUENCE FOR FINDING DRIVER */
+// router.get("/mothers/next/:phone_number", async (req, res) => {
+//   try {
+//     let pendingRequest = await sms.checkPendingRequest();
+//     pendingRequest.map(request => {
+//       sms.findDriverArray(request.mother_village_id).then(drivers => {
+//         let i = drivers.length;
+//         promiseWhile(
+//           //condition
+//           function() {
+//             return i > 0 && request.assigned === 0;
+//           },
+//           // body
+//           function() {
+//             return new Promise((resolve, reject) => {
+//               setTimeout(() => {
+//                 findDriver(request.mother_village_id).then(driverInfos => {
+//                   driverInfos.map(driver => {
+//                     let id = driver.id;
+//                     let availabilty = { availabilty: false };
+//                     updateDriverAvailability(id, availabilty);
+//                     let message = `Hi! ${driver.name}! You have a pickup request, request number: ${request.id}.
+//                       Type Yes or No together with the request id . Example: "Yes 12"`;
+//                     // sendDataToFrontlineSMS(message, phone_number);
+
+//                     // to consider: what will happen if the driver declined the request
+//                     // if there is no driver found through the village id list (null) then search for the nearest (LAT, LONG)
+//                     console.log(message);
+
+//                     // getting a sql error
+//                   });
+//                 });
+//                 i--;
+//                 resolve();
+//               }, 5 * 1000);
+//             });
+//           }
+//         );
+//         res.status(200).json(drivers);
+//       });
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 function promiseWhile(condition, body) {
-  return new RSVP.Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     function loop() {
-      RSVP.Promise.resolve(condition()).then(function(result) {
-        // When the result of calling `condition` is no longer true, we are done.
+      Promise.resolve(condition()).then(function(result) {
         if (!result) {
           resolve();
         } else {
-          // When it completes loop again otherwise, if it fails, reject
-          RSVP.Promise.resolve(body()).then(loop, reject);
+          Promise.resolve(body()).then(loop, reject);
         }
       });
     }
 
-    // Start running the loop
     loop();
+  });
+}
+
+async function updatePendingRequest(id, data) {
+  return await sms.updatePendingRequest(id, data);
+}
+
+function updateDriverAvailability(id, data) {
+  return sms.updateDriverAvailability(id, data).then(results => {
+    return results;
   });
 }
 
@@ -115,10 +184,8 @@ function addDriverRideRequest(id, driver_id) {
   sms.addDriverRideRequest(id, driver_id).then(driver => driver);
 }
 
-function findDriver(mother_village_id) {
-  return sms.findDriver(mother_village_id).then(driver => {
-    return driver;
-  });
+async function findDriver(mother_village_id) {
+  return await sms.findDriver(mother_village_id);
 }
 
 function removeSpecialChar(num) {
@@ -189,5 +256,7 @@ router.get("/rides", (req, res) => {
 //   let url = "https://cloud.frontlinesms.com/api/1/webhook";
 //   axios.post(url, payload);
 // });
+
+// // type next to continue
 
 module.exports = router;
