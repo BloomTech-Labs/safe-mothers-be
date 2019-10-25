@@ -3,7 +3,6 @@ const axios = require("axios");
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
-let RSVP = require("RSVP");
 // HELP
 
 router.get("/mothers/help/:phone_number", (req, res) => {
@@ -48,6 +47,7 @@ router.get("/mothers/help/:phone_number", (req, res) => {
 });
 
 // type next to continue
+let RSVP = require("RSVP");
 router.get("/mothers/next/:phone_number", (req, res) => {
   sms.checkPendingRequest().then(request => {
     if (request[0].assigned === 0) {
