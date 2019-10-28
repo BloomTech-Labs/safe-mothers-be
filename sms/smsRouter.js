@@ -1,18 +1,18 @@
-const router = require("express").Router();
-const axios = require("axios");
-const Mothers = require("../mothers/mothersHelper");
-const Drivers = require("../drivers/driversHelper");
-const sms = require("./smsHelper");
+const router = require('express').Router();
+const axios = require('axios');
+const Mothers = require('../mothers/mothersHelper');
+const Drivers = require('../drivers/driversHelper');
+const sms = require('./smsHelper');
 
 // register mother through SMS
-router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
+router.post('/mothers/register/:phone_number/:village_id', (req, res) => {
   let phone_number = req.params.phone_number;
   let village_id = parseInt(req.params.village_id);
 
   let data = { phone_number: phone_number, village_id: village_id };
   Mothers.addMother(data)
     .then(mother => {
-      res.status(201).json({ message: "Added a mother" });
+      res.status(201).json({ message: 'Added a mother' });
     })
     .catch(err => {
       res.status(500).json(err);
@@ -30,7 +30,7 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
 });
 
 // HELP
-router.get("/mothers/help/:phone_number", async (req, res) => {
+router.get('/mothers/help/:phone_number', async (req, res) => {
   try {
     // get the phone number from the link
     let { phone_number } = req.params;
@@ -67,7 +67,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
 
 // DRIVERS RESPONSE TO THE MESSAGE
 router.post(
-  "/drivers/assign/:phone_number/:answer/:request_id",
+  '/drivers/assign/:phone_number/:answer/:request_id',
   async (req, res) => {
     try {
       let { answer, request_id, phone_number } = req.params;
@@ -87,7 +87,7 @@ router.post(
       let updateRide = {
         driver_id: parseInt(driverInfo[0].id)
       };
-      if (answer === "yes" && rideInfo[0].driver_id === null) {
+      if (answer === 'yes' && rideInfo[0].driver_id === null) {
         sms
           .addDriverRideRequest(rideId, updateRide)
           .then(request => request)
@@ -99,7 +99,7 @@ router.post(
         changeDriverAvailability(driverId, update);
       }
       // if the driver choose no the availability value will be false
-      else if (answer === "no") {
+      else if (answer === 'no') {
         let update = {
           availability: false
         };
@@ -108,14 +108,14 @@ router.post(
           .catch(err => console.log(err));
       }
       // if the driver choose yes but the ride table is complete already send info to the driver
-      else if (answer === "yes" && rideInfo[0].driver_id !== null) {
+      else if (answer === 'yes' && rideInfo[0].driver_id !== null) {
         // FRONT LINE TEXT
-        console.log("Sorry, this request is close already");
+        console.log('Sorry, this request is close already');
       }
       // make else if for lat and long if there is no driver available on the same village id
       else {
         console.log(
-          "Something is wrong please send your response: answer requestID (example: yes 12)"
+          'Something is wrong please send your response: answer requestID (example: yes 12)'
         );
       }
     } catch (error) {
@@ -147,7 +147,7 @@ async function findDriver(mother_village_id) {
 function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number
   var regexPhoneNumber = /[^A-Z0-9]+/gi;
-  return num.replace(regexPhoneNumber, " ").trim();
+  return num.replace(regexPhoneNumber, ' ').trim();
 }
 
 /** MAKE SURE YOU HAVE THE .env FILE */
@@ -156,15 +156,15 @@ function sendDataToFrontlineSMS(message, phone_number) {
     apiKey: process.env.FRONTLINE_KEY,
     payload: {
       message: message,
-      recipients: [{ type: "mobile", value: `+${phone_number}` }]
+      recipients: [{ type: 'mobile', value: `+${phone_number}` }]
     }
   };
-  let url = "https://cloud.frontlinesms.com/api/1/webhook";
+  let url = 'https://cloud.frontlinesms.com/api/1/webhook';
   axios.post(url, payload);
 }
 
 // get all mothers
-router.get("/mothers", (req, res) => {
+router.get('/mothers', (req, res) => {
   Mothers.getMothers()
     .then(mothers => {
       res.status(200).json(mothers);
@@ -173,7 +173,7 @@ router.get("/mothers", (req, res) => {
 });
 
 // get all the drivers
-router.get("/drivers", (req, res) => {
+router.get('/drivers', (req, res) => {
   Drivers.getDrivers()
     .then(drivers => {
       res.status(200).json(drivers);
@@ -181,7 +181,7 @@ router.get("/drivers", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-router.get("/rides", (req, res) => {
+router.get('/rides', (req, res) => {
   sms
     .getRideRequest()
     .then(rides => res.status(200).json(rides))
@@ -216,10 +216,22 @@ router.get("/rides", (req, res) => {
 // // type next to continue
 
 // Chris-Delfaus Branch
-router.get("/testrides", (req , res) => {
-  sms.reassignFailedRides()
-    .then(() => {
-      return res.status(200).json({ message: "Ride Check Complete"});
-    });
-})
+router.get('/testrides', (req, res) => {
+  sms.reassignFailedRides().then(() => {
+    return res.status(200).json({ message: 'Ride Check Complete' });
+  });
+});
+
+router.put('/checkonline/:phone_number/:answer', (req, res) => {
+  let phone_number = req.params.phone_number;
+  let answer = req.params.answer;
+
+  if ((answer = 'online')) {
+    sms.statusOnline(phone_number, answer);
+  }
+  if ((answer = 'offline')) {
+    sms.statusOffline(phone_number, answer);
+  }
+  return res.status(200).json({ message: 'Status Updated' });
+});
 module.exports = router;
