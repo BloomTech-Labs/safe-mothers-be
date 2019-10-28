@@ -259,4 +259,11 @@ router.get("/rides", (req, res) => {
 
 // // type next to continue
 
+// Chris-Delfaus Branch
+router.get("/testrides", (req , res) => {
+  sms.reassignFailedRides()
+    .then(() => {
+      return res.status(200).json({ message: "Ride Check Complete"});
+    });
+})
 module.exports = router;
