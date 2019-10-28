@@ -91,3 +91,4 @@ function statusOffline(phoneNumber, answer) {
     .select('*')
     .update({ availability: false });
 }
+
