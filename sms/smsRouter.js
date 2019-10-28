@@ -64,7 +64,6 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         completed: false,
         assigned: false
       };
-console.log(motherId)
       sms
         .addMotherRideRequest(data)
         .then(request => res.status(200).json(request))
