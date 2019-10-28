@@ -193,37 +193,7 @@ exports.up = function (knex) {
           .onUpdate("CASCADE");
       })
 
-      // //rides
-      // .createTable("rides", rides => {
-      //   //PK
-      //   rides.increments();
-      //   //mothers
-      //   rides.integer("mother_id");
-      //
-      //   rides.string("mother_name");
-      //
-      //   rides.integer("mother_village_id");
-      //
-      //   rides.string("mother_phone_number");
-      //
-      //   //drivers
-      //   rides.integer("driver_id");
-      //
-      //   rides.string("driver_name");
-      //
-      //   rides.string("driver_village_id");
-      //
-      //   rides.string("driver_phone_number");
-      //
-      //   //intiated
-      //   rides.datetime("initiated");
-      //   //ended
-      //   rides.datetime("ended");
-      //   //completed
-      //   rides.boolean("completed");
-      //   //assigned
-      //   rides.boolean("assigned");
-      // })
+
   );
 };
 
