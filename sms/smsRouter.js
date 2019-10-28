@@ -5,13 +5,26 @@ const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 
 // register mother through SMS
-router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
-  let phone_number = req.params.phone_number;
-  let village_id = parseInt(req.params.village_id);
+router.post("/mothers/register/:phone_number/:village_name", async (req, res) => {
+  let { village_name, phone_number } = req.params;
+  let newNum = removeSpecialChar(phone_number);
+  
+  //Searching for village name in the database
+  let village_search = { name: village_name }
 
-  let data = { phone_number: phone_number, village_id: village_id };
-  Mothers.addMother(data)
+//Getting that village name that mother texted
+  let village_list = await sms.getVillageById(village_search);
+
+  //Grabbing the id of village from above search
+  let village_id = village_list[0].id
+
+//Adding that to the mothers data
+  let mother_data = { phone_number: newNum, village: village_id };
+
+  Mothers.addMother(mother_data)
     .then(mother => {
+      let message = "You are now registered. Please text 'help' to request a boda"
+      console.log(message)
       res.status(201).json({ message: "Added a mother" });
     })
     .catch(err => {
@@ -29,6 +42,8 @@ router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
   // axios.post(url, payload);
 });
 
+//let message = "You are registerd. Please test "help" to request a boda"
+
 // HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
   try {
@@ -37,27 +52,26 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     let newNum = removeSpecialChar(phone_number);
     // check if mother is registered
     let registered = await sms.checkMotherRegistration(newNum);
-    let motherId = registered[0].id;
-    let motherVillageId = registered[0].id;
-
+    // let motherVillageId = registered[0].id; ---> not using right now
     // search drivers on the same village
-    let pending = await sms.findDriver(motherVillageId);
-
+    // let pending = await sms.findDriver(motherVillageId); ---> not using
+  console.log(registered)
     if (registered && registered.length !== 0 && registered !== undefined) {
+      let motherId = registered[0].id;
       let data = {
         mother_id: motherId,
         ended: null,
         completed: false,
         assigned: false
       };
-
+console.log(motherId)
       sms
         .addMotherRideRequest(data)
         .then(request => res.status(200).json(request))
         .catch(err => console.log(err));
     } else {
-      let message = `To register type "register villagename" (example: register uganga)`;
-      // sendDataToFrontlineSMS(message, phone_number);
+      let message = `To register type "register village" (example: register Iganga)`;
+      // sendDataToFrontlineSMS(message, newNum);
       console.log(message);
     }
   } catch (err) {
@@ -180,3 +194,4 @@ router.get("/rides", (req, res) => {
 });
 
 module.exports = router;
+

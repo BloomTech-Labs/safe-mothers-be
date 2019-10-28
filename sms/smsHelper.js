@@ -9,7 +9,9 @@ module.exports = {
   addMotherRideRequest,
   addDriverRideRequest,
   getRideRequest,
-  updateDriverAvailability
+  updateDriverAvailability,
+  getVillages,
+  getVillageById
 };
 
 function checkMotherRegistration(number) {
@@ -62,3 +64,16 @@ function updateDriverAvailability(id, data) {
 function getRideRequest() {
   return db("rides").select("*");
 }
+
+// Village Helpers
+function getVillages() {
+  return db("village")
+    .select("*")
+}
+
+function getVillageById(data) {
+  return db("village")
+    .where(data)
+    .select("id","name")
+}
+
