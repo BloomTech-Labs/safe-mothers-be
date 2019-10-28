@@ -2,10 +2,9 @@ const db = require("../data/dbConfig");
 
 module.exports = {
   checkMotherRegistration,
-  checkPendingRequest,
+  checkRideRequest,
   updatePendingRequest,
   findDriver,
-  findDriverArray,
   findDriverPhone,
   addMotherRideRequest,
   addDriverRideRequest,
@@ -16,12 +15,12 @@ module.exports = {
 function checkMotherRegistration(number) {
   return db("mothers")
     .where({ phone_number: number })
-    .select("name", "phone_number", "village", "id");
+    .select("id", "name", "phone_number", "village");
 }
 
-function checkPendingRequest() {
+function checkRideRequest(data) {
   return db("rides")
-    .where({ assigned: false })
+    .where(data)
     .select("*");
 }
 
@@ -30,14 +29,6 @@ function updatePendingRequest(id, data) {
 }
 
 function findDriver(id) {
-  return db("drivers")
-    .where({ village_id: id, availability: true })
-    .select("id", "name", "phone_number", "availability", "village_id")
-    .max("reliability as reliability");
-  // .orderBy("reliability", "desc");
-}
-
-function findDriverArray(id) {
   return db("drivers")
     .where({ village_id: id, availability: true })
     .select("id", "name", "phone_number", "availability", "village_id")
@@ -54,17 +45,18 @@ function addMotherRideRequest(data) {
   return db("rides").insert(data, "id");
 }
 
-function addDriverRideRequest(id, driver_id) {
+function addDriverRideRequest(id, data) {
   return db("rides")
     .where({ id: id })
-    .insert({ driver_id: driver_id });
+    .update(data);
 }
 
 // drivers status
 function updateDriverAvailability(id, data) {
   return db("drivers")
     .where({ id: id })
-    .update(data);
+    .update(data)
+    .select("*");
 }
 /** DONT TOUCH THIS */
 function getRideRequest() {
