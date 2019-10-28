@@ -42,7 +42,6 @@ router.post("/mothers/register/:phone_number/:village_name", async (req, res) =>
   // axios.post(url, payload);
 });
 
-//let message = "You are registerd. Please test "help" to request a boda"
 
 // HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
@@ -146,6 +145,45 @@ function changeDriverAvailability(id, data) {
     .catch(err => console.log(err));
 }
 
+// get all mothers
+router.get("/mothers", (req, res) => {
+  Mothers.getMothers()
+    .then(mothers => {
+      res.status(200).json(mothers);
+    })
+    .catch(err => res.status(500).json(err));
+});
+
+// updating driver online/offline status
+router.put('/checkonline/:phone_number/:answer', (req, res) => {
+  let phone_number = req.params.phone_number;
+  let answer = req.params.answer;
+
+  if ((answer = 'online')) {
+    sms.statusOnline(phone_number, answer);
+  }
+  if ((answer = 'offline')) {
+    sms.statusOffline(phone_number, answer);
+  }
+  return res.status(200).json({ message: 'Status Updated' });
+}); 
+
+// get all the drivers
+router.get("/drivers", (req, res) => {
+  Drivers.getDrivers()
+    .then(drivers => {
+      res.status(200).json(drivers);
+    })
+    .catch(err => res.status(500).json(err));
+});
+
+router.get("/rides", (req, res) => {
+  sms
+    .getRideRequest()
+    .then(rides => res.status(200).json(rides))
+    .catch(err => res.status(500).json(err));
+});
+
 /*** FUNCTIONS */
 
 function removeSpecialChar(num) {
@@ -167,30 +205,6 @@ function sendDataToFrontlineSMS(message, phone_number) {
   axios.post(url, payload);
 }
 
-// get all mothers
-router.get("/mothers", (req, res) => {
-  Mothers.getMothers()
-    .then(mothers => {
-      res.status(200).json(mothers);
-    })
-    .catch(err => res.status(500).json(err));
-});
-
-// get all the drivers
-router.get("/drivers", (req, res) => {
-  Drivers.getDrivers()
-    .then(drivers => {
-      res.status(200).json(drivers);
-    })
-    .catch(err => res.status(500).json(err));
-});
-
-router.get("/rides", (req, res) => {
-  sms
-    .getRideRequest()
-    .then(rides => res.status(200).json(rides))
-    .catch(err => res.status(500).json(err));
-});
 
 module.exports = router;
 

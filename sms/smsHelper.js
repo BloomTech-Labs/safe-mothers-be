@@ -63,6 +63,7 @@ function updateDriverAvailability(id, data) {
     .update(data)
     .select("*");
 }
+
 /** DONT TOUCH THIS */
 function getRideRequest() {
   return db("rides").select("*");
