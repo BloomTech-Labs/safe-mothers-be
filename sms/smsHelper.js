@@ -9,7 +9,12 @@ module.exports = {
   addMotherRideRequest,
   addDriverRideRequest,
   getRideRequest,
-  updateDriverAvailability
+  updateDriverAvailability,
+  getVillages,
+  getVillageById,
+  statusOnline,
+  statusOffline
+
 };
 
 function checkMotherRegistration(number) {
@@ -58,7 +63,39 @@ function updateDriverAvailability(id, data) {
     .update(data)
     .select("*");
 }
+
 /** DONT TOUCH THIS */
 function getRideRequest() {
   return db("rides").select("*");
 }
+
+//Driver status: 
+function statusOnline(phoneNumber, answer) {
+  console.log('Online', phoneNumber);
+  return db('drivers')
+    .where({ phone_number: phoneNumber })
+    .update({ availability: true })
+    .select('*');
+
+}
+
+function statusOffline(phoneNumber, answer) {
+  console.log('Offline', phoneNumber)
+  return db('drivers')
+    .where({ phone_number: phoneNumber })
+    .select('*')
+    .update({ availability: false });
+}
+
+// Village Helpers
+function getVillages() {
+  return db("village")
+    .select("*")
+}
+
+function getVillageById(data) {
+  return db("village")
+    .where(data)
+    .select("id","name")
+}
+
