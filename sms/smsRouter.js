@@ -96,9 +96,7 @@ router.post(
         let update = {
           availability: false
         };
-        changeDriverAvailability(driverId, update)
-          .then(driver => driver)
-          .catch(err => console.log(err));
+        changeDriverAvailability(driverId, update);
       }
       // if the driver choose no the availability value will be false
       else if (answer === "no") {
