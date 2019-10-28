@@ -4,68 +4,136 @@ const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 
-// HELP
-router.get("/mothers/help/:phone_number", (req, res) => {
-  // get the phone number from the link
-  let { phone_number } = req.params;
-  let newNum = removeSpecialChar(phone_number);
+// register mother through SMS
+router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
+  let phone_number = req.params.phone_number;
+  let village_id = parseInt(req.params.village_id);
 
-  sms
-    .checkMotherRegistration(newNum)
-    .then(registered => {
-      // if registered and there is an item in the array
-      if (registered && registered.length !== 0) {
-        registered.map(mother => {
-          // finding the driver and this is based from the availability, reliability, village_id
-          findDriver(mother.village, mother.phone_number, mother.name);
-          res.status(200).json(mother);
-        });
-      } else {
-        let message = `To register type "register villagename" (example: register uganga)`;
-        // sendDataToFrontlineSMS(message, phone_number);
-        console.log(message);
-        res.status(400).json({
-          message: `To register type "register villagename" (example: register uganga)`
-        });
-      }
+  let data = { phone_number: phone_number, village_id: village_id };
+  Mothers.addMother(data)
+    .then(mother => {
+      res.status(201).json({ message: "Added a mother" });
     })
     .catch(err => {
       res.status(500).json(err);
     });
+
+  // let payload = {
+  //   apiKey: process.env.FRONTLINE_KEY,
+  //   payload: {
+  //     message: "Hi people!",
+  //     recipients: [{ type: "mobile", value: "+699699699" }]
+  //   }
+  // };
+  // let url = "https://cloud.frontlinesms.com/api/1/webhook";
+  // axios.post(url, payload);
 });
 
-router.post("/mothers/register/:phone_number/:name", (req, res) => {
-  const { phone_number, name } = req.params;
+// HELP
+router.get("/mothers/help/:phone_number", async (req, res) => {
+  try {
+    // get the phone number from the link
+    let { phone_number } = req.params;
+    let newNum = removeSpecialChar(phone_number);
+    // check if mother is registered
+    let registered = await sms.checkMotherRegistration(newNum);
+    let motherId = registered[0].id;
+    let motherVillageId = registered[0].id;
 
-  console.log(phone_number, name);
+    // search drivers on the same village
+    let pending = await sms.findDriver(motherVillageId);
+
+    if (registered && registered.length !== 0 && registered !== undefined) {
+      let data = {
+        mother_id: motherId,
+        ended: null,
+        completed: false,
+        assigned: false
+      };
+
+      sms
+        .addMotherRideRequest(data)
+        .then(request => res.status(200).json(request))
+        .catch(err => console.log(err));
+    } else {
+      let message = `To register type "register villagename" (example: register uganga)`;
+      // sendDataToFrontlineSMS(message, phone_number);
+      console.log(message);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-/*** FUNCTIONS */
+// DRIVERS RESPONSE TO THE MESSAGE
+router.post(
+  "/drivers/assign/:phone_number/:answer/:request_id",
+  async (req, res) => {
+    try {
+      let { answer, request_id, phone_number } = req.params;
+      phone_number = removeSpecialChar(phone_number);
+      answer = answer.toLowerCase();
+      request_id = parseInt(request_id);
 
-function findDriver(motherVillage, motherPhone, motherName) {
+      let newPhone = { phone_number: phone_number };
+
+      let driverInfo = await sms.findDriverPhone(newPhone);
+      let rideInfo = await sms.getRideRequest(request_id);
+
+      let rideId = parseInt(rideInfo[0].id);
+      let driverId = parseInt(driverInfo[0].id);
+
+      //if the driver press yes with the request ID then it will add to the rides table
+      let updateRide = {
+        driver_id: parseInt(driverInfo[0].id)
+      };
+      if (answer === "yes" && rideInfo[0].driver_id === null) {
+        sms
+          .addDriverRideRequest(rideId, updateRide)
+          .then(request => request)
+          .catch(err => console.log(err));
+
+        let update = {
+          availability: false
+        };
+        changeDriverAvailability(driverId, update)
+          .then(driver => driver)
+          .catch(err => console.log(err));
+      }
+      // if the driver choose no the availability value will be false
+      else if (answer === "no") {
+        let update = {
+          availability: false
+        };
+        changeDriverAvailability(driverId, update)
+          .then(driver => driver)
+          .catch(err => console.log(err));
+      }
+      // if the driver choose yes but the ride table is complete already send info to the driver
+      else if (answer === "yes" && rideInfo[0].driver_id !== null) {
+        // FRONT LINE TEXT
+        console.log("Sorry, this request is close already");
+      }
+      // make else if for lat and long if there is no driver available on the same village id
+      else {
+        console.log(
+          "Something is wrong please send your response: answer requestID (example: yes 12)"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+function changeDriverAvailability(id, data) {
   sms
-    .findDriver(motherVillage)
-    .then(drivers => {
-      drivers.forEach(driver => {
-        // make algorithm to check the status for availability in every 5 minutes
-        // Perhaps make use of the setTimeout() js function. You give it a time interval after which you can call a function.
-        // if there's no changes in the availability within 5 minutes, move to another index file
-
-        setTimeout(function() {
-          console.log(driver);
-        }, 10 * 1000);
-
-        // let message = `Hi! your driver will be ${driver.name} and his number is ${driver.phone_number}`;
-        // console.log(message);
-        // sendDataToFrontlineSMS(message, motherPhone);
-
-        // let driverMessage = `Hi ${driver.name}, please pickup ${motherName} at ${motherVillage} please press 1 for yes and 0 for no. You have 5 minutes to response`;
-        // console.log(driverMessage);
-        // sendDataToFrontlineSMS(driverMessage, driver.phone_number);
-      });
-    })
+    .updateDriverAvailability(id, data)
+    .then(driver => driver)
     .catch(err => console.log(err));
 }
+
+/*** FUNCTIONS */
 
 function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number
@@ -104,29 +172,11 @@ router.get("/drivers", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-// // register mother through SMS
-// router.post("/mothers/register/:phone_number/:village_id", (req, res) => {
-//   let phone_number = req.params.phone_number;
-//   let village_id = parseInt(req.params.village_id);
-
-//   let data = { phone_number: phone_number, village_id: village_id };
-//   Mothers.addMother(data)
-//     .then(mother => {
-//       res.status(201).json({ message: "Added a mother" });
-//     })
-//     .catch(err => {
-//       res.status(500).json(err);
-//     });
-
-//   let payload = {
-//     apiKey: process.env.FRONTLINE_KEY,
-//     payload: {
-//       message: "Hi people!",
-//       recipients: [{ type: "mobile", value: "+699699699" }]
-//     }
-//   };
-//   let url = "https://cloud.frontlinesms.com/api/1/webhook";
-//   axios.post(url, payload);
-// });
+router.get("/rides", (req, res) => {
+  sms
+    .getRideRequest()
+    .then(rides => res.status(200).json(rides))
+    .catch(err => res.status(500).json(err));
+});
 
 module.exports = router;

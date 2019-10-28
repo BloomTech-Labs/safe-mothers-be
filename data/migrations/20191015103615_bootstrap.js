@@ -19,7 +19,7 @@ exports.up = function(knex) {
       })
 
       //villages
-      .createTable("home_village", village => {
+      .createTable("village", village => {
         //pk
         village
           .integer("id")
@@ -171,6 +171,7 @@ exports.up = function(knex) {
         //**Conclusions
         mothers.string("notes");
       })
+
       //scores (Many to many relationship)
       .createTable("scores", scores => {
         // primary id
@@ -191,42 +192,11 @@ exports.up = function(knex) {
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
       })
-
-      //rides
-      .createTable("rides", rides => {
-        //PK
-        rides.increments();
-        //mothers --> FK
-        rides
-          .integer("mother_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("mothers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
-        //drivers --> FK
-        rides
-          .integer("driver_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("drivers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
-        //intiated
-        rides.datetime("initiated");
-        //ended
-        rides.datetime("ended");
-        //completed
-        rides.binary("completed");
-      })
   );
 };
 
 exports.down = function(knex) {
   return knex.schema
-    .dropTableIfExists("rides")
     .dropTableIfExists("scores")
     .dropTableIfExists("mothers")
     .dropTableIfExists("drivers")
