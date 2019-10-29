@@ -27,7 +27,7 @@ router.post(
       .then(mother => {
         let message =
           "You are now registered. Please text 'help' to request a boda";
-        console.log(message);
+        sendDataToFrontlineSMS(message, phone_number);
         res.status(201).json({ message: "Added a mother" });
       })
       .catch(err => {

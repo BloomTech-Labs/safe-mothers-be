@@ -14,7 +14,6 @@ module.exports = {
   getVillageById,
   statusOnline,
   statusOffline
-
 };
 
 function checkMotherRegistration(number) {
@@ -69,33 +68,30 @@ function getRideRequest() {
   return db("rides").select("*");
 }
 
-//Driver status: 
+//Driver status:
 function statusOnline(phoneNumber, answer) {
-  console.log('Online', phoneNumber);
-  return db('drivers')
+  console.log("Online", phoneNumber);
+  return db("drivers")
     .where({ phone_number: phoneNumber })
     .update({ availability: true })
-    .select('*');
-
+    .select("*");
 }
 
 function statusOffline(phoneNumber, answer) {
-  console.log('Offline', phoneNumber)
-  return db('drivers')
+  console.log("Offline", phoneNumber);
+  return db("drivers")
     .where({ phone_number: phoneNumber })
-    .select('*')
+    .select("*")
     .update({ availability: false });
 }
 
 // Village Helpers
 function getVillages() {
-  return db("village")
-    .select("*")
+  return db("village").select("*");
 }
 
 function getVillageById(data) {
   return db("village")
     .where(data)
-    .select("id","name")
+    .select("id", "name");
 }
-
