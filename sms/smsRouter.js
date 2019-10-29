@@ -162,7 +162,7 @@ router.get("/mothers", (req, res) => {
 
 // updating driver online/offline status
 router.put("/checkonline/:phone_number/:answer", (req, res) => {
-  let phone_number = req.params.phone_number;
+  let phone_number = removeSpecialChar(req.params.phone_number);
   let answer = req.params.answer.toLowerCase();
   if (answer === "online") {
     sms
