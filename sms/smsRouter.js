@@ -71,13 +71,14 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name} have a request pending pickup id of ${request}. To confirm type "answer pickupID" (example: yes 12)`;
-          sendDataToFrontlineSMS(message, newNum);
-          console.log(phone_number);
+          sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          // console.log(phone_number);
+          console.log(drivers[0].phone_number);
         })
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
-      sendDataToFrontlineSMS(message, newNum);
+      sendDataToFrontlineSMS(message, drivers[0].phone_number);
     }
   } catch (err) {
     console.log(err);
