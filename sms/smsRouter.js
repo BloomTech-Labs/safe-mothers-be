@@ -70,7 +70,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .addMotherRideRequest(data)
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name} have a request pending pickup id of ${request}. To confirm type "answer pickupID" (example: yes 12)`;
+          let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
           sendDataToFrontlineSMS(message, drivers[0].phone_number);
 
           res.status(200).json(request);
@@ -86,62 +86,63 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
 });
 
 // DRIVERS RESPONSE TO THE MESSAGE
-router.post("/drivers/assign/:phone_number/:answer", async (req, res) => {
-  try {
-    let { answer, request_id, phone_number } = req.params;
-    phone_number = removeSpecialChar(phone_number);
-    answer = answer.toLowerCase();
-    request_id = parseInt(request_id);
+router.post(
+  "/drivers/assign/:phone_number/:answer/:request_id",
+  async (req, res) => {
+    try {
+      let { answer, request_id, phone_number } = req.params;
+      phone_number = removeSpecialChar(phone_number);
+      answer = answer.toLowerCase();
+      request_id = parseInt(request_id);
 
-    console.log(answer);
+      let newPhone = { phone_number: phone_number };
 
-    // let newPhone = { phone_number: phone_number };
+      let driverInfo = await sms.findDriverPhone(newPhone);
+      let rideInfo = await sms.getRideRequest(request_id);
 
-    // let driverInfo = await sms.findDriverPhone(newPhone);
-    // let rideInfo = await sms.getRideRequest(request_id);
+      let rideId = parseInt(rideInfo[0].id);
+      let driverId = parseInt(driverInfo[0].id);
 
-    // let rideId = parseInt(rideInfo[0].id);
-    // let driverId = parseInt(driverInfo[0].id);
+      //if the driver press yes with the request ID then it will add to the rides table
+      let updateRide = {
+        driver_id: parseInt(driverInfo[0].id)
+      };
+      if (answer === "yes" && rideInfo[0].driver_id === null) {
+        sms
+          .addDriverRideRequest(rideId, updateRide)
+          .then(request => request)
+          .catch(err => console.log(err));
 
-    // //if the driver press yes with the request ID then it will add to the rides table
-    // let updateRide = {
-    //   driver_id: parseInt(driverInfo[0].id)
-    // };
-    // if (answer === "yes" && rideInfo[0].driver_id === null) {
-    //   sms
-    //     .addDriverRideRequest(rideId, updateRide)
-    //     .then(request => request)
-    //     .catch(err => console.log(err));
-
-    //   let update = {
-    //     availability: false
-    //   };
-    //   changeDriverAvailability(driverId, update);
-    // }
-    // // if the driver choose no the availability value will be false
-    // else if (answer === "no") {
-    //   let update = {
-    //     availability: false
-    //   };
-    //   changeDriverAvailability(driverId, update)
-    //     .then(driver => driver)
-    //     .catch(err => console.log(err));
-    // }
-    // // if the driver choose yes but the ride table is complete already send info to the driver
-    // else if (answer === "yes" && rideInfo[0].driver_id !== null) {
-    //   // FRONT LINE TEXT
-    //   console.log("Sorry, this request is close already");
-    // }
-    // // make else if for lat and long if there is no driver available on the same village id
-    // else {
-    //   console.log(
-    //     "Something is wrong please send your response: answer requestID (example: yes 12)"
-    //   );
-    // }
-  } catch (error) {
-    console.log(error);
+        let update = {
+          availability: false
+        };
+        changeDriverAvailability(driverId, update);
+      }
+      // if the driver choose no the availability value will be false
+      else if (answer === "no") {
+        let update = {
+          availability: false
+        };
+        changeDriverAvailability(driverId, update)
+          .then(driver => driver)
+          .catch(err => console.log(err));
+      }
+      // if the driver choose yes but the ride table is complete already send info to the driver
+      else if (answer === "yes" && rideInfo[0].driver_id !== null) {
+        // FRONT LINE TEXT
+        console.log("Sorry, this request is close already");
+      }
+      // make else if for lat and long if there is no driver available on the same village id
+      else {
+        console.log(
+          "Something is wrong please send your response: answer requestID (example: yes 12)"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
+);
 
 function changeDriverAvailability(id, data) {
   sms
@@ -162,15 +163,20 @@ router.get("/mothers", (req, res) => {
 // updating driver online/offline status
 router.put("/checkonline/:phone_number/:answer", (req, res) => {
   let phone_number = req.params.phone_number;
-  let answer = req.params.answer;
-
-  if ((answer = "online")) {
-    sms.statusOnline(phone_number, answer);
+  let answer = req.params.answer.toLowerCase();
+  if (answer === "online") {
+    sms
+      .statusOnline(phone_number)
+      .then(res => res)
+      .catch(err => console.log(err));
   }
-  if ((answer = "offline")) {
-    sms.statusOffline(phone_number, answer);
+  if (answer === "offline") {
+    sms
+      .statusOffline(phone_number)
+      .then(res => res)
+      .catch(err => console.log(err));
   }
-  return res.status(200).json({ message: "Status Updated" });
+  return res.status(200).json({ message: "Status Updated", phone_number });
 });
 
 // get all the drivers
