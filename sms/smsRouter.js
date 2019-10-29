@@ -70,8 +70,10 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .addMotherRideRequest(data)
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name} have a request pending pickup id of id. To confirm type "answer pickupID" (example: yes 12)`;
+          let message = `${drivers[0].name} have a request pending pickup id of ${request}. To confirm type "answer pickupID" (example: yes 12)`;
           sendDataToFrontlineSMS(message, drivers[0].phone_number);
+
+          res.status(200).json(request);
         })
         .catch(err => console.log(err));
     } else {
@@ -206,10 +208,7 @@ function sendDataToFrontlineSMS(message, phone_number) {
     }
   };
   let url = "https://cloud.frontlinesms.com/api/1/webhook";
-  axios
-    .post(url, payload)
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
+  axios.post(url, payload);
 }
 
 module.exports = router;
