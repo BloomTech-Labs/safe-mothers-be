@@ -5,43 +5,46 @@ const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 
 // register mother through SMS
-router.post("/mothers/register/:phone_number/:village_name", async (req, res) => {
-  let { village_name, phone_number } = req.params;
-  let newNum = removeSpecialChar(phone_number);
-  
-  //Searching for village name in the database
-  let village_search = { name: village_name }
+router.post(
+  "/mothers/register/:phone_number/:village_name",
+  async (req, res) => {
+    let { village_name, phone_number } = req.params;
+    let newNum = removeSpecialChar(phone_number);
 
-//Getting that village name that mother texted
-  let village_list = await sms.getVillageById(village_search);
+    //Searching for village name in the database
+    let village_search = { name: village_name };
 
-  //Grabbing the id of village from above search
-  let village_id = village_list[0].id
+    //Getting that village name that mother texted
+    let village_list = await sms.getVillageById(village_search);
 
-//Adding that to the mothers data
-  let mother_data = { phone_number: newNum, village: village_id };
+    //Grabbing the id of village from above search
+    let village_id = village_list[0].id;
 
-  Mothers.addMother(mother_data)
-    .then(mother => {
-      let message = "You are now registered. Please text 'help' to request a boda"
-      console.log(message)
-      res.status(201).json({ message: "Added a mother" });
-    })
-    .catch(err => {
-      res.status(500).json(err);
-    });
+    //Adding that to the mothers data
+    let mother_data = { phone_number: newNum, village: village_id };
 
-  // let payload = {
-  //   apiKey: process.env.FRONTLINE_KEY,
-  //   payload: {
-  //     message: "Hi people!",
-  //     recipients: [{ type: "mobile", value: "+699699699" }]
-  //   }
-  // };
-  // let url = "https://cloud.frontlinesms.com/api/1/webhook";
-  // axios.post(url, payload);
-});
+    Mothers.addMother(mother_data)
+      .then(mother => {
+        let message =
+          "You are now registered. Please text 'help' to request a boda";
+        console.log(message);
+        res.status(201).json({ message: "Added a mother" });
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
 
+    // let payload = {
+    //   apiKey: process.env.FRONTLINE_KEY,
+    //   payload: {
+    //     message: "Hi people!",
+    //     recipients: [{ type: "mobile", value: "+699699699" }]
+    //   }
+    // };
+    // let url = "https://cloud.frontlinesms.com/api/1/webhook";
+    // axios.post(url, payload);
+  }
+);
 
 // HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
@@ -51,10 +54,10 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     let newNum = removeSpecialChar(phone_number);
     // check if mother is registered
     let registered = await sms.checkMotherRegistration(newNum);
-    // let motherVillageId = registered[0].id; ---> not using right now
+    let motherVillageId = registered[0].village;
     // search drivers on the same village
-    // let pending = await sms.findDriver(motherVillageId); ---> not using
-  console.log(registered)
+    let drivers = await sms.findDriver(motherVillageId);
+
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherId = registered[0].id;
       let data = {
@@ -65,7 +68,11 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       };
       sms
         .addMotherRideRequest(data)
-        .then(request => res.status(200).json(request))
+        .then(request => {
+          /** This is just temporary, we will do the 5 minutes response time filter */
+          let message = `${drivers[0].name} have a request pending pickup id of ${request}. To confirm type "answer pickupID" (example: yes 12)`;
+          console.log(message);
+        })
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
@@ -153,18 +160,18 @@ router.get("/mothers", (req, res) => {
 });
 
 // updating driver online/offline status
-router.put('/checkonline/:phone_number/:answer', (req, res) => {
+router.put("/checkonline/:phone_number/:answer", (req, res) => {
   let phone_number = req.params.phone_number;
   let answer = req.params.answer;
 
-  if ((answer = 'online')) {
+  if ((answer = "online")) {
     sms.statusOnline(phone_number, answer);
   }
-  if ((answer = 'offline')) {
+  if ((answer = "offline")) {
     sms.statusOffline(phone_number, answer);
   }
-  return res.status(200).json({ message: 'Status Updated' });
-}); 
+  return res.status(200).json({ message: "Status Updated" });
+});
 
 // get all the drivers
 router.get("/drivers", (req, res) => {
@@ -203,6 +210,4 @@ function sendDataToFrontlineSMS(message, phone_number) {
   axios.post(url, payload);
 }
 
-
 module.exports = router;
-

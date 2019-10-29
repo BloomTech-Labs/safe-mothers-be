@@ -6,7 +6,7 @@ exports.seed = function(knex) {
       lat: "0.7954328",
       long: "33.4547664",
       phone_number: "699699699",
-      village_id: 1,
+      village_id: 29,
       availability: true,
       reliability: 4
     },
