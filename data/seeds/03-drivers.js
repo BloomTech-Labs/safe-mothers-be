@@ -5,7 +5,7 @@ exports.seed = function(knex) {
       name: "Nviiri Brian",
       lat: "0.7954328",
       long: "33.4547664",
-      phone_number: "699699699",
+      phone_number: "699123456",
       village_id: 29,
       availability: true,
       reliability: 4
@@ -15,7 +15,7 @@ exports.seed = function(knex) {
       name: "Brian Chong",
       lat: "0.8254328",
       long: "40.4547664",
-      phone_number: "699699698",
+      phone_number: "9093794021",
       village_id: 1,
       availability: true,
       reliability: 4
