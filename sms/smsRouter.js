@@ -206,7 +206,10 @@ function sendDataToFrontlineSMS(message, phone_number) {
     }
   };
   let url = "https://cloud.frontlinesms.com/api/1/webhook";
-  axios.post(url, payload);
+  axios
+    .post(url, payload)
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
 }
 
 module.exports = router;
