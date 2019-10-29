@@ -198,8 +198,8 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema
     .dropTableIfExists("scores")
+    .dropTableIfExists("mothers")
     .dropTableIfExists("drivers")
     .dropTableIfExists("village")
-    .dropTableIfExists("mothers")
     .dropTableIfExists("users");
 };
