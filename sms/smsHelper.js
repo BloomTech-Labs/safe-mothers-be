@@ -69,20 +69,20 @@ function getRideRequest() {
 }
 
 //Driver status:
-function statusOnline(phoneNumber, answer) {
-  console.log("Online", phoneNumber);
+function statusOnline(phoneNumber) {
+  // console.log("Online", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
     .update({ availability: true })
     .select("*");
 }
 
-function statusOffline(phoneNumber, answer) {
-  console.log("Offline", phoneNumber);
+function statusOffline(phoneNumber) {
+  // console.log("Offline", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
-    .select("*")
-    .update({ availability: false });
+    .update({ availability: false })
+    .select("*");
 }
 
 // Village Helpers
