@@ -7,12 +7,13 @@ const sms = require("./smsHelper");
 // register mother through SMS
 router.post(
   "/mothers/register/:phone_number/:village_name",
+  // mothers/register/+699699699/Bugole%20A
   async (req, res) => {
     let { village_name, phone_number } = req.params;
     //Village name is an issue in Frontline. Works fine on local host.
-    village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
-
-    console.log(village_name);
+    // village_name = removeSpecialChar( village_name.charAt(0).toUpperCase() + village_name.slice(1));
+    village_name = getTheVillageName(village_name);
+    phone_number = removeSpecialChar(phone_number);
 
     let newNum = removeSpecialChar(phone_number);
 
@@ -33,7 +34,7 @@ router.post(
       .then(mother => {
         let message =
           "You are now registered. Please text 'help' to request a boda";
-        // sendDataToFrontlineSMS(message, newNum);
+        sendDataToFrontlineSMS(message, newNum);
         res.status(201).json({ message: "Added a mother" });
       })
       .catch(err => {
@@ -68,7 +69,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
-          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          sendDataToFrontlineSMS(message, drivers[0].phone_number);
           console.log(message)
           res.status(200).json(request);
         })
@@ -226,8 +227,16 @@ router.get("/rides", (req, res) => {
 
 function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number
-  var regexPhoneNumber = /[^A-Z0-9]+/gi;
+  var regexPhoneNumber = /[^a-zA-Z0-9]+/gi;
   return num.replace(regexPhoneNumber, " ").trim();
+}
+
+function getTheVillageName(name) {
+  var regex = /[^a-zA-Z0-9]\s/gi;
+  var wordRegex = /value /g;
+  let word = name.replace(regex, "");
+  word = word.replace(wordRegex, "");
+  return word;
 }
 
 /** MAKE SURE YOU HAVE THE .env FILE */
