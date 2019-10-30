@@ -9,7 +9,7 @@ router.post(
   "/mothers/register/:phone_number/:village_name",
   async (req, res) => {
     let { village_name, phone_number } = req.params;
-
+    //Village name is an issue in Frontline. Works fine on local host.
     village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
 
     console.log(village_name);
@@ -28,11 +28,12 @@ router.post(
     //Adding that to the mothers data
     let mother_data = { phone_number: newNum, village: village_id };
 
+    // Adding new mother to DB does not work in sms ---> have not pushed any changes
     Mothers.addMother(mother_data)
       .then(mother => {
         let message =
           "You are now registered. Please text 'help' to request a boda";
-        sendDataToFrontlineSMS(message, newNum);
+        // sendDataToFrontlineSMS(message, newNum);
         res.status(201).json({ message: "Added a mother" });
       })
       .catch(err => {
@@ -67,14 +68,14 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
-          sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
           console.log(message)
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
-      sendDataToFrontlineSMS(message, newNum);
+      // sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(201).json({message: "Mother added"});
     }
@@ -133,12 +134,8 @@ router.post(
         let update = {
           availability: false
         };
+        //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
         changeDriverAvailability(driverId, update)
-          .then(driver => driver)
-          .catch(err => {
-            console.log(err)
-            res.status(500).json(err)
-          });
       }
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
