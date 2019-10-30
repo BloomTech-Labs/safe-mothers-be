@@ -9,6 +9,11 @@ router.post(
   "/mothers/register/:phone_number/:village_name",
   async (req, res) => {
     let { village_name, phone_number } = req.params;
+
+    village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
+
+    console.log(village_name);
+    
     let newNum = removeSpecialChar(phone_number);
 
     //Searching for village name in the database
@@ -33,16 +38,6 @@ router.post(
       .catch(err => {
         res.status(500).json(err);
       });
-
-    // let payload = {
-    //   apiKey: process.env.FRONTLINE_KEY,
-    //   payload: {
-    //     message: "Hi people!",
-    //     recipients: [{ type: "mobile", value: "+699699699" }]
-    //   }
-    // };
-    // let url = "https://cloud.frontlinesms.com/api/1/webhook";
-    // axios.post(url, payload);
   }
 );
 
@@ -72,7 +67,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
           sendDataToFrontlineSMS(message, drivers[0].phone_number);
-
+          
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
@@ -142,6 +137,7 @@ router.post(
             res.status(500).json(err)
           });
       }
+      //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
         sms.getRideRequest()
