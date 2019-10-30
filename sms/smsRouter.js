@@ -102,7 +102,7 @@ router.post(
       let driverInfo = await sms.findDriverPhone(newPhone);
       let rideInfo = await sms.getRideRequest(request_id);
       let motherInfo = await Mothers.getMotherForDriver(rideInfo[0].mother_id);
-      let villageId = {id: motherInfo[0].village};
+      let villageId = { id: motherInfo[0].village };
       let villageInfo = await sms.getVillageById(villageId);
 
       let rideId = parseInt(rideInfo[0].id);
@@ -120,7 +120,7 @@ router.post(
               availability: false
             };
             changeDriverAvailability(driverId, update);
-    
+
             // send mothers information to driver
             let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
             sendDataToFrontlineSMS(message, phone_number)
@@ -137,22 +137,37 @@ router.post(
         };
         changeDriverAvailability(driverId, update)
           .then(driver => driver)
-          .catch(err => console.log(err));
+          .catch(err => {
+            console.log(err)
+            res.status(500).json(err)
+          });
       }
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
-          // FRONT LINE TEXT
-        let message = `Sorry, this request is close already`
-        sendDataToFrontlineSMS(message, phone_number)
-        res.status(401).json({message: 'request is closed already'});
-          
+        sms.getRideRequest()
+          .then(request => {
+            // FRONT LINE TEXT
+            let message = `Sorry, this request is close already`
+            sendDataToFrontlineSMS(message, phone_number)
+            res.status(401).json({ message: 'request is closed already' });
+          })
+          .catch( err => {
+            console.log(err)
+            res.status(500).json(err)
+          })
       }
       // make else if for lat and long if there is no driver available on the same village id
       else {
-        let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
-        sendDataToFrontlineSMS(message, phone_number);
-        res.status(401).json({message: "Something is wrong with your response"});
-
+        sms.getRideRequest()
+        .then(request => {
+          let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
+          sendDataToFrontlineSMS(message, phone_number);
+          res.status(401).json({ message: "Something is wrong with your response" });
+        })
+        .catch( err => {
+          console.log(err)
+          res.status(500).json(err)
+        })
       }
     } catch (error) {
       console.log(error);
