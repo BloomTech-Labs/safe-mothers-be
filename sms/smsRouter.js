@@ -144,11 +144,14 @@ router.post(
         // FRONT LINE TEXT
         let message = `Sorry, this request is close already`
         sendDataToFrontlineSMS(message, phone_number)
+        res.status(401).json({message: 'request is closed already'});
       }
       // make else if for lat and long if there is no driver available on the same village id
       else {
         let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
-        sendDataToFrontlineSMS(message, phone_number)
+        sendDataToFrontlineSMS(message, phone_number);
+        res.status(500).json({message: "Something is wrong with your response"});
+
       }
     } catch (error) {
       console.log(error);
