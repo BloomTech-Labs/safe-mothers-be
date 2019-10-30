@@ -101,6 +101,9 @@ router.post(
 
       let driverInfo = await sms.findDriverPhone(newPhone);
       let rideInfo = await sms.getRideRequest(request_id);
+      let motherInfo = await Mothers.getMotherForDriver(rideInfo[0].mother_id);
+      let villageId = {id: motherInfo[0].village};
+      let villageInfo = await sms.getVillageById(villageId);
 
       let rideId = parseInt(rideInfo[0].id);
       let driverId = parseInt(driverInfo[0].id);
@@ -112,13 +115,18 @@ router.post(
       if (answer === "yes" && rideInfo[0].driver_id === null) {
         sms
           .addDriverRideRequest(rideId, updateRide)
-          .then(request => request)
+          .then(request => res.status(200).json(request))
           .catch(err => console.log(err));
 
         let update = {
           availability: false
         };
         changeDriverAvailability(driverId, update);
+
+        // send mothers information to driver
+        let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
+        sendDataToFrontlineSMS(message, phone_number)
+        console.log(message);
       }
       // if the driver choose no the availability value will be false
       else if (answer === "no") {
@@ -132,13 +140,13 @@ router.post(
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
         // FRONT LINE TEXT
-        console.log("Sorry, this request is close already");
+        let message = `Sorry, this request is close already`
+        sendDataToFrontlineSMS(message, phone_number)
       }
       // make else if for lat and long if there is no driver available on the same village id
       else {
-        console.log(
-          "Something is wrong please send your response: answer requestID (example: yes 12)"
-        );
+        let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
+        sendDataToFrontlineSMS(message, phone_number)
       }
     } catch (error) {
       console.log(error);
