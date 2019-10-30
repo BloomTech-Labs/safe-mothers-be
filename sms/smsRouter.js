@@ -11,9 +11,8 @@ router.post(
   async (req, res) => {
     let { village_name, phone_number } = req.params;
     //Village name is an issue in Frontline. Works fine on local host.
-    // village_name = removeSpecialChar( village_name.charAt(0).toUpperCase() + village_name.slice(1));
-    village_name = getTheVillageName(village_name);
-    phone_number = removeSpecialChar(phone_number);
+    village_name = removeSpecialChar( village_name.charAt(0).toUpperCase() + village_name.slice(1));
+    // phone_number = removeSpecialChar(phone_number);
 
     let newNum = removeSpecialChar(phone_number);
 
@@ -35,7 +34,7 @@ router.post(
         let message =
           "You are now registered. Please text 'help' to request a boda";
         sendDataToFrontlineSMS(message, newNum);
-        res.status(201).json({ message: "Added a mother" });
+        res.status(201).json(mother);
       })
       .catch(err => {
         res.status(500).json(err);
@@ -229,14 +228,6 @@ function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number
   var regexPhoneNumber = /[^a-zA-Z0-9]+/gi;
   return num.replace(regexPhoneNumber, " ").trim();
-}
-
-function getTheVillageName(name) {
-  var regex = /[^a-zA-Z0-9]\s/gi;
-  var wordRegex = /value /g;
-  let word = name.replace(regex, "");
-  word = word.replace(wordRegex, "");
-  return word;
 }
 
 /** MAKE SURE YOU HAVE THE .env FILE */
