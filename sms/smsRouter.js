@@ -95,6 +95,8 @@ router.post(
       answer = answer.toLowerCase();
       request_id = parseInt(request_id);
 
+      console.log(phone_number + answer + request_id);
+
       let newPhone = { phone_number: phone_number };
 
       let driverInfo = await sms.findDriverPhone(newPhone);
