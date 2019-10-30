@@ -73,7 +73,7 @@ function statusOnline(phoneNumber) {
   // console.log("Online", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
-    .update({ availability: true })
+    .update({ online: true })
     .select("*");
 }
 
@@ -81,7 +81,7 @@ function statusOffline(phoneNumber) {
   // console.log("Offline", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
-    .update({ availability: false })
+    .update({ online: false })
     .select("*");
 }
 
