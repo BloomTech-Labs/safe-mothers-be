@@ -11,7 +11,7 @@ router.post(
   async (req, res) => {
     let { village_name, phone_number } = req.params;
     //Village name is an issue in Frontline. Works fine on local host.
-    village_name = removeSpecialChar( village_name.charAt(0).toUpperCase() + village_name.slice(1));
+    village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
 
     let newNum = removeSpecialChar(phone_number);
 
@@ -75,7 +75,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
-      // sendDataToFrontlineSMS(message, newNum);
+      sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(201).json({message: "Mother added"});
     }
@@ -135,7 +135,7 @@ router.post(
           availability: false
         };
         //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
-        changeDriverAvailability(driverId, update)
+        changeDriverAvailability(driverId, update);
       }
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
@@ -145,7 +145,7 @@ router.post(
             // FRONT LINE TEXT
             let message = `Sorry, this request is close already`
             sendDataToFrontlineSMS(message, phone_number)
-            res.status(401).json({ message: 'request is closed already' });
+            res.status(200).json({ message: 'request is closed already' });
           })
           .catch(err => {
             console.log(err)
@@ -158,7 +158,7 @@ router.post(
           .then(request => {
             let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
             sendDataToFrontlineSMS(message, phone_number);
-            res.status(401).json({ message: "Something is wrong with your response" });
+            res.status(200).json({ message: "Something is wrong with your response" });
           })
           .catch(err => {
             console.log(err)
