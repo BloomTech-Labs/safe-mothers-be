@@ -74,7 +74,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
-      sendDataToFrontlineSMS(message, drivers[0].phone_number);
+      sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(201).json({message: "Mother added"});
     }
