@@ -33,7 +33,7 @@ router.post(
       .then(mother => {
         let message =
           "You are now registered. Please text 'help' to request a boda";
-        // sendDataToFrontlineSMS(message, newNum);
+        sendDataToFrontlineSMS(message, newNum);
         res.status(201).json(mother);
       })
       .catch(err => {
@@ -143,7 +143,7 @@ router.post(
         sms.getRideRequest()
           .then(request => {
             // FRONT LINE TEXT
-            let message = `Sorry, this request is close already`
+            let message = `Sorry, this request is closed already`
             sendDataToFrontlineSMS(message, phone_number)
             res.status(200).json({ message: 'request is closed already' });
           })
@@ -153,7 +153,7 @@ router.post(
           })
       }
       // make else if for lat and long if there is no driver available on the same village id
-      else {
+      else if (answer !== "yes" || answer !== "no"){
         sms.getRideRequest()
           .then(request => {
             let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
