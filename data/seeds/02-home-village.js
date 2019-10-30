@@ -14,25 +14,25 @@ exports.seed = function(knex) {
     },
     {
       id: 1,
-      name: "Bugole-A",
+      name: "Bugole A",
       lat: "0.8683849999999976",
       long: "33.382454999999936"
     },
     {
       id: 2,
-      name: "Bugole-B",
+      name: "Bugole B",
       lat: "0.8527656000000022",
       long: "33.373872000000006"
     },
     {
       id: 3,
-      name: "Bugongo-A",
+      name: "Bugongo A",
       lat: "0.8630280000000112",
       long: "33.39781700000003"
     },
     {
       id: 10,
-      name: "Bugongo-B",
+      name: "Bugongo B",
       lat: "0.8541590000000057",
       long: "33.39529300000004"
     },
@@ -92,37 +92,37 @@ exports.seed = function(knex) {
     },
     {
       id: 22,
-      name: "Kabuli-1",
+      name: "Kabuli 1",
       lat: "0.8784890000000011",
       long: "33.427318000000014"
     },
     {
       id: 23,
-      name: "Kabuli-2",
+      name: "Kabuli 2",
       lat: "0.8766488999999923",
       long: "33.416100700000015"
     },
     {
       id: 30,
-      name: "Kiringa-A",
+      name: "Kiringa A",
       lat: "0.8329696999999938",
       long: "33.420125900000016"
     },
     {
       id: 31,
-      name: "Kiringa-B",
+      name: "Kiringa B",
       lat: "0.8134022999999982",
       long: "33.417551"
     },
     {
       id: 11,
-      name: "Kiwanyi-1",
+      name: "Kiwanyi 1",
       lat: "0.8190666000000089",
       long: "33.433343899999954"
     },
     {
       id: 12,
-      name: "Kiwanyi-2",
+      name: "Kiwanyi 2",
       lat: "0.7989198000000097",
       long: "33.422872600000005"
     },
@@ -140,25 +140,25 @@ exports.seed = function(knex) {
     },
     {
       id: 26,
-      name: "Malobi-A",
+      name: "Malobi A",
       lat: "0.871444800000015",
       long: "33.45455279999999"
     },
     {
       id: 27,
-      name: "Malobi-B",
+      name: "Malobi B",
       lat: "0.871444800000015",
       long: "33.45455279999999"
     },
     {
       id: 4,
-      name: "Namabwere-1",
+      name: "Namabwere 1",
       lat: "0.8272050000000034",
       long: "33.39704000000006"
     },
     {
       id: 5,
-      name: "Namabwere-2",
+      name: "Namabwere 2",
       lat: "0.8388055999999934",
       long: "33.40690799999993"
     },
@@ -170,7 +170,7 @@ exports.seed = function(knex) {
     },
     {
       id: 28,
-      name: "Namusiisi ",
+      name: "Namusiisi",
       lat: "0.8570650000000077",
       long: "33.43251499999997"
     },
@@ -182,13 +182,13 @@ exports.seed = function(knex) {
     },
     {
       id: 32,
-      name: "Nawangaiza-1",
+      name: "Nawangaiza 1",
       lat: "0.808081400000012",
       long: "33.40484809999998"
     },
     {
       id: 8,
-      name: "Nawangaiza-2",
+      name: "Nawangaiza 2",
       lat: "0.8061933000000043",
       long: "33.390428499999985"
     }

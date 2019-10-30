@@ -12,7 +12,6 @@ router.post(
     let { village_name, phone_number } = req.params;
     //Village name is an issue in Frontline. Works fine on local host.
     village_name = removeSpecialChar( village_name.charAt(0).toUpperCase() + village_name.slice(1));
-    // phone_number = removeSpecialChar(phone_number);
 
     let newNum = removeSpecialChar(phone_number);
 
@@ -24,6 +23,7 @@ router.post(
 
     //Grabbing the id of village from above search
     let village_id = village_list[0].id;
+    
 
     //Adding that to the mothers data
     let mother_data = { phone_number: newNum, village: village_id };
@@ -33,7 +33,7 @@ router.post(
       .then(mother => {
         let message =
           "You are now registered. Please text 'help' to request a boda";
-        sendDataToFrontlineSMS(message, newNum);
+        // sendDataToFrontlineSMS(message, newNum);
         res.status(201).json(mother);
       })
       .catch(err => {
