@@ -58,6 +58,10 @@ exports.up = function(knex) {
         drivers.boolean("availability");
         //reliability
         drivers.integer("reliability");
+        //online ---> driver is clocked in for a shift
+        drivers
+          .boolean("online", )
+          .defaultTo(false)
       })
 
       //mothers

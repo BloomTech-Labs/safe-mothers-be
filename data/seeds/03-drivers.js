@@ -8,7 +8,8 @@ exports.seed = function(knex) {
       phone_number: "699123456",
       village_id: 29,
       availability: true,
-      reliability: 4
+      reliability: 4,
+      online:false
     },
     {
       id: 2,
@@ -18,7 +19,8 @@ exports.seed = function(knex) {
       phone_number: "19093794021",
       village_id: 1,
       availability: true,
-      reliability: 4
+      reliability: 4,
+      online:false
     },
     {
       id: 3,
@@ -28,7 +30,8 @@ exports.seed = function(knex) {
       phone_number: "699699681",
       village_id: 1,
       availability: false,
-      reliability: 4
+      reliability: 4,
+      online:true
     },
 
     {
@@ -39,7 +42,8 @@ exports.seed = function(knex) {
       phone_number: "699699695",
       village_id: 1,
       availability: true,
-      reliability: 3
+      reliability: 3,
+      online:false
     },
 
     {
@@ -50,7 +54,8 @@ exports.seed = function(knex) {
       phone_number: "699699697",
       village_id: 2,
       availability: true,
-      reliability: 5
+      reliability: 5,
+      online:true
     },
 
     {
@@ -61,7 +66,8 @@ exports.seed = function(knex) {
       phone_number: "699699679",
       village_id: 1,
       availability: false,
-      reliability: 5
+      reliability: 5,
+      online:true
     }
   ]);
 };
