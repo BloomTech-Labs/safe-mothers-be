@@ -121,16 +121,19 @@ router.post(
             changeDriverAvailability(driverId, update);
 
             // send mothers information to driver
-            let message;
             if(motherInfo[0].name === null) {
-              message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
-            }
-            else {
-              message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
-            }
-            sendDataToFrontlineSMS(message, phone_number)
+              let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
+              sendDataToFrontlineSMS(message, phone_number)
             console.log(message);
             res.status(200).json(request)
+            }
+            else {
+             let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
+              sendDataToFrontlineSMS(message, phone_number)
+            console.log(message);
+            res.status(200).json(request)
+            }
+            
           })
           .catch(err => console.log(err));
 
