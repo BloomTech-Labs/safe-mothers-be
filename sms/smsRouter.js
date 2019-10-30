@@ -141,16 +141,17 @@ router.post(
       }
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
-        // FRONT LINE TEXT
+          // FRONT LINE TEXT
         let message = `Sorry, this request is close already`
         sendDataToFrontlineSMS(message, phone_number)
         res.status(401).json({message: 'request is closed already'});
+          
       }
       // make else if for lat and long if there is no driver available on the same village id
       else {
         let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
         sendDataToFrontlineSMS(message, phone_number);
-        res.status(500).json({message: "Something is wrong with your response"});
+        res.status(401).json({message: "Something is wrong with your response"});
 
       }
     } catch (error) {
