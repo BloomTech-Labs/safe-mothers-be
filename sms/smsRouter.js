@@ -115,18 +115,20 @@ router.post(
       if (answer === "yes" && rideInfo[0].driver_id === null) {
         sms
           .addDriverRideRequest(rideId, updateRide)
-          .then(request => res.status(200).json(request))
+          .then(request => {
+            let update = {
+              availability: false
+            };
+            changeDriverAvailability(driverId, update);
+    
+            // send mothers information to driver
+            let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
+            sendDataToFrontlineSMS(message, phone_number)
+            console.log(message);
+            res.status(200).json(request)
+          })
           .catch(err => console.log(err));
 
-        let update = {
-          availability: false
-        };
-        changeDriverAvailability(driverId, update);
-
-        // send mothers information to driver
-        let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
-        sendDataToFrontlineSMS(message, phone_number)
-        console.log(message);
       }
       // if the driver choose no the availability value will be false
       else if (answer === "no") {
