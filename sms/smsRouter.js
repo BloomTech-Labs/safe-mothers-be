@@ -13,7 +13,7 @@ router.post(
     village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
 
     console.log(village_name);
-    
+
     let newNum = removeSpecialChar(phone_number);
 
     //Searching for village name in the database
@@ -49,11 +49,12 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     let newNum = removeSpecialChar(phone_number);
     // check if mother is registered
     let registered = await sms.checkMotherRegistration(newNum);
-    let motherVillageId = registered[0].village;
-    // search drivers on the same village
-    let drivers = await sms.findDriver(motherVillageId);
+    
 
     if (registered && registered.length !== 0 && registered !== undefined) {
+      let motherVillageId = registered[0].village;
+      // search drivers on the same village
+      let drivers = await sms.findDriver(motherVillageId);      
       let motherId = registered[0].id;
       let data = {
         mother_id: motherId,
@@ -67,13 +68,15 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
           sendDataToFrontlineSMS(message, drivers[0].phone_number);
-          
+          console.log(message)
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
     } else {
       let message = `To register type "register village" (example: register Iganga)`;
       sendDataToFrontlineSMS(message, drivers[0].phone_number);
+      console.log(message);
+      res.status(201).json({message: "Mother added"});
     }
   } catch (err) {
     console.log(err);
@@ -147,7 +150,7 @@ router.post(
             sendDataToFrontlineSMS(message, phone_number)
             res.status(401).json({ message: 'request is closed already' });
           })
-          .catch( err => {
+          .catch(err => {
             console.log(err)
             res.status(500).json(err)
           })
@@ -155,15 +158,15 @@ router.post(
       // make else if for lat and long if there is no driver available on the same village id
       else {
         sms.getRideRequest()
-        .then(request => {
-          let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
-          sendDataToFrontlineSMS(message, phone_number);
-          res.status(401).json({ message: "Something is wrong with your response" });
-        })
-        .catch( err => {
-          console.log(err)
-          res.status(500).json(err)
-        })
+          .then(request => {
+            let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
+            sendDataToFrontlineSMS(message, phone_number);
+            res.status(401).json({ message: "Something is wrong with your response" });
+          })
+          .catch(err => {
+            console.log(err)
+            res.status(500).json(err)
+          })
       }
     } catch (error) {
       console.log(error);
