@@ -158,7 +158,8 @@ exports.seed = function(knex) {
     },
     {
       id: 5,
-      name: "Namabwere_2",
+      name: "Namabwere_
+      2",
       lat: "0.8388055999999934",
       long: "33.40690799999993"
     },
