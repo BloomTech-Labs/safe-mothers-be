@@ -23,7 +23,7 @@ router.post(
 
     //Grabbing the id of village from above search
     let village_id = village_list[0].id;
-    
+
 
     //Adding that to the mothers data
     let mother_data = { phone_number: newNum, village: village_id };
@@ -50,12 +50,12 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     let newNum = removeSpecialChar(phone_number);
     // check if mother is registered
     let registered = await sms.checkMotherRegistration(newNum);
-    
+
 
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherVillageId = registered[0].village;
       // search drivers on the same village
-      let drivers = await sms.findDriver(motherVillageId);      
+      let drivers = await sms.findDriver(motherVillageId);
       let motherId = registered[0].id;
       let data = {
         mother_id: motherId,
@@ -67,7 +67,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .addMotherRideRequest(data)
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name} have a request pending pickup id of id ${request}. To confirm type "answer pickupID" (example: yes 12)`;
+          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "answer pickupID" (example: yes 12)`;
           sendDataToFrontlineSMS(message, drivers[0].phone_number);
           console.log(message)
           res.status(200).json(request);
@@ -77,7 +77,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       let message = `To register type "register village" (example: register Iganga)`;
       sendDataToFrontlineSMS(message, newNum);
       console.log(message);
-      res.status(201).json({message: "Mother added"});
+      res.status(201).json({ message: "Mother added" });
     }
   } catch (err) {
     console.log(err);
@@ -121,19 +121,19 @@ router.post(
             changeDriverAvailability(driverId, update);
 
             // send mothers information to driver
-            if(motherInfo[0].name === null) {
+            if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
               sendDataToFrontlineSMS(message, phone_number)
-            console.log(message);
-            res.status(200).json(request)
+              console.log(message);
+              res.status(200).json(request)
             }
             else {
-             let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
+              let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
               sendDataToFrontlineSMS(message, phone_number)
-            console.log(message);
-            res.status(200).json(request)
+              console.log(message);
+              res.status(200).json(request)
             }
-            
+
           })
           .catch(err => console.log(err));
 
@@ -162,7 +162,7 @@ router.post(
           })
       }
       // make else if for lat and long if there is no driver available on the same village id
-      else if (answer !== "yes" || answer !== "no"){
+      else if (answer !== "yes" || answer !== "no") {
         sms.getRideRequest()
           .then(request => {
             let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
@@ -203,13 +203,21 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
   if (answer === "online") {
     sms
       .statusOnline(phone_number)
-      .then(res => res)
+      .then(res => {
+        let message = `You are now clocked in`
+        sendDataToFrontlineSMS(message, phone_number);
+        res.status(200).json(res)
+      })
       .catch(err => console.log(err));
   }
   if (answer === "offline") {
     sms
       .statusOffline(phone_number)
-      .then(res => res)
+      .then(res => {
+        let message = `You are now clocked out`
+        sendDataToFrontlineSMS(message, phone_number);
+        res.status(200).json(res)
+      })
       .catch(err => console.log(err));
   }
   return res.status(200).json({ message: "Status Updated", phone_number });
