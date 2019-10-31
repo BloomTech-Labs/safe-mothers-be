@@ -220,7 +220,6 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
       })
       .catch(err => console.log(err));
   }
-  return res.status(200).json({ message: "Status Updated", phone_number });
 });
 
 // get all the drivers
