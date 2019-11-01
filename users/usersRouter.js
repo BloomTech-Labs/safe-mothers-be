@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const users = require("./usersHelper");
+const Users = require("./usersHelper");
 
 
 
