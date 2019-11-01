@@ -8,7 +8,7 @@ const users = require("./usersHelper");
 router.get("/", (req, res) => {
   Users.getUsers()
     .catch(err => {
-      res.status(200).json({ message: "Error getting users" });
+      res.status(500).json({ message: "Error getting users" });
     })
     .then(users => {
       res.status(200).json(users);
