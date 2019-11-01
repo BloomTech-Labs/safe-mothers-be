@@ -203,22 +203,25 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
   if (answer === "online") {
     sms
       .statusOnline(phone_number)
-      .then(res => {
+      .then(clockedIn => {
         let message = `You are now clocked in`
         sendDataToFrontlineSMS(message, phone_number);
-        res.status(200).json(res)
+        res.status(200).json(clockedIn)
       })
       .catch(err => console.log(err));
   }
   if (answer === "offline") {
     sms
       .statusOffline(phone_number)
-      .then(res => {
+      .then(clockedOut => {
         let message = `You are now clocked out`
         sendDataToFrontlineSMS(message, phone_number);
-        res.status(200).json(res)
+        res.status(200).json(clockedOut)
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err)
+        res.status(500).json(err)
+      });
   }
 });
 
