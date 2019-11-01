@@ -9,7 +9,7 @@ module.exports = {
 };
 
 function getUsers() {
-  return db("users").select("username", "first_name", "last_name");
+  return db("users").select("id","username", "first_name", "last_name");
 }
 
 async function addUser(user) {
