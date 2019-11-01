@@ -5,7 +5,8 @@ module.exports = {
   updateMother,
   deleteMother,
   getMothers,
-  getMotherById
+  getMotherById,
+  getMotherForDriver
 };
 
 function addMother(data) {
@@ -21,6 +22,12 @@ function getMotherById(id) {
   .where({ id })
 }
 
+//Used for sms message to driver:
+function getMotherForDriver(id) {
+  return db("mothers")
+  .where({ id: id })
+  .select("name", "village", "phone_number")
+}
 
 function updateMother(id, data) {
   return db("mothers")

@@ -5,7 +5,8 @@ module.exports = {
   addDriver,
   updateDriver,
   deleteDriver,
-  getDriverById
+  getDriverById,
+  getDriverAvailability
 };
 
 function addDriver(data) {
@@ -31,4 +32,16 @@ function deleteDriver(id) {
   return db("drivers")
     .where({ id: id })
     .delete();
+}
+
+// Just getting driver availability
+function getDriverAvailability() {
+  return db("drivers")
+    .where({availability: true})
+    .select("id",
+    "name",
+    "phone_number",
+    "availability",
+    "reliability",
+    "village_id")
 }

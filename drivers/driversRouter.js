@@ -41,6 +41,19 @@ router.get('/:id', async (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+//Get drivers who are available for the dashboard
+router.get("/available/drivers", (req, res) => {
+  Drivers.getDriverAvailability()
+  .then(available => {
+    console.log(available)
+    res.status(200).json(available)
+  })
+  .catch(err => {
+    console.log(err)
+    res.status(500).json(err)
+  })
+})
+
 // edit a driver based on ID
 router.put('/:id', (req, res) => {
   const { id } = req.params;
