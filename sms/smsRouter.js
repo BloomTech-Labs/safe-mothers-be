@@ -4,6 +4,38 @@ const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 
+
+// test route
+router.get("/test/register", async (req, res) => {
+  try {
+    let testing = req.query;
+    let data = {
+      name: testing.name,
+      village: 10
+    };
+    Mothers.addMother(data)
+      .then(mother => mother)
+      .catch(err => console.log(err));
+    res.status(201).json({ message: "Created Mother" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//for any misspelled texts
+router.get("/misspelled", (req, res) => {
+  try {
+    let text = req.query.testMessage;
+    if(text !== "help"){
+      let message = `text received ${text}: You misspelled something. 
+      please text "help" and send it again.`
+      sendDataToFrontlineSMS(message)
+    }
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 // register mother through SMS
 router.post(
   "/mothers/register/:phone_number/:village_name",
@@ -41,6 +73,8 @@ router.post(
       });
   }
 );
+
+
 
 // HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
