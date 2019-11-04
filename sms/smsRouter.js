@@ -5,7 +5,7 @@ const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 
 
-// test route
+// test route ofr mother registration
 router.get("/test/register", async (req, res) => {
   try {
     let testing = req.query;
@@ -23,13 +23,15 @@ router.get("/test/register", async (req, res) => {
 });
 
 //for any misspelled texts
+// GOAL: Check the spelling and then do the necessary trigger functionality
+// ENDPOINTS: Help. Register, Yes, No, Online, Offline
 router.get("/misspelled", (req, res) => {
   try {
     let text = req.query.testMessage;
     if(text !== "help"){
       let message = `text received ${text}: You misspelled something. 
       please text "help" and send it again.`
-      sendDataToFrontlineSMS(message)
+      sendDataToFrontlineSMS(message, "+699699699")
     }
   } catch (err) {
     console.log(err);
