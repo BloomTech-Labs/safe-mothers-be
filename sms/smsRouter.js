@@ -6,20 +6,20 @@ const sms = require("./smsHelper");
 const Fuse = require("fuse.js");
 
 // Misspell - this defaults to 'mother' instructions to press 1.
-router.get("/misspell/:phone_number", async (req, res) => {
-  try {
-    let { phone_number } = req.params;
-    let newNum = removeSpecialChar(phone_number);
+// router.get("/misspell/:phone_number", async (req, res) => {
+//   try {
+//     let { phone_number } = req.params;
+//     let newNum = removeSpecialChar(phone_number);
 
-    let message = `Press 1 to call for boda`;
-    console.log(message);
-    // sendDataToFrontlineSMS(message, newNum);
-    res.status(200).json({ message: "Calling for Boda" });
-  } catch (err) {
-    res.status(500).json(err);
-    console.log(err);
-  }
-});
+//     let message = `Press 911 to call for a boda`;
+//     console.log(message);
+//     sendDataToFrontlineSMS(message, phone_number);
+//     res.status(200).json({ message: "Calling for Boda" });
+//   } catch (err) {
+//     res.status(500).json(err);
+//     console.log(err);
+//   }
+// });
 
 // 1 ---> HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
@@ -46,14 +46,17 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
           let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
-          console.log(message);
+          sendDataToFrontlineSMS(message, drivers[0].phone_number);
+
+          let messageForMother = `Request has been received. Waiting for boda response.`;
+          sendDataToFrontlineSMS(messageForMother, newNum);
+          // console.log(message);
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
     } else {
-      let message = `To register please type 2 and your village name. (example: 2 Abbo Zadzisai)`;
-      // sendDataToFrontlineSMS(message, newNum);
+      let message = `To register please type 912 and your village name. (example: 912 Abbo Zadzisai)`;
+      sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
@@ -79,19 +82,19 @@ router.get("/mothers/register/name/:phone_number", async (req, res) => {
 
       Mothers.addMother(data)
         .then(mother => {
-          let message = `To register your village, type 3 and your village name. (Example: 3 Iganga)`;
-          // sendDataToFrontlineSMS(message, phone_number);
+          let message = `To register your village, type 913 and your village name. (Example: 913 Iganga)`;
+          sendDataToFrontlineSMS(message, newNum);
           console.log(message);
           res.status(201).json(mother);
         })
         .catch(err => console.log(err));
     } else if (registered.length !== 0) {
-      let message = `To register your village, type 3 and your village name. (Example: 3 Iganga)`;
-      // sendDataToFrontlineSMS(message, phone_number);
+      let message = `To register your village, type 913 and your village name. (Example: 913 Iganga)`;
+      sendDataToFrontlineSMS(message, newNum);
       console.log(message);
     } else {
-      let message = `Sorry, we can't process that. To register please type 2 and your village name. (example: 2 Abbo Zadzisai)`;
-      // sendDataToFrontlineSMS(message, phone_number);
+      let message = `Sorry, we can't process that. To register please type 912 and your name. (Example: 912 Abbo Zadzisai)`;
+      sendDataToFrontlineSMS(message, newNum);
       console.log(message);
     }
   } catch (err) {
@@ -124,7 +127,6 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
     let fuse = new Fuse(villageList, options);
 
     let result = fuse.search(answer);
-
     // if the village name is spelled correctly and matches the villages in the database
     if (answer.toLowerCase() === result[0].name.toLowerCase()) {
       let mothers_data = {
@@ -134,15 +136,18 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
       Mothers.updateMother(motherId, mothers_data)
         .then(mother => {
           let message =
-            "You are now registered. Please text '1' to request a boda";
-          // sendDataToFrontlineSMS(message, newNum);
+            "You are now registered. Please text '911' to request a boda";
+          sendDataToFrontlineSMS(message, newNum);
           res.status(201).json(mother);
         })
         .catch(err => {
           res.status(500).json(err);
         });
       // If not, give mother village names to pick from
-    } else if (answer.toLowerCase() !== result[0].name.toLowerCase()) {
+    } else if (
+      answer.toLowerCase() !== result[0].name.toLowerCase() &&
+      result[0].name !== undefined
+    ) {
       const newSuggestions = result.map(async suggestions => {
         if (suggestions !== undefined) {
           return suggestions;
@@ -151,11 +156,22 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
 
       Promise.all(newSuggestions).then(infos => {
         //Do mothers know the difference between village a and village b?
-        let message = `Did you mean: Press "a" for ${infos[0].name}, "b" for ${infos[1].name}, "c" for ${infos[2].name}, "d" for ${infos[3].name}`;
-        // sendDataToFrontlineSMS(message, phone_number)
-        console.log(message);
+        let message2 = infos
+          .slice(0, 4)
+          .map(info => {
+            return `"${info.id}" for ${info.name}`;
+          })
+          .join(", ");
+
+        let message = "Please press  " + message2;
+        //send the information
+        // console.log(message);
+        sendDataToFrontlineSMS(message, newNum);
         res.status(200).json({ message: "Message sent" });
       });
+    } else if (result === undefined) {
+      let message = `Sorry could not find village. Please try again ("Example: 913 Iganga") `;
+      console.log(message);
     }
   } catch (err) {
     console.log(err);
@@ -163,7 +179,36 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
   }
 });
 
-// get end points - multiple choice answers
+//MOTHERS VILLAGE SELECTION REPONSE TO SMS
+router.get("/mothers/selection", async (req, res) => {
+  try {
+    let { phone_number, answer } = req.query;
+    let newNum = removeSpecialChar(phone_number);
+
+    let motherInfo = await sms.checkMotherRegistration(newNum);
+    let motherId = motherInfo[0].id;
+    let villageId = parseInt(answer);
+
+    let mother_data = {
+      village: villageId
+    };
+
+    Mothers.updateMother(motherId, mother_data)
+      .then(mother => {
+        let message = `You are now registered! Please press 911 to call for a boda`;
+        console.log(message);
+        sendDataToFrontlineSMS(message, newNum);
+        res.status(202).json(mother);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 
 // DRIVERS RESPONSE TO THE MESSAGE
 router.post(
