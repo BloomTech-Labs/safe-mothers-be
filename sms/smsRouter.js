@@ -3,46 +3,25 @@ const axios = require("axios");
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
+const Fuse = require("fuse.js");
 
-// register mother through SMS
-router.post(
-  "/mothers/register/:phone_number/:village_name",
-  // mothers/register/+699699699/Bugole%20A
-  async (req, res) => {
-    let { village_name, phone_number } = req.params;
-    //Village name is an issue in Frontline. Works fine on local host.
-    village_name = village_name.charAt(0).toUpperCase() + village_name.slice(1);
-
+// Misspell - this defaults to 'mother' instructions to press 1.
+router.get("/misspell/:phone_number", async (req, res) => {
+  try {
+    let { phone_number } = req.params;
     let newNum = removeSpecialChar(phone_number);
 
-    //Searching for village name in the database
-    let village_search = { name: village_name };
-
-    //Getting that village name that mother texted
-    let village_list = await sms.getVillageById(village_search);
-
-    //Grabbing the id of village from above search
-    let village_id = village_list[0].id;
-
-
-    //Adding that to the mothers data
-    let mother_data = { phone_number: newNum, village: village_id };
-
-    // Adding new mother to DB does not work in sms ---> have not pushed any changes
-    Mothers.addMother(mother_data)
-      .then(mother => {
-        let message =
-          "You are now registered. Please text 'help' to request a boda";
-        sendDataToFrontlineSMS(message, newNum);
-        res.status(201).json(mother);
-      })
-      .catch(err => {
-        res.status(500).json(err);
-      });
+    let message = `Press 1 to call for boda`;
+    console.log(message);
+    // sendDataToFrontlineSMS(message, newNum);
+    res.status(200).json({ message: "Calling for Boda" });
+  } catch (err) {
+    res.status(500).json(err);
+    console.log(err);
   }
-);
+});
 
-// HELP
+// 1 ---> HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
   try {
     // get the phone number from the link
@@ -50,7 +29,6 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     let newNum = removeSpecialChar(phone_number);
     // check if mother is registered
     let registered = await sms.checkMotherRegistration(newNum);
-
 
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherVillageId = registered[0].village;
@@ -67,22 +45,125 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .addMotherRideRequest(data)
         .then(request => {
           /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "answer pickupID" (example: yes 12)`;
-          sendDataToFrontlineSMS(message, drivers[0].phone_number);
-          console.log(message)
+          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          console.log(message);
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
     } else {
-      let message = `To register type "register village" (example: register Iganga)`;
-      sendDataToFrontlineSMS(message, newNum);
+      let message = `To register please type 2 and your village name. (example: 2 Abbo Zadzisai)`;
+      // sendDataToFrontlineSMS(message, newNum);
       console.log(message);
-      res.status(201).json({ message: "Mother added" });
+      res.status(200).json({ message: "Sent text message to mother" });
     }
   } catch (err) {
     console.log(err);
   }
 });
+
+// 2 ---> REGISTER Mother's Name
+router.get("/mothers/register/name/:phone_number", async (req, res) => {
+  try {
+    let { answer } = req.query;
+    let { phone_number } = req.params;
+    let newNum = removeSpecialChar(phone_number);
+
+    let registered = await sms.checkMotherRegistration(newNum);
+
+    if (registered.length === 0 || registered === undefined) {
+      let data = {
+        name: answer,
+        phone_number: newNum
+      };
+
+      Mothers.addMother(data)
+        .then(mother => {
+          let message = `To register your village, type 3 and your village name. (Example: 3 Iganga)`;
+          // sendDataToFrontlineSMS(message, phone_number);
+          console.log(message);
+          res.status(201).json(mother);
+        })
+        .catch(err => console.log(err));
+    } else if (registered.length !== 0) {
+      let message = `To register your village, type 3 and your village name. (Example: 3 Iganga)`;
+      // sendDataToFrontlineSMS(message, phone_number);
+      console.log(message);
+    } else {
+      let message = `Sorry, we can't process that. To register please type 2 and your village name. (example: 2 Abbo Zadzisai)`;
+      // sendDataToFrontlineSMS(message, phone_number);
+      console.log(message);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+// 3 ---> REGISTER Mother's Village Name
+router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
+  try {
+    let { phone_number } = req.params;
+    let newNum = removeSpecialChar(phone_number);
+    let { answer } = req.query;
+
+    let motherInfo = await sms.checkMotherRegistration(newNum);
+    let motherId = motherInfo[0].id;
+
+    let villageList = await sms.getVillages();
+    //fuse----> fuzzy search
+    let options = {
+      shouldSort: true,
+      threshold: 0.6,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: ["name"]
+    };
+
+    let fuse = new Fuse(villageList, options);
+
+    let result = fuse.search(answer);
+
+    // if the village name is spelled correctly and matches the villages in the database
+    if (answer.toLowerCase() === result[0].name.toLowerCase()) {
+      let mothers_data = {
+        village: result[0].id,
+        phone_number: newNum
+      };
+      Mothers.updateMother(motherId, mothers_data)
+        .then(mother => {
+          let message =
+            "You are now registered. Please text '1' to request a boda";
+          // sendDataToFrontlineSMS(message, newNum);
+          res.status(201).json(mother);
+        })
+        .catch(err => {
+          res.status(500).json(err);
+        });
+      // If not, give mother village names to pick from
+    } else if (answer.toLowerCase() !== result[0].name.toLowerCase()) {
+      const newSuggestions = result.map(async suggestions => {
+        if (suggestions !== undefined) {
+          return suggestions;
+        }
+      });
+
+      Promise.all(newSuggestions).then(infos => {
+        //Do mothers know the difference between village a and village b?
+        let message = `Did you mean: Press "a" for ${infos[0].name}, "b" for ${infos[1].name}, "c" for ${infos[2].name}, "d" for ${infos[3].name}`;
+        // sendDataToFrontlineSMS(message, phone_number)
+        console.log(message);
+        res.status(200).json({ message: "Message sent" });
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+// get end points - multiple choice answers
 
 // DRIVERS RESPONSE TO THE MESSAGE
 router.post(
@@ -123,20 +204,17 @@ router.post(
             // send mothers information to driver
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
-              sendDataToFrontlineSMS(message, phone_number)
+              sendDataToFrontlineSMS(message, phone_number);
               console.log(message);
-              res.status(200).json(request)
-            }
-            else {
+              res.status(200).json(request);
+            } else {
               let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
-              sendDataToFrontlineSMS(message, phone_number)
+              sendDataToFrontlineSMS(message, phone_number);
               console.log(message);
-              res.status(200).json(request)
+              res.status(200).json(request);
             }
-
           })
           .catch(err => console.log(err));
-
       }
       // if the driver choose no the availability value will be false
       else if (answer === "no") {
@@ -149,30 +227,34 @@ router.post(
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
-        sms.getRideRequest()
+        sms
+          .getRideRequest()
           .then(request => {
             // FRONT LINE TEXT
-            let message = `Sorry, this request is closed already`
-            sendDataToFrontlineSMS(message, phone_number)
-            res.status(200).json({ message: 'request is closed already' });
+            let message = `Sorry, this request is closed already`;
+            sendDataToFrontlineSMS(message, phone_number);
+            res.status(200).json({ message: "request is closed already" });
           })
           .catch(err => {
-            console.log(err)
-            res.status(500).json(err)
-          })
+            console.log(err);
+            res.status(500).json(err);
+          });
       }
       // make else if for lat and long if there is no driver available on the same village id
       else if (answer !== "yes" || answer !== "no") {
-        sms.getRideRequest()
+        sms
+          .getRideRequest()
           .then(request => {
-            let message = `Something is wrong please send your response: answer requestID (example: yes 12)`
+            let message = `Something is wrong please send your response: answer requestID (example: yes 12)`;
             sendDataToFrontlineSMS(message, phone_number);
-            res.status(200).json({ message: "Something is wrong with your response" });
+            res
+              .status(200)
+              .json({ message: "Something is wrong with your response" });
           })
           .catch(err => {
-            console.log(err)
-            res.status(500).json(err)
-          })
+            console.log(err);
+            res.status(500).json(err);
+          });
       }
     } catch (error) {
       console.log(error);
@@ -204,9 +286,9 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
     sms
       .statusOnline(phone_number)
       .then(clockedIn => {
-        let message = `You are now clocked in`
+        let message = `You are now clocked in`;
         sendDataToFrontlineSMS(message, phone_number);
-        res.status(200).json(clockedIn)
+        res.status(200).json(clockedIn);
       })
       .catch(err => console.log(err));
   }
@@ -214,13 +296,13 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
     sms
       .statusOffline(phone_number)
       .then(clockedOut => {
-        let message = `You are now clocked out`
+        let message = `You are now clocked out`;
         sendDataToFrontlineSMS(message, phone_number);
-        res.status(200).json(clockedOut)
+        res.status(200).json(clockedOut);
       })
       .catch(err => {
-        console.log(err)
-        res.status(500).json(err)
+        console.log(err);
+        res.status(500).json(err);
       });
   }
 });
