@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const users = require("./usersHelper");
+const Users = require("./usersHelper");
 
 
 
@@ -32,7 +32,8 @@ router.get("/:id", (req, res) => {
 
       const user = users[0];
       res.status(200).json({
-        name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         username: user.username
       });
     });
