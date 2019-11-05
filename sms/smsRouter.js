@@ -55,7 +55,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         })
         .catch(err => console.log(err));
     } else {
-      let message = `To register please type 912 and your village name. (example: 912 Abbo Zadzisai)`;
+      let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
       sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
@@ -159,11 +159,12 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
         let message2 = infos
           .slice(0, 4)
           .map(info => {
-            return `"${info.id}" for ${info.name}`;
+            return `"${info.id}" - ${info.name}\n`;
           })
           .join(", ");
 
-        let message = "Please press  " + message2;
+        let message =
+          "Please press 914 and: \n" + message2 + "\n(Example 914 5)";
         //send the information
         // console.log(message);
         sendDataToFrontlineSMS(message, newNum);
