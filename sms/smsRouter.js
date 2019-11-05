@@ -163,7 +163,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
   }
 });
 
-// 4 get end points
+// get end points - multiple choice answers
 
 // DRIVERS RESPONSE TO THE MESSAGE
 router.post(
