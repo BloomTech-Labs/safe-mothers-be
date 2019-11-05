@@ -1,7 +1,6 @@
 exports.seed = function(knex) {
   return knex("mothers").insert([
     {
-      id: 1,
       current_pg: 1,
       due_now: 0,
       deliver_elsewhere: 0,
@@ -56,7 +55,6 @@ exports.seed = function(knex) {
       sell_asset: 1
     },
     {
-      id: 2,
       current_pg: 1,
       due_now: 0,
       deliver_elsewhere: 0,
