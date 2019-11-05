@@ -22,21 +22,6 @@ router.get("/test/register", async (req, res) => {
   }
 });
 
-//for any misspelled texts
-// GOAL: Check the spelling and then do the necessary trigger functionality
-// ENDPOINTS: Help. Register, Yes, No, Online, Offline
-router.get("/misspelled", (req, res) => {
-  try {
-    let text = req.query.testMessage;
-    if(text !== "help"){
-      let message = `text received ${text}: You misspelled something. 
-      please text "help" and send it again.`
-      sendDataToFrontlineSMS(message, "+699699699")
-    }
-  } catch (err) {
-    console.log(err);
-  }
-})
 
 // register mother through SMS
 router.post(
@@ -66,7 +51,7 @@ router.post(
     Mothers.addMother(mother_data)
       .then(mother => {
         let message =
-          "You are now registered. Please text 'help' to request a boda";
+          "You are now registered. Please text '1' to request a boda";
         sendDataToFrontlineSMS(message, newNum);
         res.status(201).json(mother);
       })
@@ -110,7 +95,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         })
         .catch(err => console.log(err));
     } else {
-      let message = `To register type "register village" (example: register Iganga)`;
+      let message = `To register please type 2 and your village name (example: 2 Iganga)`;
       sendDataToFrontlineSMS(message, newNum);
       console.log(message);
       res.status(201).json({ message: "Mother added" });
