@@ -59,9 +59,7 @@ exports.up = function(knex) {
         //reliability
         drivers.integer("reliability");
         //online ---> driver is clocked in for a shift
-        drivers
-          .boolean("online", )
-          .defaultTo(false)
+        drivers.boolean("online").defaultTo(false);
       })
 
       //mothers
@@ -88,7 +86,7 @@ exports.up = function(knex) {
         mothers
           .integer("village")
           .unsigned()
-          .notNullable()
+          // .notNullable()
           .references("id")
           .inTable("village")
           .onDelete("CASCADE")
