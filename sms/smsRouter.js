@@ -101,54 +101,69 @@ router.get("/mothers/register/name/:phone_number", async (req, res) => {
 
 // 3 ---> REGISTER Mother's Village Name
 router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
-  let { phone_number } = req.params;
-  let { answer } = req.query;
+  try {
+    let { phone_number } = req.params;
+    let newNum = removeSpecialChar(phone_number);
+    let { answer } = req.query;
 
-  /** DO IF STATEMENT IF THE VILLAGE CAN BE QUERY OR NOT  */
-  let villageList = await sms.getVillages();
+    let motherInfo = await sms.checkMotherRegistration(newNum);
+    let motherId = motherInfo[0].id;
 
-  let options = {
-    shouldSort: true,
-    threshold: 0.6,
-    location: 0,
-    distance: 100,
-    maxPatternLength: 32,
-    minMatchCharLength: 1,
-    keys: ["name"]
-  };
+    let villageList = await sms.getVillages();
+    //fuse----> fuzzy search
+    let options = {
+      shouldSort: true,
+      threshold: 0.6,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: ["name"]
+    };
 
-  let fuse = new Fuse(villageList, options);
+    let fuse = new Fuse(villageList, options);
 
-  let result = fuse.search(answer);
+    let result = fuse.search(answer);
 
-  console.log(result);
-  res.status(200).json({ message: "Success!" });
+    // if the village name is spelled correctly and matches the villages in the database
+    if (answer.toLowerCase() === result[0].name.toLowerCase()) {
+      let mothers_data = {
+        village: result[0].id,
+        phone_number: newNum
+      };
+      Mothers.updateMother(motherId, mothers_data)
+        .then(mother => {
+          let message =
+            "You are now registered. Please text '1' to request a boda";
+          // sendDataToFrontlineSMS(message, newNum);
+          res.status(201).json(mother);
+        })
+        .catch(err => {
+          res.status(500).json(err);
+        });
+      // If not, give mother village names to pick from
+    } else if (answer.toLowerCase() !== result[0].name.toLowerCase()) {
+      const newSuggestions = result.map(async suggestions => {
+        if (suggestions !== undefined) {
+          return suggestions;
+        }
+      });
 
-  // let newNum = removeSpecialChar(phone_number);
-
-  // //Searching for village name in the database
-  // let village_search = { name: village_name };
-
-  // //Getting that village name that mother texted
-  // let village_list = await sms.getVillageById(village_search);
-
-  // //Grabbing the id of village from above search
-  // let village_id = village_list[0].id;
-
-  // //Adding that to the mothers data
-  // let mother_data = { phone_number: newNum, village: village_id };
-
-  // // Adding new mother to DB does not work in sms ---> have not pushed any changes
-  // Mothers.addMother(mother_data)
-  //   .then(mother => {
-  //     let message = "You are now registered. Please text '1' to request a boda";
-  //     sendDataToFrontlineSMS(message, newNum);
-  //     res.status(201).json(mother);
-  //   })
-  //   .catch(err => {
-  //     res.status(500).json(err);
-  //   });
+      Promise.all(newSuggestions).then(infos => {
+        //Do mothers know the difference between village a and village b?
+        let message = `Did you mean: Press "a" for ${infos[0].name}, "b" for ${infos[1].name}, "c" for ${infos[2].name}, "d" for ${infos[3].name}`;
+        // sendDataToFrontlineSMS(message, phone_number)
+        console.log(message);
+        res.status(200).json({ message: "Message sent" });
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
+
+// 4 get end points
 
 // DRIVERS RESPONSE TO THE MESSAGE
 router.post(
