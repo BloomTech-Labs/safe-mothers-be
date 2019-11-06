@@ -2,8 +2,8 @@ exports.seed = function(knex) {
   return knex("drivers").insert([
     {
       name: "Nviiri Brian",
-      lat: "0.7954328",
-      long: "33.4547664",
+      latitude: "0.7954328",
+      longitude: "33.4547664",
       phone_number: "699123456",
       village_id: 29,
       availability: true,
@@ -12,8 +12,8 @@ exports.seed = function(knex) {
     },
     {
       name: "Brian Chong",
-      lat: "0.8254328",
-      long: "40.4547664",
+      latitude: "0.8254328",
+      longitude: "40.4547664",
       phone_number: "19093794021",
       village_id: 1,
       availability: true,
@@ -22,8 +22,8 @@ exports.seed = function(knex) {
     },
     {
       name: "Cheetos Cheetah",
-      lat: "0.8254328",
-      long: "40.4547664",
+      latitude: "0.8254328",
+      longitude: "40.4547664",
       phone_number: "699699681",
       village_id: 1,
       availability: false,
@@ -33,8 +33,8 @@ exports.seed = function(knex) {
 
     {
       name: "Deer Belieff",
-      lat: "1.8254328",
-      long: "50.4547664",
+      latitude: "1.8254328",
+      longitude: "50.4547664",
       phone_number: "699699695",
       village_id: 1,
       availability: true,
@@ -44,8 +44,8 @@ exports.seed = function(knex) {
 
     {
       name: "Mugeere Erifazi",
-      lat: "0.7954328",
-      long: "33.4547664",
+      latitude: "0.7954328",
+      longitude: "33.4547664",
       phone_number: "699699697",
       village_id: 2,
       availability: true,
@@ -55,8 +55,8 @@ exports.seed = function(knex) {
 
     {
       name: "Dembe Erifazi",
-      lat: "-0.847919",
-      long: "30.905961",
+      latitude: "-0.847919",
+      longitude: "30.905961",
       phone_number: "699699679",
       village_id: 1,
       availability: false,

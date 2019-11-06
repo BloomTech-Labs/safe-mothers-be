@@ -27,10 +27,10 @@ exports.up = function(knex) {
           .unique();
         //name
         village.string("name", 255);
-        //lat
-        village.string("lat", 255).notNullable();
-        //long
-        village.string("long", 255).notNullable();
+        //latitude
+        village.string("latitude", 255).notNullable();
+        //longitude
+        village.string("longitude", 255).notNullable();
       })
 
       //drivers--> village_id may need to be put as obsolete. The drivers that I have plotted (only two) seem to be at crossroads that are not connected to a village
@@ -39,10 +39,10 @@ exports.up = function(knex) {
         drivers.increments();
         //name
         drivers.string("name", 255);
-        //lat
-        drivers.string("lat", 255).notNullable();
-        //long
-        drivers.string("long", 255).notNullable();
+        //latitude
+        drivers.string("latitude", 255).notNullable();
+        //longitude
+        drivers.string("longitude", 255).notNullable();
         //phone_number
         drivers.string("phone_number", 255);
         //village -->FK
@@ -60,6 +60,8 @@ exports.up = function(knex) {
         drivers.integer("reliability");
         //online ---> driver is clocked in for a shift
         drivers.boolean("online").defaultTo(false);
+        //timestamp
+        drivers.timestamps(true, true)
       })
 
       //mothers
@@ -195,14 +197,16 @@ exports.up = function(knex) {
           .inTable("drivers")
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
-        //intiated
+        //intiated ----> when ride is created (mother request for help)
         rides.datetime("initiated");
-        //ended
+        //ended -----> when the ride is completed record the date and time 
         rides.datetime("ended");
-        //completed
+        //completed -----> Boda ride was completed (transportation of the mother)
         rides.boolean("completed").defaultTo(false);
-        //assigned
+        //assigned -----> Assigned to driver to mother
         rides.boolean("assigned").defaultTo(false);
+        //success ------> ride accepted by a driver
+        rides.boolean("success").defaultTo(false);
       })
 
       //scores (Many to many relationship)
