@@ -32,7 +32,9 @@ router.post('/register', (req, res) => {
   user.password = hash;
 
   Users.addUser(user)
-    // .catch(error => res.status(500).json(error) )
+    .then(user => {
+      res.status(201).json(user);
+    })
     .catch(error => {
       usernameTaken =
         'SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username';
@@ -45,24 +47,23 @@ router.post('/register', (req, res) => {
         .status(500)
         .json({ message: `error adding new user: ${error}` });
     })
-    .then(user => {
-      // console.log('ADD USER ', user);
-      res.status(201).json(user);
-    });
+  
 });
 
 router.post('/login', (req, res) => {
   let { username, password } = req.body;
 
   Users.findBy({ username })
-    .catch(error => {
-      res.status(500).json(error);
-    })
     .then(users => {
       if (users.length === 0) {
         return res.status(404).json({
           message: `${username} is not registered`,
-        });
+        })
+
+    .catch(error => {
+      res.status(500).json(error);
+    })
+ 
       }
 
       const user = users[0];
