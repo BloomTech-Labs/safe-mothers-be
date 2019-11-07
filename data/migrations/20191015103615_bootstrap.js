@@ -7,7 +7,6 @@ exports.up = function(knex) {
         //username
         users
           .string("username", 255)
-
           .notNullable()
           .unique();
         //first name
