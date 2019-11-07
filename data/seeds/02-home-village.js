@@ -192,6 +192,7 @@ exports.seed = function(knex) {
       lat: "0.8061933000000043",
       long: "33.390428499999985"
     },
+    //need to figure lat/long
     {
       id:97,
       name:"Other"
