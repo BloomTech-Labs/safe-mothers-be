@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function (knex) {
   return (
     knex.schema
       .createTable("users", users => {
@@ -228,11 +228,29 @@ exports.up = function(knex) {
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
       })
+
+      //Labels for the front end mothers table
+      .createTable("labels", labels => {
+        labels.increments();
+        labels.string("label_name", 15);
+        labels.string("color", 15);
+        labels.string("dark_color", 15);
+        labels.string("text_color", 15);
+        labels
+          .integer("mother_id")
+          .unsigned()
+          .notNullable()
+          .references("id")
+          .inTable("mothers")
+          .onDelete("CASCADE")
+          .onUpdate("CASCADE");
+      })
   );
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema
+    .dropTableIfExists("labels")
     .dropTableIfExists("scores")
     .dropTableIfExists("rides")
     .dropTableIfExists("mothers")
