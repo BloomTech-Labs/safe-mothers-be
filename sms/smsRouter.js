@@ -4,7 +4,7 @@ const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 const Fuse = require("fuse.js");
-const geolib = require('geolib');
+const geo = require('../geolocation/geolib');
 
 // Misspell - this defaults to 'mother' instructions to press 1.
 // router.get("/misspell/:phone_number", async (req, res) => {
@@ -45,7 +45,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         assigned: false
       };
       //geolocation:
-
+      geo.geoLocation(motherVillageId);
       // sms
       //   .addMotherRideRequest(data)
       //   .then(request => {
@@ -60,29 +60,9 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       //   })
       //   .catch(err => console.log(err));
     } else {
-      let driversArray = await sms.driverLocation();
-      let mothersArray = await sms.motherLocation(99);
-      // console.log(mothersArray)
-      // getting an array of drivers that are close to the mother
-      let distance = geolib.orderByDistance(mothersArray[0], driversArray)
-      // console.log("Order By Distance",distance)
-      // Need a function here to search through distance to find which drivers are available.
-      let availableDriversArray = [];
-      distance.map( driver => {
-        // console.log("Map", driver.availability)
-        if(driver.availability === 1) {
-        return availableDriversArray.push(driver)
-      }
-      })
-      console.log("New Array",availableDriversArray)
-      // Now we use geolib to find The nearest driver that is available.
-      let getNearest = geolib.findNearest(mothersArray[0], availableDriversArray)
-      console.log("Find Nearest",getNearest)
-
-      
-      // let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
+      let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
       // sendDataToFrontlineSMS(message, newNum);
-      // console.log(message);
+      console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
   }

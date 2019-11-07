@@ -7,8 +7,6 @@ module.exports = {
   findDriver,
   findDriverPhone,
   addMotherRideRequest,
-  motherLocation,
-  driverLocation,
   addDriverRideRequest,
   getRideRequest,
   updateDriverAvailability,
@@ -32,20 +30,6 @@ function checkRideRequest(data) {
 
 function updatePendingRequest(id, data) {
   return db("rides").where({ id: id }, data);
-}
-
-// we need to ge the village ID (LAT LONG)
-// 
-
-// make function that will accept lat long
-function motherLocation(village) {
-  return db("village")
-    .where({ id: village })
-    .select("latitude", "longitude")
-}
-
-function driverLocation() {
-  return db("drivers").select("name","latitude", "longitude", "availability")
 }
 
 
