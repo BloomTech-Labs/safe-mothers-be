@@ -19,6 +19,7 @@ server.use("/auth", authRouter);
 server.use("/users", restricted, usersRouter);
 server.use("/mothers", restricted, mothersRouter);
 server.use("/drivers", restricted, driversRouter);
+server.use("/labels", restricted, labelsRouter);
 //Unprotected
 server.use("/sms", smsRouter);
 
