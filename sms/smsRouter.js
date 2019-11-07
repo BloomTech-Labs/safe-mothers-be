@@ -4,6 +4,7 @@ const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
 const Fuse = require("fuse.js");
+const geolib = require('geolib');
 
 // Misspell - this defaults to 'mother' instructions to press 1.
 // router.get("/misspell/:phone_number", async (req, res) => {
@@ -20,6 +21,8 @@ const Fuse = require("fuse.js");
 //     console.log(err);
 //   }
 // });
+
+
 
 // 1 ---> HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
@@ -41,26 +44,49 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         completed: false,
         assigned: false
       };
-      sms
-        .addMotherRideRequest(data)
-        .then(request => {
-          /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          sendDataToFrontlineSMS(message, drivers[0].phone_number);
+      //geolocation:
 
-          let messageForMother = `Request has been received. Waiting for boda response.`;
-          sendDataToFrontlineSMS(messageForMother, newNum);
-          // console.log(message);
-          res.status(200).json(request);
-        })
-        .catch(err => console.log(err));
+      // sms
+      //   .addMotherRideRequest(data)
+      //   .then(request => {
+      //     /** This is just temporary, we will do the 5 minutes response time filter */
+      //     let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+      //     sendDataToFrontlineSMS(message, drivers[0].phone_number);
+
+      //     let messageForMother = `Request has been received. Waiting for boda response.`;
+      //     sendDataToFrontlineSMS(messageForMother, newNum);
+      //     // console.log(message);
+      //     res.status(200).json(request);
+      //   })
+      //   .catch(err => console.log(err));
     } else {
-      let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
-      sendDataToFrontlineSMS(message, newNum);
-      console.log(message);
+      let driversArray = await sms.driverLocation();
+      let mothersArray = await sms.motherLocation(99);
+      // console.log(mothersArray)
+      // getting an array of drivers that are close to the mother
+      let distance = geolib.orderByDistance(mothersArray[0], driversArray)
+      // console.log("Order By Distance",distance)
+      // Need a function here to search through distance to find which drivers are available.
+      let availableDriversArray = [];
+      distance.map( driver => {
+        // console.log("Map", driver.availability)
+        if(driver.availability === 1) {
+        return availableDriversArray.push(driver)
+      }
+      })
+      console.log("New Array",availableDriversArray)
+      // Now we use geolib to find The nearest driver that is available.
+      let getNearest = geolib.findNearest(mothersArray[0], availableDriversArray)
+      console.log("Find Nearest",getNearest)
+
+      
+      // let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
+      // sendDataToFrontlineSMS(message, newNum);
+      // console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
-  } catch (err) {
+  }
+  catch (err) {
     console.log(err);
   }
 });
@@ -370,6 +396,7 @@ router.get("/rides", (req, res) => {
 });
 
 /*** FUNCTIONS */
+
 
 function removeSpecialChar(num) {
   // remove whitespaces and + in the phone number

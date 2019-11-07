@@ -191,6 +191,12 @@ exports.seed = function(knex) {
       name: "Nawangaiza 2",
       latitude: "0.8061933000000043",
       longitude: "33.390428499999985"
+    },
+    {
+      id: 99,
+      name:"Other",
+      latitude:"1.850",
+      longitude: "50.25",
     }
   ]);
 };
