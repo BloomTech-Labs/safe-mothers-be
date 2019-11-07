@@ -28,9 +28,9 @@ exports.up = function(knex) {
         //name
         village.string("name", 255);
         //lat
-        village.string("lat", 255).notNullable();
+        village.string("lat", 255)
         //long
-        village.string("long", 255).notNullable();
+        village.string("long", 255)
       })
 
       //drivers--> village_id may need to be put as obsolete. The drivers that I have plotted (only two) seem to be at crossroads that are not connected to a village
@@ -92,7 +92,7 @@ exports.up = function(knex) {
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
         //Does this need to be changed to home_village_other. In excel it is: village_other
-        mothers.string("village_other");
+        mothers.string("village_other");//
         mothers.integer("own_phone");
         mothers.string("other_phone");
         mothers.string("phone_number");
@@ -124,7 +124,7 @@ exports.up = function(knex) {
         mothers.integer("plan_transport");
         mothers.string("plan_transport_other");
         mothers.integer("purchase_supplies");
-        mothers.integer("name_supplies");
+        mothers.string("name_supplies");
         mothers.string("supplies_other");
         mothers.integer("mama_kit");
         mothers.integer("mackintosh");
@@ -164,7 +164,7 @@ exports.up = function(knex) {
         mothers.integer("wife_order");
         mothers.string("wife_order_other");
         mothers.integer("insurance");
-        mothers.integer("insurance_type");
+        mothers.string("insurance_type");
         mothers.string("insurance_type_other");
         mothers.integer("insurance_CBO");
         mothers.integer("insurance_private");
