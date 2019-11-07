@@ -7,6 +7,7 @@ const restricted = require("./auth/restrictedMiddleware");
 const usersRouter = require("./users/usersRouter");
 const mothersRouter = require("./mothers/mothersRouter");
 const driversRouter = require("./drivers/driversRouter");
+const labelsRouter = require("./labels/labelsRouter");
 const smsRouter = require("./sms/smsRouter");
 
 const server = express();
