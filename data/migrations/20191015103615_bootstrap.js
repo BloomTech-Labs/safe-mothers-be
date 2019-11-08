@@ -44,15 +44,6 @@ exports.up = function (knex) {
         drivers.string("longitude", 255).notNullable();
         //phone_number
         drivers.string("phone_number", 255);
-        //village -->FK
-        drivers
-          .integer("village_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("village")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
         //availability
         drivers.boolean("availability");
         //reliability
