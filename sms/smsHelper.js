@@ -16,6 +16,7 @@ module.exports = {
   statusOffline
 };
 
+
 function checkMotherRegistration(number) {
   return db("mothers")
     .where({ phone_number: number })
