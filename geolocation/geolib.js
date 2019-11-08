@@ -19,7 +19,7 @@ function motherLocation(village) {
 async function geoLocation(motherVillageId){
     let driversArray = await driverLocation();
     let mothersArray =  await motherLocation(motherVillageId);
-    // console.log(mothersArray)
+    console.log(mothersArray)
     // getting an array of drivers that are close to the mother
     let distance = geolib.orderByDistance(mothersArray[0], driversArray)
     // console.log("Order By Distance",distance)

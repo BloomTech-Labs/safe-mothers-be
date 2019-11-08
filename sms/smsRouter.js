@@ -47,19 +47,19 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       };
       //geolocation:
       geo.geoLocation(motherVillageId);
-      sms
-        .addMotherRideRequest(data)
-        .then(request => {
-          /** This is just temporary, we will do the 5 minutes response time filter */
-          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
+      // sms
+      //   .addMotherRideRequest(data)
+      //   .then(request => {
+      //     /** This is just temporary, we will do the 5 minutes response time filter */
+      //     let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+      //     sendDataToFrontlineSMS(message, drivers[0].phone_number);
 
-          let messageForMother = `Request has been received. Waiting for boda response.`;
-          // smsFunctions.sendDataToFrontlineSMS(messageForMother, newNum);
-          console.log(message);
-          res.status(200).json(request);
-        })
-        .catch(err => console.log(err));
+      //     let messageForMother = `Request has been received. Waiting for boda response.`;
+      //     smsFunctions.sendDataToFrontlineSMS(messageForMother, newNum);
+      //     // console.log(message);
+      //     res.status(200).json(request);
+      //   })
+      //   .catch(err => console.log(err));
     } else {
       let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
       // sendDataToFrontlineSMS(message, newNum);
