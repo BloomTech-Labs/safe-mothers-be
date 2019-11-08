@@ -1,6 +1,7 @@
 const db = require("../data/dbConfig");
 module.exports = {
     getLabels,
+    getAllLabels,
     addLabel,
     findBy,
     deleteLabel
