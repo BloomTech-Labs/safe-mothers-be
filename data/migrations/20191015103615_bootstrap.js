@@ -191,6 +191,8 @@ exports.up = function (knex) {
         rides.datetime("initiated");
         //ended -----> when the ride is completed record the date and time 
         rides.datetime("ended");
+        //pending -----> When a ride request has been sent to a driver and waiting for response
+        rides.boolean("pending").defaultTo(false);
         //completed -----> Boda ride was completed (transportation of the mother)
         rides.boolean("completed").defaultTo(false);
         //assigned -----> Assigned to driver to mother

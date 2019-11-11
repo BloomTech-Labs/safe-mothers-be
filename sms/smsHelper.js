@@ -1,4 +1,5 @@
 const db = require("../data/dbConfig");
+const geoLocation = require("../geolocation/geolib")
 
 module.exports = {
   checkMotherRegistration,
@@ -33,11 +34,11 @@ function updatePendingRequest(id, data) {
   return db("rides").where({ id: id }, data);
 }
 
-
+//Had to get rid on village_id
 function findDriver(id) {
   return db("drivers")
-    .where({ village_id: id, availability: true })
-    .select("id", "name", "phone_number", "availability", "village_id")
+    .where({ availability: true })
+    .select("id", "name", "phone_number", "availability")
     .orderBy("reliability", "desc");
 }
 
@@ -75,7 +76,7 @@ function statusOnline(phoneNumber) {
   // console.log("Online", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
-    .update({ online: true })
+    .update({ online: true, availability: true })
     .select("*");
 }
 
@@ -83,7 +84,7 @@ function statusOffline(phoneNumber) {
   // console.log("Offline", phoneNumber);
   return db("drivers")
     .where({ phone_number: phoneNumber })
-    .update({ online: false })
+    .update({ online: false, availability: false })
     .select("*");
 }
 
@@ -96,6 +97,119 @@ function getVillageById(data) {
   return db("village")
     .where(data)
     .select("id", "name");
+}
+
+//** Chris-branch **//
+
+// In order to do what we need to do, we have to go through a long chain of synchronous
+// queries and updates
+
+// this function attempts to do it all in one
+function reassignFailedRides() {
+  // first we find the failed rides, we're considering a ride as failed when
+  // it isn't completed, it's assigned, and it was initiated longer than 5 minutes
+  // ago
+  return (
+    db('rides')
+      .where({ completed: false, pending: true })
+
+      // this is where we check if the initiated at time is over 5 minutes ago
+      .andWhere(
+        'initiated',
+        '<',
+        moment()
+          .subtract(5, 'minutes')
+          .format()
+      )
+      .select('id', 'mothers_id', 'driver_id')
+      .then(failedRides => {
+        // go through the failed rides, mark their drivers as availability: false,
+        // mark the ride as failed ( completed: true, but null for ended time)
+        console.log('FAILED RIDES', failedRides.length);
+        return db('drivers')
+          .whereIn('id', failedRides.map(fr => fr.driver_id))
+          .update({ availability: false })
+          .then(() => {
+            console.log('Did it make it here', failedRides.map(fr => fr.id));
+            return db('rides')
+              .whereIn(
+                'id',
+                failedRides.map(fr => fr.id)
+                // ask how group indicates ride failure
+              )
+              .update({ completed: true }); // for now a ride that is completed but has no end time is a failed ride
+          })
+          .then(() => {
+            console.log('second then');
+            // here we query the failed rides again, this will prevent us from leaving previous failed rides
+            // if we do a query like this, each time we run our checking script, previously failed rides will
+            // have a chance to be assigned a driver
+
+            // also for situations where there were not enough drivers for moms, they'll have a chance again
+            return db('rides')
+              .where({
+                completed: true
+              })
+              .whereNull('ended')
+              .select('*')
+              .then(freshFailedRides => {
+                console.log(' 3');
+                // create a promise chain of unknown lengh, build it through a for loop,
+                // then start it at the end of that loop.
+                console.log('FreshFailed', freshFailedRides.length);
+                // this is one way to synchronously run an unknown number of promises
+                let chain = Promise.resolve();
+                freshFailedRides.forEach(fr => {
+                  chain = chain.then(() => {
+                    return (
+                      //Obsolete???? 
+                      db('mothers')
+                        .where({ id: fr.mothers_id })
+                        .then(m => {
+                          console.log(' 4');
+                          const mom = m[0];
+                          return mom.village;
+                        })
+                        //possible geoLocation goes here??
+                        .then(findDriverArray)
+                        // restarts the rides
+                        .then(drivers => {
+                          const newDriver = drivers[0];
+
+                          // bail out if there aren't any drivers available
+                          // this mom will have another chance when the script runs again
+                          if (newDriver === undefined) {
+                            return;
+                          }
+
+                          // otherwise, we found a driver, so update this mom's ride from failed
+                          // to re-initiated
+
+                          // also update the driver's availability to false
+                          return db('rides')
+                            .where({ id: fr.id })
+                            .update({
+                              completed: false,
+                              driver_id: newDriver.id,
+                              initiated: moment().format()
+                            })
+                            .then(() => {
+                              // Here you would also send an SMS to tell this driver he has a new ride
+                              return db('drivers')
+                                .where({ id: newDriver.id })
+                                .update({
+                                  availability: false
+                                });
+                            });
+                        })
+                    );
+                  });
+                });
+                return chain;
+              });
+          });
+      })
+  );
 }
 
 
