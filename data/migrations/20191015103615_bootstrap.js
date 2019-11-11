@@ -166,6 +166,33 @@ exports.up = function (knex) {
         mothers.string("notes");
       })
 
+      //pending rides table
+      .createTable("pending", pending => {
+        //PK
+        pending.increments();
+
+        //FK ---> mothers
+        pending
+          .integer("mother_id")
+          .unsigned()
+          .references("id")
+          .inTable("mothers")
+          .onDelete("CASCADE")
+          .onUpdate("CASCADE");
+
+        //FK ---> driver
+        pending
+          .integer("drivers_id")
+          .unsigned()
+          .references("id")
+          .inTable("drivers")
+          .onDelete("CASCADE")
+          .onUpdate("CASCADE");
+
+        //timestamp
+        pending.datetime("initiated");
+      })
+
       //rides
       .createTable("rides", rides => {
         //PK
@@ -246,6 +273,7 @@ exports.down = function (knex) {
     .dropTableIfExists("labels")
     .dropTableIfExists("scores")
     .dropTableIfExists("rides")
+    .dropTableIfExists("pending")
     .dropTableIfExists("mothers")
     .dropTableIfExists("drivers")
     .dropTableIfExists("village")
