@@ -57,10 +57,10 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** Need to do the 5 minutes response time filter */
           let message = `${drivers[0].driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          // sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          sendDataToFrontlineSMS(message, drivers[0].phone_number);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
-          // smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
+          smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
           console.log(message);
           console.log(messageForMother);
           res.status(200).json(request);
@@ -69,7 +69,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     } else {
       //if mother is not registered, take her through a short registration process to gather he basic info: name, phone number, village:
       let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
-      // sendDataToFrontlineSMS(message, phone_number);
+      sendDataToFrontlineSMS(message, phone_number);
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
@@ -97,18 +97,18 @@ router.get("/mothers/register/name/:phone_number", async (req, res) => {
       Mothers.addMother(data)
         .then(mother => {
           let message = `To register your village, type 913 and your village name. (Example: 913 Iganga)`;
-          // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+          smsFunctions.sendDataToFrontlineSMS(message, phone_number);
           console.log(message);
           res.status(201).json(mother);
         })
         .catch(err => console.log(err));
     } else if (registered.length !== 0) {
       let message = `To register your village, type 913 and your village name. (Example: 913 Iganga)`;
-      // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+      smsFunctions.sendDataToFrontlineSMS(message, phone_number);
       console.log(message);
     } else {
       let message = `Sorry, we can't process that. To register please type 912 and your name. (Example: 912 Abbo Zadzisai)`;
-      // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+      smsFunctions.sendDataToFrontlineSMS(message, phone_number);
       console.log(message);
     }
   } catch (err) {
@@ -150,7 +150,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
         .then(mother => {
           let message =
             "You are now registered. Please text '911' to request a boda";
-            // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
           res.status(201).json(mother);
         })
         .catch(err => {
@@ -179,7 +179,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
           "Please press 914 and the number next to your village name: \n" + message2 + "\n(Example 914  5)";
         //send the information
         console.log(message);
-        // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+        smsFunctions.sendDataToFrontlineSMS(message, phone_number);
         res.status(200).json({ message: "Message sent" });
       });
     } else if (result === undefined) {
@@ -209,7 +209,7 @@ router.get("/mothers/selection", async (req, res) => {
       .then(mother => {
         let message = `You are now registered! Please press 911 to call for a boda`;
         console.log(message);
-        // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+        smsFunctions.sendDataToFrontlineSMS(message, phone_number);
         res.status(202).json(mother);
       })
       .catch(err => {
@@ -269,12 +269,12 @@ router.post(
             // send mothers information to driver
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
-              // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               console.log(message);
               res.status(200).json(request);
             } else {
               let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
-              // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               console.log(message);
               res.status(200).json(request);
             }
@@ -285,9 +285,13 @@ router.post(
       else if (answer === "no") {
         let update = {
           availability: false
+        // we are going to geoLocation of find a new driver for the ride.
+        // need to update the ride with the new driver
+        //Lastly we send a sms message to the new driver to notify him he has a ride request
         };
+        console.log(update)
         //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
-        // smsFunctions.changeDriverAvailability(driverId, update);
+        smsFunctions.changeDriverAvailability(driverId, update);
       }
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
@@ -298,7 +302,7 @@ router.post(
           .then(request => {
             // FRONT LINE TEXT
             let message = `Sorry, this request is closed already`;
-            // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
             res.status(200).json({ message: "request is closed already" });
           })
           .catch(err => {
@@ -312,7 +316,7 @@ router.post(
           .getRideRequest()
           .then(request => {
             let message = `Something is wrong please send your response: answer requestID (example: yes 12)`;
-            // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
             res
               .status(200)
               .json({ message: "Something is wrong with your response" });
