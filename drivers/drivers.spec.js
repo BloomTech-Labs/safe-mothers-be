@@ -27,7 +27,7 @@ describe("server.js", () => {
       // })
     });
     it("should return a response of 200 with test token", async () => {
-      const response = await request(server).get("/drivers/").set("Authorization", testToken);
+      const response = await request(server).get("/drivers").set("Authorization", testToken);
       expect(response.status).toBe(200);
     })
 
