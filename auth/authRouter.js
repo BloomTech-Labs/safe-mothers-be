@@ -1,15 +1,15 @@
-const router = require('express').Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const router = require("express").Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const Users = require('../users/usersHelper');
-const secrets = require('../config/secrets');
+const Users = require("../users/usersHelper");
+const secrets = require("../config/secrets");
 
-router.post('/register', (req, res) => {
+router.post("/register", (req, res) => {
   let user = req.body;
 
   if (!user) {
-    return res.status(400).json({ message: 'You need to register' });
+    return res.status(400).json({ message: "You need to register" });
   }
 
   if (!user.first_name && !user.last_name) {
@@ -37,7 +37,7 @@ router.post('/register', (req, res) => {
     })
     .catch(error => {
       usernameTaken =
-        'SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username';
+        "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username";
       if (error.toString().includes(usernameTaken)) {
         return res
           .status(400)
@@ -46,8 +46,7 @@ router.post('/register', (req, res) => {
       return res
         .status(500)
         .json({ message: `error adding new user: ${error}` });
-    })
-  
+    });
 });
 
 router.post("/login", (req, res) => {
@@ -81,10 +80,10 @@ router.post("/login", (req, res) => {
 
 function generateToken(user) {
   const payload = {
-    subject: user.id,
-    username: user.username,
-    first_name: user.first_name,
-    last_name: user.last_name,
+    // subject: user.id,
+    username: user.username
+    // first_name: user.first_name,
+    // last_name: user.last_name,
   };
   //Don't we want the token to last more than a day?
   const options = {

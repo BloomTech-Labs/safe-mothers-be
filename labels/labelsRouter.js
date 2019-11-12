@@ -1,4 +1,5 @@
 const router = require("express").Router();
+
 const Labels = require("./labelsHelper");
 
 
@@ -13,7 +14,6 @@ router.get("/", (req, res) => {
         })
 });
 
-
 router.get("/:mother_id/", (req, res) => {
     const mother_id = req.params.mother_id;
     Labels.getLabels({ mother_id })
@@ -25,7 +25,6 @@ router.get("/:mother_id/", (req, res) => {
             res.status(500).json({ message: "Error getting labels" });
         })
 });
-
 
 router.delete("/:label_id", (req, res) => {
     const label_id = req.params.label_id;

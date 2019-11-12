@@ -1,67 +1,103 @@
 exports.seed = function(knex) {
   return knex("drivers").insert([
+    //please correct the phone numbers of the actual drivers
     {
-      name: "Nviiri Brian",
-      lat: "0.7954328",
-      long: "33.4547664",
-      phone_number: "699123456",
-      village_id: 29,
+      driver_name: "Jade Lopez",
+      latitude: "0.8254328",
+      longitude: "40.4547664",
+      phone: "+19093794021",
       availability: true,
       reliability: 4,
       online:false
     },
     {
-      name: "Brian Chong",
-      lat: "0.8254328",
-      long: "40.4547664",
-      phone_number: "19093794021",
-      village_id: 1,
-      availability: true,
-      reliability: 4,
-      online:false
-    },
-    {
-      name: "Cheetos Cheetah",
-      lat: "0.8254328",
-      long: "40.4547664",
-      phone_number: "699699681",
-      village_id: 1,
+      driver_name: "Johnathan Dorety",
+      latitude: "0.8254328",
+      longitude: "34.524547664",
+      phone: "+13366959254",
       availability: false,
       reliability: 4,
       online:true
     },
 
     {
-      name: "Deer Belieff",
-      lat: "1.8254328",
-      long: "50.4547664",
-      phone_number: "699699695",
-      village_id: 1,
+      driver_name: "Deer Belieff",
+      latitude: "1.8254328",
+      longitude: "50.4547664",
+      phone: "+699699695",
       availability: true,
       reliability: 3,
+      online:true
+    },
+    // These are actual drivers
+    {
+      driver_name: "Nviiri Brian",
+      latitude: "0.7954328",
+      longitude: "33.4547664",
+      phone: "+256782407942699",
+      availability: true,
+      reliability: 4,
       online:false
     },
 
     {
-      name: "Mugeere Erifazi",
-      lat: "0.7954328",
-      long: "33.4547664",
-      phone_number: "699699697",
-      village_id: 2,
+      driver_name: "Mugeere Erifazi",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
+      phone: "+256774897846699",
+      availability: true,
+      reliability: 5,
+      online:true
+    },
+    {
+      driver_name: "Zijjakyiro Bakali",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
+      phone: "+256750684130699",
       availability: true,
       reliability: 5,
       online:true
     },
 
     {
-      name: "Dembe Erifazi",
-      lat: "-0.847919",
-      long: "30.905961",
-      phone_number: "699699679",
-      village_id: 1,
+      driver_name: "Dembe Erifazi",
+      latitude: "-0.847919",
+      longitude: "30.905961",
+      phone: "+699699679699",
       availability: false,
       reliability: 5,
       online:true
-    }
+    },
+
+    {
+      driver_name: "Kalende Yasin",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
+      phone: "+256789563155699",
+      availability: true,
+      reliability: 5,
+      online:true
+    },
+    
+    {
+      driver_name: "Izimba Jowari",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
+      phone: "+25678327095699",
+      availability: true,
+      reliability: 5,
+      online:true
+    },
+    {
+      driver_name: "Muduuli Aminsi",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
+      phone: "+25678965912699",
+      availability: true,
+      reliability: 5,
+      online:true
+    },
+
+
   ]);
 };

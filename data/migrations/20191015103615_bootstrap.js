@@ -1,4 +1,4 @@
-exports.up = function(knex) {
+exports.up = function (knex) {
   return (
     knex.schema
       .createTable("users", users => {
@@ -7,7 +7,6 @@ exports.up = function(knex) {
         //username
         users
           .string("username", 255)
-
           .notNullable()
           .unique();
         //first name
@@ -27,10 +26,11 @@ exports.up = function(knex) {
           .unique();
         //name
         village.string("name", 255);
-        //lat
-        village.string("lat", 255)
-        //long
-        village.string("long", 255)
+
+        //latitude
+        village.string("latitude", 255).notNullable();
+        //longitude
+        village.string("longitude", 255).notNullable();
       })
 
       //drivers--> village_id may need to be put as obsolete. The drivers that I have plotted (only two) seem to be at crossroads that are not connected to a village
@@ -38,28 +38,64 @@ exports.up = function(knex) {
         //primary key
         drivers.increments();
         //name
-        drivers.string("name", 255);
-        //lat
-        drivers.string("lat", 255).notNullable();
-        //long
-        drivers.string("long", 255).notNullable();
+        drivers.string("driver_name", 255);
         //phone_number
-        drivers.string("phone_number", 255);
-        //village -->FK
-        drivers
-          .integer("village_id")
-          .unsigned()
-          .notNullable()
-          .references("id")
-          .inTable("village")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
+        drivers.string("phone", 255);
+        //carrier
+        drivers.integer("carrier");
+        //another phone question
+        drivers.integer("another_phone");
+        //second phone number
+        drivers.string("phone_2", 255);
+        //latitude
+        drivers.string("latitude", 255).notNullable();
+        //longitude
+        drivers.string("longitude", 255).notNullable();
+        //district
+        drivers.integer("district");
+        //district-other input field
+        drivers.string("district_other", 255);
+        //subcounty
+        drivers.integer("subcounty");
+        //subcounty-other input field
+        drivers.string("subcounty_other", 255);
+        //stage(Parish)
+        drivers.integer("stage");
+        //(stage)parish-other input field
+        drivers.string("parish_other", 255);
         //availability
         drivers.boolean("availability");
         //reliability
         drivers.integer("reliability");
         //online ---> driver is clocked in for a shift
         drivers.boolean("online").defaultTo(false);
+        //timestamp
+        drivers.timestamps(true, true)
+        //own a motorcycle?
+        drivers.integer("own_boda");
+        //keep boda-boda with you how many nights?
+        drivers.integer("boda_night");
+        //# of transfers mothers to health facility
+        drivers.integer("transfers");
+        //Story of transfer of pregnant mother
+        drivers.string("story");
+        //motivation
+        drivers.string("motivation");
+        //background - question 8
+        drivers.string("background");
+        //married
+        drivers.integer("married");
+        //children
+        drivers.integer("children");
+        //how many children
+        drivers.integer("number_kids");
+        //Children info
+        drivers.string("kid_info");
+        //future dream
+        drivers.string("dream");
+        //Picture - how do we handle this. In the form you can take a picture 
+        drivers.string("picture");
+        
       })
 
       //mothers
@@ -195,14 +231,16 @@ exports.up = function(knex) {
           .inTable("drivers")
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
-        //intiated
+        //intiated ----> when ride is created (mother request for help)
         rides.datetime("initiated");
-        //ended
+        //ended -----> when the ride is completed record the date and time 
         rides.datetime("ended");
-        //completed
+        //completed -----> Boda ride was completed (transportation of the mother)
         rides.boolean("completed").defaultTo(false);
-        //assigned
+        //assigned -----> Assigned to driver to mother
         rides.boolean("assigned").defaultTo(false);
+        //success ------> ride accepted by a driver
+        rides.boolean("success").defaultTo(false);
       })
 
       //scores (Many to many relationship)
@@ -234,18 +272,20 @@ exports.up = function(knex) {
         labels.string("dark_color", 15);
         labels.string("text_color", 15);
         labels
-            .integer("mother_id")
-            .unsigned()
-            .notNullable()
-            .references("id")
-            .inTable("mothers")
-            .onDelete("CASCADE")
-            .onUpdate("CASCADE");
-    })
+
+          .integer("mother_id")
+          .unsigned()
+          .notNullable()
+          .references("id")
+          .inTable("mothers")
+          .onDelete("CASCADE")
+          .onUpdate("CASCADE");
+      })
+
   );
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema
     .dropTableIfExists("labels")
     .dropTableIfExists("scores")
