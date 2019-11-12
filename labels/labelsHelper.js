@@ -7,6 +7,7 @@ module.exports = {
     deleteLabel
 };
 
+
 function getAllLabels() {
     return db("labels");
 }
@@ -24,9 +25,11 @@ async function addLabel(label) {
         });
 }
 
+
 function findBy(filter) {
     return db("labels").where(filter);
 }
+
 
 function deleteLabel(id) {
     return db("labels")

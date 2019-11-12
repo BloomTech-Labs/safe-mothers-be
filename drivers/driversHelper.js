@@ -39,9 +39,11 @@ function getDriverAvailability() {
   return db("drivers")
     .where({availability: true})
     .select("id",
-    "name",
-    "phone_number",
+    "driver_name",
+    "phone",
     "availability",
     "reliability",
-    "village_id")
+    "latitude",
+    "longitude"
+    )
 }
