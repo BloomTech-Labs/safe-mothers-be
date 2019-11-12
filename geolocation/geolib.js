@@ -19,16 +19,13 @@ function motherLocation(village) {
 async function geoLocation(motherVillageId){
     let driversArray = await driverLocation();
     let mothersArray =  await motherLocation(motherVillageId);
-    console.log(mothersArray)
     // getting an array of drivers that are close to the mother
     let distance = geolib.orderByDistance(mothersArray[0], driversArray)
-    console.log("Order By Distance",distance)
     // Need a function here to search through distance to find which drivers are available.
     let availableDriversArray = [];
     distance.map( driver => {
-      console.log("Map", driver.availability)
+      //If testing in localhost, boolean value must be set to 1. Otherwise in heroku the value must be set to true
       if(driver.availability === true) {
-        console.log("Pushed to availableDriversArray")
       return availableDriversArray.push(driver)
     }
     })
