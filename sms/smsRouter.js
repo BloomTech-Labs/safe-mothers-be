@@ -286,10 +286,8 @@ router.post(
           availability: false
       
         };
-        let rideUpdate = {
-          // success: false
-        }
-        console.log(update)
+        
+        console.log("No",update)
         //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
         // sms.addDriverRideRequest(rideId, rideUpdate)
         smsFunctions.changeDriverAvailability(driverId, update);
