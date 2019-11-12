@@ -139,6 +139,7 @@ function reassignFailedRides() {
         .subtract(5, 'minutes')
         .format()
       )
+      // .orWhere({decline: false})
       .select('id', 'mother_id', 'driver_id')
       .then(failedRides => {
         // go through the failed rides, mark their drivers as availability: false,

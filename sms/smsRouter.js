@@ -284,12 +284,14 @@ router.post(
       else if (answer === "no") {
         let update = {
           availability: false
-        // we are going to geoLocation of find a new driver for the ride.
-        // need to update the ride with the new driver
-        //Lastly we send a sms message to the new driver to notify him he has a ride request
+      
         };
+        let rideUpdate = {
+          // success: false
+        }
         console.log(update)
         //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
+        // sms.addDriverRideRequest(rideId, rideUpdate)
         smsFunctions.changeDriverAvailability(driverId, update);
       }
       //This is looping on sms
