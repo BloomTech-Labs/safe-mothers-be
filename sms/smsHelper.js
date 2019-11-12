@@ -136,8 +136,8 @@ function reassignFailedRides() {
         'initiated',
         '<',
         moment()
-          .subtract(5, 'minutes')
-          .format()
+        .subtract(5, 'minutes')
+        .format()
       )
       .select('id', 'mother_id', 'driver_id')
       .then(failedRides => {
@@ -172,7 +172,7 @@ function reassignFailedRides() {
               .select('*')
               .then(freshFailedRides => {
                 console.log(' 3');
-                // create a promise chain of unknown lengh, build it through a for loop,
+                // create a promise chain of unknown length, build it through a for loop,
                 // then start it at the end of that loop.
                 console.log('FreshFailed', freshFailedRides.length);
                 // this is one way to synchronously run an unknown number of promises
