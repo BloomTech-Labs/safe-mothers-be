@@ -51,14 +51,12 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         driver_id:drivers.id
       };
       console.log("Help",data)
-
-    
       sms
         .addMotherRideRequest(data)
         .then(request => {
           /** Need to do the 5 minutes response time filter */
           let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          smsFunctions.sendDataToFrontlineSMS(message, drivers.phone_number);
+          smsFunctions.sendDataToFrontlineSMS(message, drivers.phone);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
           smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
