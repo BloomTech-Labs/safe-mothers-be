@@ -27,11 +27,12 @@ async function geoLocation(motherVillageId){
     let availableDriversArray = [];
     distance.map( driver => {
       console.log("Map", driver.availability)
-      if(driver.availability === 1) {
+      if(driver.availability === true) {
+        console.log("Pushed to availableDriversArray")
       return availableDriversArray.push(driver)
     }
     })
-    console.log("New Array",availableDriversArray)
+    console.log("Available Drivers Array",availableDriversArray)
     // Now we use geolib to find The nearest driver that is available.
     let getNearest = geolib.findNearest(mothersArray[0], availableDriversArray)
     console.log("Find Nearest",getNearest)
