@@ -3,8 +3,8 @@ exports.seed = function(knex) {
     //please correct the phone numbers of the actual drivers
     {
       driver_name: "Jade Lopez",
-      latitude: "0.8254328",
-      longitude: "40.4547664",
+      latitude: "0.8683849999999976",
+      longitude: "33.382454999999936",
       phone: "+19093794021",
       availability: true,
       reliability: 4,
