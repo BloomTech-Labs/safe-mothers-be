@@ -10,7 +10,7 @@ exports.seed = function(knex) {
       name: "Jalen Dow",
       edd: "2019-12-19",
       age: 30,
-      village: 99,
+      village: 1,
       own_phone: 0,
       other_phone: 1,
       phone_number: "+17574341805",
