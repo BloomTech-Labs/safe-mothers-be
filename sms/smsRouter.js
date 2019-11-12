@@ -56,7 +56,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** Need to do the 5 minutes response time filter */
           let message = `${drivers[0].driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          smsFunctions.sendDataToFrontlineSMS(message, drivers[0].phone_number);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
           smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
@@ -68,7 +68,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     } else {
       //if mother is not registered, take her through a short registration process to gather he basic info: name, phone number, village:
       let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
-      sendDataToFrontlineSMS(message, phone_number);
+      smsFunctions.sendDataToFrontlineSMS(message, phone_number);
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
