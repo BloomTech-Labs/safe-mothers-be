@@ -37,7 +37,9 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherVillageId = registered[0].village;
       // search for the nearest driver by geoLocation()
-      let drivers = await sms.findDriver(motherVillageId);
+      // let drivers = await sms.findDriver(motherVillageId);
+      let drivers = await geo.geoLocation(motherVillageId);
+      console.log("drivers", await drivers)
       let motherId = registered[0].id;
       let data = {
         mother_id: motherId,
@@ -46,17 +48,17 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         assigned: false,
         initiated:  moment().format(),
         //This will assign a driver that the message will be sent to and switch only if the driver does not respond or replies no.
-        driver_id:drivers[0].id
+        driver_id:drivers.id
       };
       console.log("Help",data)
-      //geolocation:
-      geo.geoLocation(motherVillageId);
+
+    
       sms
         .addMotherRideRequest(data)
         .then(request => {
           /** Need to do the 5 minutes response time filter */
-          let message = `${drivers[0].driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          smsFunctions.sendDataToFrontlineSMS(message, drivers[0].phone_number);
+          let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+          smsFunctions.sendDataToFrontlineSMS(message, drivers.phone_number);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
           smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
