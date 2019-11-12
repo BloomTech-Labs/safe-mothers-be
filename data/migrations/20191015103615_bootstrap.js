@@ -26,6 +26,7 @@ exports.up = function (knex) {
           .unique();
         //name
         village.string("name", 255);
+
         //latitude
         village.string("latitude", 255).notNullable();
         //longitude
@@ -127,7 +128,7 @@ exports.up = function (knex) {
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
         //Does this need to be changed to home_village_other. In excel it is: village_other
-        mothers.string("village_other");
+        mothers.string("village_other");//
         mothers.integer("own_phone");
         mothers.string("other_phone");
         mothers.string("phone_number");
@@ -159,7 +160,7 @@ exports.up = function (knex) {
         mothers.integer("plan_transport");
         mothers.string("plan_transport_other");
         mothers.integer("purchase_supplies");
-        mothers.integer("name_supplies");
+        mothers.string("name_supplies");
         mothers.string("supplies_other");
         mothers.integer("mama_kit");
         mothers.integer("mackintosh");
@@ -199,7 +200,7 @@ exports.up = function (knex) {
         mothers.integer("wife_order");
         mothers.string("wife_order_other");
         mothers.integer("insurance");
-        mothers.integer("insurance_type");
+        mothers.string("insurance_type");
         mothers.string("insurance_type_other");
         mothers.integer("insurance_CBO");
         mothers.integer("insurance_private");
@@ -271,6 +272,7 @@ exports.up = function (knex) {
         labels.string("dark_color", 15);
         labels.string("text_color", 15);
         labels
+
           .integer("mother_id")
           .unsigned()
           .notNullable()
@@ -279,6 +281,7 @@ exports.up = function (knex) {
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
       })
+
   );
 };
 

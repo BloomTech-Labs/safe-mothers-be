@@ -85,6 +85,7 @@ function generateToken(user) {
     // first_name: user.first_name,
     // last_name: user.last_name,
   };
+  //Don't we want the token to last more than a day?
   const options = {
     expiresIn: "1d"
   };
