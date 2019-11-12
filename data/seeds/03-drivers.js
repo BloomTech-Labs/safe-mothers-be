@@ -42,8 +42,8 @@ exports.seed = function(knex) {
 
     {
       driver_name: "Mugeere Erifazi",
-      latitude: "0.8607573",
-      longitude: "33.4388595",
+      latitude: "0.8407573",
+      longitude: "32.4388595",
       phone: "+256774897846699",
       availability: true,
       reliability: 5,
@@ -51,8 +51,8 @@ exports.seed = function(knex) {
     },
     {
       driver_name: "Zijjakyiro Bakali",
-      latitude: "0.8607573",
-      longitude: "33.4388595",
+      latitude: "0.8407573",
+      longitude: "32.4388595",
       phone: "+256750684130699",
       availability: true,
       reliability: 5,
@@ -81,8 +81,8 @@ exports.seed = function(knex) {
     
     {
       driver_name: "Izimba Jowari",
-      latitude: "0.8607573",
-      longitude: "33.4388595",
+      latitude: "-0.847919",
+      longitude: "30.905961",
       phone: "+25678327095699",
       availability: true,
       reliability: 5,
@@ -90,8 +90,8 @@ exports.seed = function(knex) {
     },
     {
       driver_name: "Muduuli Aminsi",
-      latitude: "0.8607573",
-      longitude: "33.4388595",
+      latitude: "0.9607573",
+      longitude: "35.4388595",
       phone: "+25678965912699",
       availability: true,
       reliability: 5,
