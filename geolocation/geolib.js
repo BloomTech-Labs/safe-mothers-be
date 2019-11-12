@@ -22,11 +22,11 @@ async function geoLocation(motherVillageId){
     console.log(mothersArray)
     // getting an array of drivers that are close to the mother
     let distance = geolib.orderByDistance(mothersArray[0], driversArray)
-    // console.log("Order By Distance",distance)
+    console.log("Order By Distance",distance)
     // Need a function here to search through distance to find which drivers are available.
     let availableDriversArray = [];
     distance.map( driver => {
-      // console.log("Map", driver.availability)
+      console.log("Map", driver.availability)
       if(driver.availability === 1) {
       return availableDriversArray.push(driver)
     }
