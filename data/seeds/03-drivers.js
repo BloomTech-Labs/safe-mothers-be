@@ -71,8 +71,8 @@ exports.seed = function(knex) {
 
     {
       driver_name: "Kalende Yasin",
-      latitude: "0.8607573",
-      longitude: "33.4388595",
+      latitude: "0.8307573",
+      longitude: "32.4388595",
       phone: "+256789563155699",
       availability: true,
       reliability: 5,
@@ -81,7 +81,7 @@ exports.seed = function(knex) {
     
     {
       driver_name: "Izimba Jowari",
-      latitude: "-0.847919",
+      latitude: "-1.847919",
       longitude: "30.905961",
       phone: "+25678327095699",
       availability: true,
