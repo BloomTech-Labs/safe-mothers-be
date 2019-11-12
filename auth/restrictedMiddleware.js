@@ -7,7 +7,7 @@ const testToken = process.env.TEST_TOKEN || null;
 module.exports = (req, res, next) => {
   // const token = req.header('x-auth-token')
   const token = req.headers.authorization;
-  if (testToken) {
+  if (token === testToken) {
     req.user = { username: "testerosa" };
     next();
   } else if (token) {

@@ -1,10 +1,6 @@
 const request = require("supertest"); // calling it "request" is a common practice
 // const request = supertest(server)
 const server = require("../server"); // Link to your server file
-const drivers = require("../drivers/drivers.spec.js");
-const knex = require("knex");
-const knexConfig = require("../knexfile.js");
-const db = knex(knexConfig.development);
 require("dotenv").config();
 const testToken = process.env.TEST_TOKEN;
 console.log(testToken);
@@ -30,6 +26,10 @@ describe("server.js", () => {
       //   expect(response.status).toEqual(expectedStatusCode);
       // })
     });
+    it("should return a response of 200 with test token", async () => {
+      const response = await request(server).get("/drivers/").set("Authorization", testToken);
+      expect(response.status).toBe(200);
+    })
 
     // This test fails because 1 !== 2
     it("Testing to see if Jest works", () => {
