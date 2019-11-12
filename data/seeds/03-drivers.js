@@ -42,8 +42,8 @@ exports.seed = function(knex) {
 
     {
       driver_name: "Mugeere Erifazi",
-      latitude: "0.8407573",
-      longitude: "32.4388595",
+      latitude: "0.8607573",
+      longitude: "33.4388595",
       phone: "+256774897846699",
       availability: true,
       reliability: 5,
