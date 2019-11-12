@@ -1,5 +1,6 @@
 const db = require("../data/dbConfig");
-const geoLocation = require("../geolocation/geolib")
+const geo = require("../geolocation/geolib")
+const moment = require('moment');
 
 module.exports = {
   checkMotherRegistration,
@@ -9,8 +10,10 @@ module.exports = {
   findDriverPhone,
   addMotherRideRequest,
   addDriverRideRequest,
+  getRideByDriverId,
   getRideRequest,
   updateDriverAvailability,
+  reassignFailedRides,
   getVillages,
   getVillageById,
   statusOnline,
@@ -38,14 +41,14 @@ function updatePendingRequest(id, data) {
 function findDriver(id) {
   return db("drivers")
     .where({ availability: true })
-    .select("id", "name", "phone_number", "availability")
+    .select("id", "driver_name", "phone", "availability")
     .orderBy("reliability", "desc");
 }
 
 function findDriverPhone(data) {
   return db("drivers")
     .where(data)
-    .select("id", "name", "phone_number", "availability");
+    .select("id", "driver_name", "phone", "availability");
 }
 
 function addMotherRideRequest(data) {
@@ -53,9 +56,12 @@ function addMotherRideRequest(data) {
 }
 
 function addDriverRideRequest(id, data) {
+  // console.log("add driver request data", data)
+  // console.log("add driver request id", id)
   return db("rides")
     .where({ id: id })
-    .update(data);
+    .update(data)
+    .select("*");
 }
 
 // drivers status
@@ -66,16 +72,25 @@ function updateDriverAvailability(id, data) {
     .select("*");
 }
 
-/** DONT TOUCH THIS */
+/** DON'T TOUCH THIS */
 function getRideRequest() {
-  return db("rides").select("*");
+  return db("rides")
+  .select("*");
 }
+// Get Rides by driver Id
+
+function getRideByDriverId(id) {
+  return db("rides")
+  .where({driver_id:id, assigned: false})
+  .select("*");
+}
+
 
 //Driver status:
 function statusOnline(phoneNumber) {
   // console.log("Online", phoneNumber);
   return db("drivers")
-    .where({ phone_number: phoneNumber })
+    .where({ phone: phoneNumber })
     .update({ online: true, availability: true })
     .select("*");
 }
@@ -83,7 +98,7 @@ function statusOnline(phoneNumber) {
 function statusOffline(phoneNumber) {
   // console.log("Offline", phoneNumber);
   return db("drivers")
-    .where({ phone_number: phoneNumber })
+    .where({ phone: phoneNumber })
     .update({ online: false, availability: false })
     .select("*");
 }
@@ -99,6 +114,9 @@ function getVillageById(data) {
     .select("id", "name");
 }
 
+ 
+      
+
 //** Chris-branch **//
 
 // In order to do what we need to do, we have to go through a long chain of synchronous
@@ -111,7 +129,7 @@ function reassignFailedRides() {
   // ago
   return (
     db('rides')
-      .where({ completed: false, pending: true })
+      .where({ completed: false, assigned: false})
 
       // this is where we check if the initiated at time is over 5 minutes ago
       .andWhere(
@@ -121,7 +139,7 @@ function reassignFailedRides() {
           .subtract(5, 'minutes')
           .format()
       )
-      .select('id', 'mothers_id', 'driver_id')
+      .select('id', 'mother_id', 'driver_id')
       .then(failedRides => {
         // go through the failed rides, mark their drivers as availability: false,
         // mark the ride as failed ( completed: true, but null for ended time)
@@ -160,22 +178,29 @@ function reassignFailedRides() {
                 // this is one way to synchronously run an unknown number of promises
                 let chain = Promise.resolve();
                 freshFailedRides.forEach(fr => {
-                  chain = chain.then(() => {
+                  console.log("Failed Rides Info", fr);
+                  //losing the data. undefined
+                  return (
+                  chain = chain.then(res  => {
+                    console.log("failed rides res", res)
                     return (
                       //Obsolete???? 
+                      // reAssignMothers(fr)
+                      
                       db('mothers')
-                        .where({ id: fr.mothers_id })
+                        .where({ id: fr.mother_id })
                         .then(m => {
-                          console.log(' 4');
-                          const mom = m[0];
-                          return mom.village;
+                          console.log(' 4', m[0].village);
+                          const mom = m[0].village;
+                          return mom;
+                          
                         })
-                        //possible geoLocation goes here??
-                        .then(findDriverArray)
+                  
+                        .then((mom) => geo.geoLocation(mom))
                         // restarts the rides
-                        .then(drivers => {
-                          const newDriver = drivers[0];
-
+                        .then(driver => {
+                          const newDriver = driver;
+                          console.log("New Driver",newDriver)
                           // bail out if there aren't any drivers available
                           // this mom will have another chance when the script runs again
                           if (newDriver === undefined) {
@@ -195,6 +220,7 @@ function reassignFailedRides() {
                             })
                             .then(() => {
                               // Here you would also send an SMS to tell this driver he has a new ride
+                              
                               return db('drivers')
                                 .where({ id: newDriver.id })
                                 .update({
@@ -203,7 +229,8 @@ function reassignFailedRides() {
                             });
                         })
                     );
-                  });
+                  })
+                  )
                 });
                 return chain;
               });

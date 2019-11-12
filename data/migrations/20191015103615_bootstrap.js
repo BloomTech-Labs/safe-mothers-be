@@ -37,13 +37,31 @@ exports.up = function (knex) {
         //primary key
         drivers.increments();
         //name
-        drivers.string("name", 255);
+        drivers.string("driver_name", 255);
+        //phone_number
+        drivers.string("phone", 255);
+        //carrier
+        drivers.integer("carrier");
+        //another phone question
+        drivers.integer("another_phone");
+        //second phone number
+        drivers.string("phone_2", 255);
         //latitude
         drivers.string("latitude", 255).notNullable();
         //longitude
         drivers.string("longitude", 255).notNullable();
-        //phone_number
-        drivers.string("phone_number", 255);
+        //district
+        drivers.integer("district");
+        //district-other input field
+        drivers.string("district_other", 255);
+        //subcounty
+        drivers.integer("subcounty");
+        //subcounty-other input field
+        drivers.string("subcounty_other", 255);
+        //stage(Parish)
+        drivers.integer("stage");
+        //(stage)parish-other input field
+        drivers.string("parish_other", 255);
         //availability
         drivers.boolean("availability");
         //reliability
@@ -52,6 +70,31 @@ exports.up = function (knex) {
         drivers.boolean("online").defaultTo(false);
         //timestamp
         drivers.timestamps(true, true)
+        //own a motorcycle?
+        drivers.integer("own_boda");
+        //keep boda-boda with you how many nights?
+        drivers.integer("boda_night");
+        //# of transfers mothers to health facility
+        drivers.integer("transfers");
+        //Story of transfer of pregnant mother
+        drivers.string("story");
+        //motivation
+        drivers.string("motivation");
+        //background - question 8
+        drivers.string("background");
+        //married
+        drivers.integer("married");
+        //children
+        drivers.integer("children");
+        //how many children
+        drivers.integer("number_kids");
+        //Children info
+        drivers.string("kid_info");
+        //future dream
+        drivers.string("dream");
+        //Picture - how do we handle this. In the form you can take a picture 
+        drivers.string("picture");
+        
       })
 
       //mothers
@@ -166,33 +209,6 @@ exports.up = function (knex) {
         mothers.string("notes");
       })
 
-      //pending rides table
-      .createTable("pending", pending => {
-        //PK
-        pending.increments();
-
-        //FK ---> mothers
-        pending
-          .integer("mother_id")
-          .unsigned()
-          .references("id")
-          .inTable("mothers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
-
-        //FK ---> driver
-        pending
-          .integer("drivers_id")
-          .unsigned()
-          .references("id")
-          .inTable("drivers")
-          .onDelete("CASCADE")
-          .onUpdate("CASCADE");
-
-        //timestamp
-        pending.datetime("initiated");
-      })
-
       //rides
       .createTable("rides", rides => {
         //PK
@@ -218,8 +234,6 @@ exports.up = function (knex) {
         rides.datetime("initiated");
         //ended -----> when the ride is completed record the date and time 
         rides.datetime("ended");
-        //pending -----> When a ride request has been sent to a driver and waiting for response
-        rides.boolean("pending").defaultTo(false);
         //completed -----> Boda ride was completed (transportation of the mother)
         rides.boolean("completed").defaultTo(false);
         //assigned -----> Assigned to driver to mother
@@ -273,7 +287,6 @@ exports.down = function (knex) {
     .dropTableIfExists("labels")
     .dropTableIfExists("scores")
     .dropTableIfExists("rides")
-    .dropTableIfExists("pending")
     .dropTableIfExists("mothers")
     .dropTableIfExists("drivers")
     .dropTableIfExists("village")

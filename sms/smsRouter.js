@@ -6,6 +6,7 @@ const sms = require("./smsHelper");
 const smsFunctions = require("./smsFunctions")
 const Fuse = require("fuse.js");
 const geo = require('../geolocation/geolib');
+const moment = require('moment');
 
 
 // Misspell - this defaults to 'mother' instructions to press 1.
@@ -43,15 +44,19 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         mother_id: motherId,
         ended: null,
         completed: false,
-        assigned: false
+        assigned: false,
+        initiated:  moment().format(),
+        //This will assign a driver that the message will be sent to and switch only if the driver does not respond or replies no.
+        driver_id:drivers[0].id
       };
+      console.log("Help",data)
       //geolocation:
       geo.geoLocation(motherVillageId);
       sms
         .addMotherRideRequest(data)
         .then(request => {
           /** Need to do the 5 minutes response time filter */
-          let message = `${drivers[0].name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+          let message = `${drivers[0].driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
           // sendDataToFrontlineSMS(message, drivers[0].phone_number);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
@@ -229,12 +234,16 @@ router.post(
       answer = answer.toLowerCase();
       request_id = parseInt(request_id);
 
-      console.log(phone_number + answer + request_id);
+      console.log('Driver',phone_number + answer + request_id);
 
-      let newPhone = { phone_number: phone_number };
-
+      let newPhone = { phone: phone_number };
+      //
       let driverInfo = await sms.findDriverPhone(newPhone);
-      let rideInfo = await sms.getRideRequest(request_id);
+
+      // let rideInfo = await sms.getRideRequest(); 
+      
+      let rideInfo = await sms.getRideByDriverId(driverInfo[0].id);
+      //Getting the mother info to send to driver through sms
       let motherInfo = await Mothers.getMotherForDriver(rideInfo[0].mother_id);
       let villageId = { id: motherInfo[0].village };
       let villageInfo = await sms.getVillageById(villageId);
@@ -242,23 +251,25 @@ router.post(
       let rideId = parseInt(rideInfo[0].id);
       let driverId = parseInt(driverInfo[0].id);
 
+      console.log("Driver Info", rideInfo[0].driver_id);
       //if the driver press yes with the request ID then it will add to the rides table
       let updateRide = {
-        driver_id: parseInt(driverInfo[0].id)
+        // driver_id: parseInt(driverInfo[0].id),
+        assigned: true
       };
-      if (answer === "yes" && rideInfo[0].driver_id === null) {
+      if (answer === "yes") {
         sms
           .addDriverRideRequest(rideId, updateRide)
           .then(request => {
             let update = {
-              availability: false
+              availability: false,
             };
             smsFunctions.changeDriverAvailability(driverId, update);
 
             // send mothers information to driver
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
-              smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+              // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               console.log(message);
               res.status(200).json(request);
             } else {
@@ -276,11 +287,12 @@ router.post(
           availability: false
         };
         //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
-        smsFunctions.changeDriverAvailability(driverId, update);
+        // smsFunctions.changeDriverAvailability(driverId, update);
       }
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
+        console.log("Closed Ride",rideInfo[0].driver_id)
         sms
           .getRideRequest()
           .then(request => {
@@ -316,6 +328,12 @@ router.post(
   }
 );
 
+router.get("/drivers/reassign", async (req, res) => {
+  sms.reassignFailedRides()
+  .then(rides => {
+    return res.status(200).json({ message: "Ride Check Complete"});
+  });
+})
 
 // get all mothers
 router.get("/mothers", (req, res) => {

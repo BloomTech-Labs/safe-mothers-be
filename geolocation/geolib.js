@@ -13,7 +13,7 @@ function motherLocation(village) {
   }
   
   function driverLocation() {
-    return db("drivers").select("name","latitude", "longitude", "availability")
+    return db("drivers").select('id',"driver_name","latitude", "longitude", "availability","phone")
   }
 
 async function geoLocation(motherVillageId){

@@ -8,7 +8,7 @@ module.exports = {
 }
 
 function removeSpecialChar(num) {
-    // remove whitespaces and + in the phone number
+    // remove white spaces and + in the phone number
     var regexPhoneNumber = /[^a-zA-Z0-9]+/gi;
     return num.replace(regexPhoneNumber, " ").trim();
   }
