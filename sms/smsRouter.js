@@ -284,7 +284,6 @@ router.post(
       else if (answer === "no") {
         let update = {
           availability: false
-      
         };
     
         smsFunctions.changeDriverAvailability(driverId, update);

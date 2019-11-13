@@ -1,6 +1,8 @@
 const db = require("../data/dbConfig");
-const geo = require("../geolocation/geolib")
+const geo = require("../geolocation/geolib");
 const moment = require('moment');
+const smsFunctions = require("./smsFunctions");
+const Mothers = require("../mothers/mothersHelper");
 
 module.exports = {
   checkMotherRegistration,
@@ -139,7 +141,6 @@ function reassignFailedRides() {
         .subtract(5, 'minutes')
         .format()
       )
-      // .orWhere({decline: false})
       .select('id', 'mother_id', 'driver_id')
       .then(failedRides => {
         // go through the failed rides, mark their drivers as availability: false,
@@ -187,7 +188,6 @@ function reassignFailedRides() {
                     return (
                       //Obsolete???? 
                       // reAssignMothers(fr)
-                      
                       db('mothers')
                         .where({ id: fr.mother_id })
                         .then(m => {
@@ -219,9 +219,15 @@ function reassignFailedRides() {
                               driver_id: newDriver.id,
                               initiated: moment().format()
                             })
-                            .then(() => {
+                            
+                            .then(async ()  => {
                               // Here you would also send an SMS to tell this driver he has a new ride
-                              
+                              // console.log("Finding mother's number", fr.mother_id)
+                              // let motherPhone = await Mothers.getMotherForDriver(fr.mother_id)
+                              // console.log(motherPhone)
+                              let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${fr.id}. To confirm type "yes/no pickupID" (example: yes 12)`;
+                              smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
+
                               return db('drivers')
                                 .where({ id: newDriver.id })
                                 .update({
