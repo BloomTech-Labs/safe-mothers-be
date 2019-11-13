@@ -235,12 +235,14 @@ exports.up = function (knex) {
           .onUpdate("CASCADE");
         //intiated ----> when ride is created (mother request for help)
         rides.datetime("initiated");
-        //ended -----> when the ride is completed record the date and time 
-        rides.datetime("ended");
-        //completed -----> Boda ride was completed (transportation of the mother)
-        rides.boolean("completed").defaultTo(false);
         //assigned -----> Assigned to driver to mother
         rides.boolean("assigned").defaultTo(false);
+        //pending ----> Failed rides logic
+        rides.boolean("pending").defaultTo(false);
+        //completed -----> Boda ride was completed (transportation of the mother)
+        rides.boolean("completed").defaultTo(false);
+        //ended -----> when the ride is completed record the date and time 
+        rides.datetime("ended");
       })
 
       //scores (Many to many relationship)
