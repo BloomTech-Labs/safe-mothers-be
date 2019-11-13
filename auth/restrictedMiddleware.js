@@ -3,12 +3,12 @@ const jwt = require("jsonwebtoken");
 const secrets = require("../config/secrets.js");
 require("dotenv").config();
 
-const testToken = process.env.TEST_TOKEN || null;
+const testToken = process.env.TEST_TOKEN || null; //get test token from env
 module.exports = (req, res, next) => {
   // const token = req.header('x-auth-token')
   const token = req.headers.authorization;
   if (token) {
-    if (token === testToken) {
+    if (token === testToken) { //check if test token
       req.user = { username: "testerosa" };
       next();
     } else {
@@ -22,6 +22,6 @@ module.exports = (req, res, next) => {
       });
     }
   } else {
-    res.status(400).json({ message: "No Credential Provider" });
+    res.status(400).json({ message: "No Credential Provided" });
   }
 };

@@ -1,7 +1,7 @@
 const request = require("supertest"); // calling it "request" is a common practice
 const server = require("../server"); // Link to your server file
-require("dotenv").config();
-const testToken = process.env.TEST_TOKEN;
+require("dotenv").config(); // needed to pull env variable
+const testToken = process.env.TEST_TOKEN; // set test token
 
 describe("drivers router", () => {
   // http calls made with supertest return promises, we can use async/await if desired
@@ -14,8 +14,8 @@ describe("drivers router", () => {
 
     it("should return a response of 200 with test token", async () => {
       const response = await request(server)
-        .get("/drivers")
-        .set("Authorization", testToken);
+        .get("/drivers")  // .set() must come after HTTP method 
+        .set("Authorization", testToken);  //this is how you set auth header in supertest
       expect(response.status).toBe(200);
     });
   });
