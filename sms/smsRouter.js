@@ -302,8 +302,8 @@ router.post(
           let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${rideId}. To confirm type "yes/no pickupID" (example: yes 12)`;
           smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
         
-          let messageForMother = `Request has been received. Waiting for boda response.`;
-          smsFunctions.sendDataToFrontlineSMS(messageForMother, motherInfo[0].phone_number);
+          // let messageForMother = `Request has been received. Waiting for boda response.`;
+          // smsFunctions.sendDataToFrontlineSMS(messageForMother, motherInfo[0].phone_number);
           console.log("*No response",message);
           console.log("*No response",messageForMother);
           res.status(200).json(request);
