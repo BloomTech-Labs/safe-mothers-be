@@ -47,6 +47,8 @@ exports.up = function (knex) {
         drivers.integer("another_phone");
         //second phone number
         drivers.string("phone_2", 255);
+        //second carrier
+        drivers.integer("carrier_2");
         //latitude
         drivers.string("latitude", 255).notNullable();
         //longitude
@@ -239,8 +241,6 @@ exports.up = function (knex) {
         rides.boolean("completed").defaultTo(false);
         //assigned -----> Assigned to driver to mother
         rides.boolean("assigned").defaultTo(false);
-        //success ------> ride accepted by a driver
-        rides.boolean("success").defaultTo(false);
       })
 
       //scores (Many to many relationship)
