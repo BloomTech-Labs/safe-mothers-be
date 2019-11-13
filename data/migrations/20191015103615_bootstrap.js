@@ -47,6 +47,8 @@ exports.up = function (knex) {
         drivers.integer("another_phone");
         //second phone number
         drivers.string("phone_2", 255);
+        //second carrier
+        drivers.integer("carrier_2");
         //latitude
         drivers.string("latitude", 255).notNullable();
         //longitude
