@@ -25,7 +25,7 @@ async function geoLocation(motherVillageId){
     let availableDriversArray = [];
     distance.map( driver => {
       //If testing in localhost, boolean value must be set to 1. Otherwise in heroku the value must be set to true
-      if(driver.availability === 1) {
+      if(driver.availability === true) {
       return availableDriversArray.push(driver)
     }
     })
