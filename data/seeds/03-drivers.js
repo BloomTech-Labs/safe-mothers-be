@@ -15,7 +15,7 @@ exports.seed = function(knex) {
       latitude: "0.8607573",
       longitude: "33.4388595",
       phone: "+13366959254",
-      availability: false,
+      availability: true,
       reliability: 4,
       online:true
     },
@@ -29,17 +29,16 @@ exports.seed = function(knex) {
       reliability: 3,
       online:true
     },
-    // These are actual drivers
+    //Make Mugeere's phone a team members number
     {
       driver_name: "Nviiri Brian",
       latitude: "0.7954328",
       longitude: "33.4547664",
-      phone: "+256782407942699",
+      phone: "+16055217234",
       availability: true,
       reliability: 4,
       online:false
     },
-    //Make Mugeere's phone a team members number
     {
       driver_name: "Mugeere Erifazi",
       latitude: "0.8254328",
