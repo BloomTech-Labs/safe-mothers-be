@@ -20,7 +20,7 @@ function removeSpecialChar(num) {
       apiKey: process.env.FRONTLINE_KEY,
       payload: {
         message: message,
-        recipients: [{ type: "mobile", value: `+${phone_number}` }]
+        recipients: [{ type: "mobile", value: `${phone_number}` }]
       }
     };
     let url = "https://cloud.frontlinesms.com/api/1/webhook";
