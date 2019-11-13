@@ -32,7 +32,7 @@ describe("drivers router", () => {
     });
     it("should respond with status 404 for non-valid id", async () => {
       const response = await request(server)
-        .get("/drivers/2")
+        .get("/drivers/700")
         .set("Authorization", testToken);
       expect(response.status).toBe(404);
     })
