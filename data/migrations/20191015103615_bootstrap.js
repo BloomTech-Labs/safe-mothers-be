@@ -241,8 +241,6 @@ exports.up = function (knex) {
         rides.boolean("completed").defaultTo(false);
         //assigned -----> Assigned to driver to mother
         rides.boolean("assigned").defaultTo(false);
-        //success ------> ride accepted by a driver
-        rides.boolean("success").defaultTo(false);
       })
 
       //scores (Many to many relationship)
