@@ -304,25 +304,7 @@ router.post(
         })
         .catch(err => console.log(err));
       }
-
-      //???????This is looping on sms
-      // if the driver choose yes but the ride table is complete already send info to the driver
-      else if (answer === "yes" && rideInfo[0].driver_id !== null) {
-        console.log("Closed Ride",rideInfo[0].driver_id)
-        sms
-          .getRideRequest()
-          .then(request => {
-            // FRONT LINE TEXT
-            let message = `Sorry, this request is closed already`;
-            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
-            res.status(200).json({ message: "request is closed already" });
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-          });
-      }
-      
+      // if the driver misspells yes or no
       else if (answer !== "yes" || answer !== "no") {
         sms
           .getRideRequest()
