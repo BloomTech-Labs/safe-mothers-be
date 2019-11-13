@@ -10,7 +10,7 @@ exports.seed = function(knex) {
       },
       {
         mother_id: 2,
-        driver_id: 2,
+        driver_id: 5,
         initiated: '2019-10-27T16:11:56-05:00',
         assigned: true,
         pending:false,

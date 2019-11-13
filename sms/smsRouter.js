@@ -131,7 +131,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
         village: result[0].id,
         phone_number: phone_number
       };
-      
+
       Mothers.updateMother(motherId, mothers_data)
         .then(mother => {
           let message =
@@ -259,6 +259,7 @@ router.post(
 
               let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
               console.log(message);
               console.log(driverMessage)
               res.status(200).json(request);
@@ -268,6 +269,7 @@ router.post(
               let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`
 
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
               console.log(driverMessage)
               console.log(message);
               res.status(200).json(request);
@@ -368,13 +370,20 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
 
   console.log("Driver id", driverId)
   
-  sms.updatePendingRequest(answer, data).then(check => {
+  sms.updatePendingRequest(answer, data)
+  .then(check => {
     console.log("update pending", check)
     res.status(200).json({message: "Ride Updated"})
   })
     .catch(err => console.log(err));
 
-  sms.updateDriverAvailability(driverId, {availability: true}).then(check => console.log(check)).catch(err => console.log(err));
+  sms.updateDriverAvailability(driverId, {availability: true})
+  .then(check => {
+    console.log(check)
+    let message = `Ride completed. Thank You.`
+    smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+  })
+  .catch(err => console.log(err));
 })
 
 
