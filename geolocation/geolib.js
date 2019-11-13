@@ -25,14 +25,13 @@ async function geoLocation(motherVillageId){
     let availableDriversArray = [];
     distance.map( driver => {
       //If testing in localhost, boolean value must be set to 1. Otherwise in heroku the value must be set to true
-      if(driver.availability === true) {
+      if(driver.availability === 1) {
       return availableDriversArray.push(driver)
     }
     })
-    console.log("Available Drivers Array",availableDriversArray)
     // Now we use geolib to find The nearest driver that is available.
     let getNearest = geolib.findNearest(mothersArray[0], availableDriversArray)
-    console.log("Find Nearest",getNearest)
+
     return getNearest
 }
 
