@@ -363,7 +363,7 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
   .then(check => {
     console.log(check)
     let message = `Ride completed. Thank You.`
-    smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+    smsFunctions.sendDataToFrontlineSMS(message, phone);
   })
   .catch(err => console.log(err));
 })
