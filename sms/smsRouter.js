@@ -305,7 +305,7 @@ router.post(
           // let messageForMother = `Request has been received. Waiting for boda response.`;
           // smsFunctions.sendDataToFrontlineSMS(messageForMother, motherInfo[0].phone_number);
           console.log("*No response",message);
-          console.log("*No response",messageForMother);
+          // console.log("*No response",messageForMother);
           res.status(200).json(request);
         })
         .catch(err => console.log(err));
