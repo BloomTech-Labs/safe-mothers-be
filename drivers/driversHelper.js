@@ -20,6 +20,7 @@ function getDrivers() {
 function getDriverById(id) {
   return db("drivers")
   .where({ id })
+  .first()
 }
 
 function updateDriver(id, data) {
