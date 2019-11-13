@@ -36,7 +36,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     //if she is registered:
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherVillageId = registered[0].village;
-      
+
       // search for the nearest driver by geoLocation()
       let drivers = await geo.geoLocation(motherVillageId);
       console.log("drivers", await drivers)
@@ -208,7 +208,7 @@ router.get("/mothers/selection", async (req, res) => {
       .then(mother => {
         let message = `You are now registered! Please press 911 to call for a boda`;
         console.log(message);
-        // smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+        smsFunctions.sendDataToFrontlineSMS(message, phone_number);
         res.status(202).json(mother);
       })
       .catch(err => {
