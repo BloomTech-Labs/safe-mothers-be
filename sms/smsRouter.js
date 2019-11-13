@@ -304,22 +304,22 @@ router.post(
         })
         .catch(err => console.log(err));
       }
-      // if the driver misspells yes or no
-      else if (answer !== "yes" || answer !== "no") {
-        sms
-          .getRideRequest()
-          .then(request => {
-            let message = `Something is wrong please send your response: answer requestID (example: yes 12)`;
-            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
-            res
-              .status(200)
-              .json({ message: "Something is wrong with your response" });
-          })
-          .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-          });
-      }
+      // // if the driver misspells yes or no
+      // else if (answer !== "yes" || answer !== "no") {
+      //   sms
+      //     .getRideRequest()
+      //     .then(request => {
+      //       let message = `Something is wrong please send your response: answer requestID (example: yes 12)`;
+      //       smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+      //       res
+      //         .status(200)
+      //         .json({ message: "Something is wrong with your response" });
+      //     })
+      //     .catch(err => {
+      //       console.log(err);
+      //       res.status(500).json(err);
+      //     });
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -363,7 +363,7 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
   .then(check => {
     console.log(check)
     let message = `Ride completed. Thank You.`
-    smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+    smsFunctions.sendDataToFrontlineSMS(message, phone);
   })
   .catch(err => console.log(err));
 })
