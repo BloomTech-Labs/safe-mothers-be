@@ -36,8 +36,8 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
     //if she is registered:
     if (registered && registered.length !== 0 && registered !== undefined) {
       let motherVillageId = registered[0].village;
+
       // search for the nearest driver by geoLocation()
-      // let drivers = await sms.findDriver(motherVillageId);
       let drivers = await geo.geoLocation(motherVillageId);
       console.log("drivers", await drivers)
       let motherId = registered[0].id;
@@ -286,11 +286,31 @@ router.post(
           availability: false
       
         };
-        console.log("No",update)
-        //The No trigger does not work: TypeError: Cannot read property 'then' of undefined  ---> need to push changes
-        // sms.addDriverRideRequest(rideId, rideUpdate)
-        smsFunctions.changeDriverAvailability(driverId, update).then(res => res.status(200).json({message: "done"})).catch(err => console.log(err));
+    
+        smsFunctions.changeDriverAvailability(driverId, update);
+        
+        console.log("new driver mothers",villageId.id)
+        let newDriver = await geo.geoLocation(villageId.id);
+        let updateRide = {
+          driver_id:newDriver.id,
+          initiated:  moment().format()
+        }
+    
+        sms.addDriverRideRequest(rideId, updateRide)
+        .then(request => {
+          /** Need to do the 5 minutes response time filter */
+          let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${rideId}. To confirm type "yes/no pickupID" (example: yes 12)`;
+          smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
+        
+          let messageForMother = `Request has been received. Waiting for boda response.`;
+          smsFunctions.sendDataToFrontlineSMS(messageForMother, motherInfo[0].phone_number);
+          console.log("*No response",message);
+          console.log("*No response",messageForMother);
+          res.status(200).json(request);
+        })
+        .catch(err => console.log(err));
       }
+
       //This is looping on sms
       // if the driver choose yes but the ride table is complete already send info to the driver
       else if (answer === "yes" && rideInfo[0].driver_id !== null) {
