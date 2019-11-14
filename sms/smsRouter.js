@@ -317,25 +317,25 @@ router.get("/drivers/reassign", async (req, res) => {
 // Ride Completion
 router.put("/ride/completion/:phone/:answer", async (req, res) => {
   try {
+    let { phone } = req.params;
+    let answer = req.params.answer;
+
+    let driver = await sms.findDriverPhone({ phone });
+
+    let driverId = driver[0].id;
+
+    let data = {
+      completed: true,
+      ended: moment().format()
+    };
+
+    console.log("Driver id", driverId);
+
     if (rideInfo.driver_id !== driverId) {
       let message = `You sent the wrong request id. Please try again!`;
 
       smsFunctions.sendDataToFrontlineSMS(message, phone);
     } else {
-      let { phone } = req.params;
-      let answer = req.params.answer;
-
-      let driver = await sms.findDriverPhone({ phone });
-
-      let driverId = driver[0].id;
-
-      let data = {
-        completed: true,
-        ended: moment().format()
-      };
-
-      console.log("Driver id", driverId);
-
       sms
         .updatePendingRequest(answer, data)
         .then(check => {
