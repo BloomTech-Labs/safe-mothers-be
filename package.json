@@ -8,7 +8,8 @@
     "test-migrations": "npx knex migrate:latest --env=test",
     "test-seeding": "npx knex seed:run --env=test",
     "server": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
