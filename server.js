@@ -9,6 +9,7 @@ const mothersRouter = require("./mothers/mothersRouter");
 const driversRouter = require("./drivers/driversRouter");
 const labelsRouter = require("./labels/labelsRouter");
 const smsRouter = require("./sms/smsRouter");
+const odkRouter = require("./odk");
 
 const server = express();
 
@@ -21,8 +22,13 @@ server.use("/users", restricted, usersRouter);
 server.use("/mothers", restricted, mothersRouter);
 server.use("/drivers", restricted, driversRouter);
 server.use("/labels", restricted, labelsRouter);
-//Unprotected
+
+//Unprotected Routes
+
+//sms functionality
 server.use("/sms", smsRouter);
+//odk router
+server.use("/odk", odkRouter )
 
 server.get("/", (req, res) => {
   res.json({ api: "safe mothers" });
