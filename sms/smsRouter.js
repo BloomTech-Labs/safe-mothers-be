@@ -31,12 +31,12 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         ended: null,
         completed: false,
         assigned: false,
-        initiated:  moment().format(),
-      
+        initiated: moment().format(),
+
         //This will assign a driver and send a ride request message to that driver. Will change only if the driver does not respond or replies no.
-        driver_id:drivers.id
+        driver_id: drivers.id
       };
-      console.log("Help",data)
+      console.log("Help", data)
       sms
         .addMotherRideRequest(data)
         .then(request => {
@@ -136,7 +136,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
         .then(mother => {
           let message =
             "You are now registered. Please text '911' to request a boda";
-            smsFunctions.sendDataToFrontlineSMS(message, phone_number);
+          smsFunctions.sendDataToFrontlineSMS(message, phone_number);
           res.status(201).json(mother);
         })
         .catch(err => {
@@ -220,12 +220,12 @@ router.post(
       answer = answer.toLowerCase();
       request_id = parseInt(request_id);
 
-      console.log('Driver',phone_number + answer + request_id);
+      console.log('Driver', phone_number + answer + request_id);
 
       let newPhone = { phone: phone_number };
-      
+
       let driverInfo = await sms.findDriverPhone(newPhone);
-      
+
       let rideInfo = await sms.getRideByDriverId(driverInfo[0].id);
       //Getting the mother info to send to driver through sms
       let motherInfo = await Mothers.getMotherForDriver(rideInfo[0].mother_id);
@@ -245,7 +245,7 @@ router.post(
       if (answer === "yes") {
         sms
           .addDriverRideRequest(rideId, updateRide)
-          .then( async request => {
+          .then(async request => {
             //change drivers availability to false so they will not be added to another ride request
             let update = {
               availability: false,
@@ -277,49 +277,33 @@ router.post(
           })
           .catch(err => console.log(err));
       }
-      // if the driver texts no the, availability value will be false so we don't text them again ---> ? how do we change their availability back to true?
+      // if the driver texts no the, availability value will be false so we don't text them again. 
       else if (answer === "no") {
         let update = {
           availability: false
         };
-  
+
         await sms.updateDriverAvailability(driverId, update);
-        
-        console.log("new driver mothers",villageId.id)
+
+        console.log("new driver mothers", villageId.id)
         let newDriver = await geo.geoLocation(villageId.id);
         let updateRide = {
-          driver_id:newDriver.id,
-          initiated:  moment().format()
+          driver_id: newDriver.id,
+          initiated: moment().format()
         }
-    
+
         sms.addDriverRideRequest(rideId, updateRide)
-        .then(request => {
-          
-          let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${rideId}. To confirm type "yes/no pickupID" (example: yes 12)`;
-          smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
-      
-          console.log("*No response",message);
-          
-          res.status(200).json(request);
-        })
-        .catch(err => console.log(err));
+          .then(request => {
+
+            let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${rideId}. To confirm type "yes/no pickupID" (example: yes 12)`;
+            smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
+
+            console.log("*No response", message);
+
+            res.status(200).json(request);
+          })
+          .catch(err => console.log(err));
       }
-      // // if the driver misspells yes or no
-      // else if (answer !== "yes" || answer !== "no") {
-      //   sms
-      //     .getRideRequest()
-      //     .then(request => {
-      //       let message = `Something is wrong please send your response: answer requestID (example: yes 12)`;
-      //       smsFunctions.sendDataToFrontlineSMS(message, phone_number);
-      //       res
-      //         .status(200)
-      //         .json({ message: "Something is wrong with your response" });
-      //     })
-      //     .catch(err => {
-      //       console.log(err);
-      //       res.status(500).json(err);
-      //     });
-      // }
     } catch (error) {
       console.log(error);
     }
@@ -328,51 +312,59 @@ router.post(
 
 router.get("/drivers/reassign", async (req, res) => {
   sms.reassignFailedRides()
-  .then(rides => {
-    return res.status(200).json({ message: "Ride Check Complete"});
-  });
+    .then(rides => {
+      return res.status(200).json({ message: "Ride Check Complete" });
+    });
 })
 
 // Ride Completion
 router.put("/ride/completion/:phone/:answer", async (req, res) => {
-;
-  let {phone} = req.params;
-  let answer = req.params.answer;
+  try {
+    let { phone } = req.params;
+    let answer = req.params.answer;
 
-  console.log(phone, answer);
-  
-  let driver = await sms.findDriverPhone({phone});
+    let driver = await sms.findDriverPhone({ phone });
 
-  let driverId = driver[0].id;
+    let driverId = driver[0].id;
 
-  let data = {
-    completed: true,
-    ended: moment().format()
+    let data = {
+      completed: true,
+      ended: moment().format()
+    }
+
+    console.log("Driver id", driverId)
+
+    sms.updatePendingRequest(answer, data)
+      .then(check => {
+        console.log("update pending", check)
+        res.status(200).json({ message: "Ride Updated" })
+      })
+      .catch(err => console.log(err));
+
+    sms.updateDriverAvailability(driverId, { availability: true })
+      .then(check => {
+
+        let message = `Ride completed. Thank You.`
+        smsFunctions.sendDataToFrontlineSMS(message, phone);
+      })
+      .catch(err => console.log(err));
+
+    let rideInfo = await sms.checkRideRequest({ id: answer });
+
+    if (rideInfo.driver_id !== driverId) {
+      let message = `You sent the wrong request id. Please try again!`;
+      smsFunctions.sendDataToFrontlineSMS(message, phone);
+    }
+  } catch (err) {
+    console.log(err);
   }
-
-  console.log("Driver id", driverId)
-  
-  sms.updatePendingRequest(answer, data)
-  .then(check => {
-    console.log("update pending", check)
-    res.status(200).json({message: "Ride Updated"})
-  })
-    .catch(err => console.log(err));
-
-  sms.updateDriverAvailability(driverId, {availability: true})
-  .then(check => {
-    console.log(check)
-    let message = `Ride completed. Thank You.`
-    smsFunctions.sendDataToFrontlineSMS(message, phone);
-  })
-  .catch(err => console.log(err));
 })
 
 
 // updating driver online/offline status
 router.put("/checkonline/:phone_number/:answer", (req, res) => {
-
-  let {phone_number} = req.params;
+  
+  let { phone_number } = req.params;
   let answer = req.params.answer.toLowerCase();
   if (answer === "online") {
     sms
