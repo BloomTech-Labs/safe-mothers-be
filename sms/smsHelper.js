@@ -112,7 +112,7 @@ function getVillageById(data) {
 }
 
 
-//** Chris-branch **//
+
 
 // In order to do what we need to do, we have to go through a long chain of synchronous
 // queries and updates
