@@ -324,6 +324,8 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
 
     let driverId = driver[0].id;
 
+    let rideInfo = await sms.checkRideRequest({ id: answer });
+
     let data = {
       completed: true,
       ended: moment().format()
@@ -352,7 +354,6 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
         })
         .catch(err => console.log(err));
 
-      let rideInfo = await sms.checkRideRequest({ id: answer });
     }
   } catch (err) {
     console.log(err);
