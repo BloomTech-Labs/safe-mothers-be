@@ -112,8 +112,6 @@ function getVillageById(data) {
 }
 
 
-
-
 // In order to do what we need to do, we have to go through a long chain of synchronous
 // queries and updates
 
@@ -125,7 +123,6 @@ function reassignFailedRides() {
   return (
     db('rides')
       .where({ completed: false, assigned: false})
-
       // this is where we check if the initiated at time is over 5 minutes ago
       .andWhere(
         'initiated',
@@ -187,9 +184,7 @@ function reassignFailedRides() {
                           console.log(' 4', m[0].village);
                           const mom = m[0].village;
                           return mom;
-                          
                         })
-                  
                         .then((mom) => geo.geoLocation(mom))
                         // restarts the rides
                         .then(driver => {
