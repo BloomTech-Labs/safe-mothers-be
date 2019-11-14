@@ -1,11 +1,9 @@
-const sms = require("./smsHelper");
 const axios = require("axios");
 
 // SMS Functions
 module.exports = {
     removeSpecialChar,
-    sendDataToFrontlineSMS,
-    changeDriverAvailability
+    sendDataToFrontlineSMS
 }
 
 function removeSpecialChar(num) {
@@ -25,11 +23,4 @@ function removeSpecialChar(num) {
     };
     let url = "https://cloud.frontlinesms.com/api/1/webhook";
     axios.post(url, payload);
-  }
-
-  function changeDriverAvailability(id, data) {
-    sms
-      .updateDriverAvailability(id, data)
-      .then(driver => driver)
-      .catch(err => console.log(err));
   }
