@@ -2,11 +2,10 @@ const router = require("express").Router();
 const Mothers = require("../mothers/mothersHelper");
 const Drivers = require("../drivers/driversHelper");
 const sms = require("./smsHelper");
-const smsFunctions = require("./smsFunctions")
+const smsFunctions = require("./smsFunctions");
 const Fuse = require("fuse.js");
-const geo = require('../geolocation/geolib');
-const moment = require('moment');
-
+const geo = require("../geolocation/geolib");
+const moment = require("moment");
 
 /****MOTHERS SMS INTERACTIONS****/
 // 1 ---> HELP
@@ -24,7 +23,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
 
       // search for the nearest driver by geoLocation()
       let drivers = await geo.geoLocation(motherVillageId);
-      console.log("drivers", await drivers)
+      console.log("drivers", await drivers);
       let motherId = registered[0].id;
       let data = {
         mother_id: motherId,
@@ -36,7 +35,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         //This will assign a driver and send a ride request message to that driver. Will change only if the driver does not respond or replies no.
         driver_id: drivers.id
       };
-      console.log("Help", data)
+      console.log("Help", data);
       sms
         .addMotherRideRequest(data)
         .then(request => {
@@ -58,12 +57,10 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
     }
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
   }
 });
-
 
 // 2 ---> REGISTER Mother's Name
 router.get("/mothers/register/name/:phone_number", async (req, res) => {
@@ -162,7 +159,9 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
           .join(", ");
 
         let message =
-          "Please press 914 and the number next to your village name: \n" + message2 + "\n(Example 914  5)";
+          "Please press 914 and the number next to your village name: \n" +
+          message2 +
+          "\n(Example 914  5)";
         //send the information
         console.log(message);
         smsFunctions.sendDataToFrontlineSMS(message, phone_number);
@@ -208,7 +207,6 @@ router.get("/mothers/selection", async (req, res) => {
   }
 });
 
-
 /****DRIVERS SMS INTERACTIONS****/
 
 // DRIVERS RESPONSE TO THE MESSAGE
@@ -220,7 +218,7 @@ router.post(
       answer = answer.toLowerCase();
       request_id = parseInt(request_id);
 
-      console.log('Driver', phone_number + answer + request_id);
+      console.log("Driver", phone_number + answer + request_id);
 
       let newPhone = { phone: phone_number };
 
@@ -248,7 +246,7 @@ router.post(
           .then(async request => {
             //change drivers availability to false so they will not be added to another ride request
             let update = {
-              availability: false,
+              availability: false
             };
 
             await sms.updateDriverAvailability(driverId, update);
@@ -257,27 +255,27 @@ router.post(
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
 
-              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`
+              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`;
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
               console.log(message);
-              console.log(driverMessage)
+              console.log(driverMessage);
               res.status(200).json(request);
             } else {
               let message = `Please pick up ${motherInfo[0].name}. Her village is ${villageInfo[0].name} and her phone number is ${motherInfo[0].phone_number}`;
 
-              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`
+              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`;
 
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
-              console.log(driverMessage)
+              console.log(driverMessage);
               console.log(message);
               res.status(200).json(request);
             }
           })
           .catch(err => console.log(err));
       }
-      // if the driver texts no the, availability value will be false so we don't text them again. 
+      // if the driver texts no the, availability value will be false so we don't text them again.
       else if (answer === "no") {
         let update = {
           availability: false
@@ -285,16 +283,16 @@ router.post(
 
         await sms.updateDriverAvailability(driverId, update);
 
-        console.log("new driver mothers", villageId.id)
+        console.log("new driver mothers", villageId.id);
         let newDriver = await geo.geoLocation(villageId.id);
         let updateRide = {
           driver_id: newDriver.id,
           initiated: moment().format()
-        }
+        };
 
-        sms.addDriverRideRequest(rideId, updateRide)
+        sms
+          .addDriverRideRequest(rideId, updateRide)
           .then(request => {
-
             let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${rideId}. To confirm type "yes/no pickupID" (example: yes 12)`;
             smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
 
@@ -311,11 +309,10 @@ router.post(
 );
 
 router.get("/drivers/reassign", async (req, res) => {
-  sms.reassignFailedRides()
-    .then(rides => {
-      return res.status(200).json({ message: "Ride Check Complete" });
-    });
-})
+  sms.reassignFailedRides().then(rides => {
+    return res.status(200).json({ message: "Ride Check Complete" });
+  });
+});
 
 // Ride Completion
 router.put("/ride/completion/:phone/:answer", async (req, res) => {
@@ -330,21 +327,22 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
     let data = {
       completed: true,
       ended: moment().format()
-    }
+    };
 
-    console.log("Driver id", driverId)
+    console.log("Driver id", driverId);
 
-    sms.updatePendingRequest(answer, data)
+    sms
+      .updatePendingRequest(answer, data)
       .then(check => {
-        console.log("update pending", check)
-        res.status(200).json({ message: "Ride Updated" })
+        console.log("update pending", check);
+        res.status(200).json({ message: "Ride Updated" });
       })
       .catch(err => console.log(err));
 
-    sms.updateDriverAvailability(driverId, { availability: true })
+    sms
+      .updateDriverAvailability(driverId, { availability: true })
       .then(check => {
-
-        let message = `Ride completed. Thank You.`
+        let message = `Ride completed. Thank You.`;
         smsFunctions.sendDataToFrontlineSMS(message, phone);
       })
       .catch(err => console.log(err));
@@ -358,12 +356,10 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-})
-
+});
 
 // updating driver online/offline status
 router.put("/checkonline/:phone_number/:answer", (req, res) => {
-  
   let { phone_number } = req.params;
   let answer = req.params.answer.toLowerCase();
   if (answer === "online") {
@@ -391,7 +387,6 @@ router.put("/checkonline/:phone_number/:answer", (req, res) => {
   }
 });
 
-
 /************ CODE BELOW USED TO SEE RESULTS OF CODE ABOVE ************/
 // get all mothers
 router.get("/mothers", (req, res) => {
@@ -418,6 +413,5 @@ router.get("/rides", (req, res) => {
     .then(rides => res.status(200).json(rides))
     .catch(err => res.status(500).json(err));
 });
-
 
 module.exports = router;
