@@ -7,8 +7,6 @@ const Fuse = require("fuse.js");
 const geo = require("../geolocation/geolib");
 const moment = require("moment");
 
-
-
 /****MOTHERS SMS INTERACTIONS****/
 // 1 ---> HELP
 router.get("/mothers/help/:phone_number", async (req, res) => {
@@ -42,6 +40,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .addMotherRideRequest(data)
         .then(request => {
           /** Need to do the 5 minutes response time filter */
+          
           let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
           smsFunctions.sendDataToFrontlineSMS(message, drivers.phone);
 
@@ -336,6 +335,7 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
     if (rideInfo[0].driver_id !== driverId) {
       let message = `You sent the wrong request id. Please try again!`;
       smsFunctions.sendDataToFrontlineSMS(message, phone);
+      res.status(200).json({message: "Driver Texted"});
     } else {
       sms
         .updatePendingRequest(answer, data)
