@@ -317,41 +317,42 @@ router.get("/drivers/reassign", async (req, res) => {
 // Ride Completion
 router.put("/ride/completion/:phone/:answer", async (req, res) => {
   try {
-    let { phone } = req.params;
-    let answer = req.params.answer;
-
-    let driver = await sms.findDriverPhone({ phone });
-
-    let driverId = driver[0].id;
-
-    let data = {
-      completed: true,
-      ended: moment().format()
-    };
-
-    console.log("Driver id", driverId);
-
-    sms
-      .updatePendingRequest(answer, data)
-      .then(check => {
-        console.log("update pending", check);
-        res.status(200).json({ message: "Ride Updated" });
-      })
-      .catch(err => console.log(err));
-
-    sms
-      .updateDriverAvailability(driverId, { availability: true })
-      .then(check => {
-        let message = `Ride completed. Thank You.`;
-        smsFunctions.sendDataToFrontlineSMS(message, phone);
-      })
-      .catch(err => console.log(err));
-
-    let rideInfo = await sms.checkRideRequest({ id: answer });
-
     if (rideInfo.driver_id !== driverId) {
       let message = `You sent the wrong request id. Please try again!`;
+
       smsFunctions.sendDataToFrontlineSMS(message, phone);
+    } else {
+      let { phone } = req.params;
+      let answer = req.params.answer;
+
+      let driver = await sms.findDriverPhone({ phone });
+
+      let driverId = driver[0].id;
+
+      let data = {
+        completed: true,
+        ended: moment().format()
+      };
+
+      console.log("Driver id", driverId);
+
+      sms
+        .updatePendingRequest(answer, data)
+        .then(check => {
+          console.log("update pending", check);
+          res.status(200).json({ message: "Ride Updated" });
+        })
+        .catch(err => console.log(err));
+
+      sms
+        .updateDriverAvailability(driverId, { availability: true })
+        .then(check => {
+          let message = `Ride completed. Thank You.`;
+          smsFunctions.sendDataToFrontlineSMS(message, phone);
+        })
+        .catch(err => console.log(err));
+
+      let rideInfo = await sms.checkRideRequest({ id: answer });
     }
   } catch (err) {
     console.log(err);
