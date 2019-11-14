@@ -36,7 +36,7 @@ function checkRideRequest(data) {
 }
 
 function updatePendingRequest(id, data) {
-  return db("rides").where({ id: id }, data);
+  return db("rides").where({ id: id }).update(data);
 }
 
 //Had to get rid on village_id
@@ -58,8 +58,6 @@ function addMotherRideRequest(data) {
 }
 
 function addDriverRideRequest(id, data) {
-  // console.log("add driver request data", data)
-  // console.log("add driver request id", id)
   return db("rides")
     .where({ id: id })
     .update(data)
@@ -79,18 +77,16 @@ function getRideRequest() {
   return db("rides")
   .select("*");
 }
-// Get Rides by driver Id
 
+// Get Rides by driver Id
 function getRideByDriverId(id) {
   return db("rides")
   .where({driver_id:id, assigned: false})
   .select("*");
 }
 
-
 //Driver status:
 function statusOnline(phoneNumber) {
-  // console.log("Online", phoneNumber);
   return db("drivers")
     .where({ phone: phoneNumber })
     .update({ online: true, availability: true })
@@ -98,7 +94,6 @@ function statusOnline(phoneNumber) {
 }
 
 function statusOffline(phoneNumber) {
-  // console.log("Offline", phoneNumber);
   return db("drivers")
     .where({ phone: phoneNumber })
     .update({ online: false, availability: false })
@@ -116,8 +111,6 @@ function getVillageById(data) {
     .select("id", "name");
 }
 
- 
-      
 
 //** Chris-branch **//
 
@@ -157,10 +150,10 @@ function reassignFailedRides() {
                 failedRides.map(fr => fr.id)
                 // ask how group indicates ride failure
               )
-              .update({ completed: true }); // for now a ride that is completed but has no end time is a failed ride
+              .update({ pending: true }); // for now a ride that is completed but has no end time is a failed ride
           })
-          .then(() => {
-            console.log('second then');
+          .then( (res) => {
+            console.log('Failed Rides completed should be set to true', res);
             // here we query the failed rides again, this will prevent us from leaving previous failed rides
             // if we do a query like this, each time we run our checking script, previously failed rides will
             // have a chance to be assigned a driver
@@ -168,7 +161,7 @@ function reassignFailedRides() {
             // also for situations where there were not enough drivers for moms, they'll have a chance again
             return db('rides')
               .where({
-                completed: true
+                pending: true
               })
               .whereNull('ended')
               .select('*')
@@ -215,7 +208,7 @@ function reassignFailedRides() {
                           return db('rides')
                             .where({ id: fr.id })
                             .update({
-                              completed: false,
+                              pending: false,
                               driver_id: newDriver.id,
                               initiated: moment().format()
                             })
