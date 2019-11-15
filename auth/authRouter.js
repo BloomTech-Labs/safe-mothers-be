@@ -17,7 +17,7 @@ router.post("/register", (req, res) => {
       .status(400)
       .json({ message: `Your first and last name is required to register` });
   }
-
+//
   if (!user.username) {
     return res
       .status(400)
@@ -36,16 +36,17 @@ router.post("/register", (req, res) => {
       res.status(201).json(user);
     })
     .catch(error => {
+      //This 400 stuff needs to be moved into the .then(above)
       usernameTaken =
         "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username";
       if (error.toString().includes(usernameTaken)) {
         return res
           .status(400)
-          .json({ message: `the username ${user.username} is not available` });
+          .json({ message: `the username ${user.username} is already taken.` });
       }
       return res
         .status(500)
-        .json({ message: `error adding new user: ${error}` });
+        .json({ message: `Could not add this user` });
     });
 });
 
@@ -55,7 +56,7 @@ router.post("/login", (req, res) => {
     .then(users => {
       if (users.length === 0) {
         return res.status(404).json({
-          message: `${username} is not registered`,
+          message: `${username} is not a registered user`,
         })
       }
       const user = users[0];
@@ -69,7 +70,7 @@ router.post("/login", (req, res) => {
           token,
         });
       } else {
-        return res.status(401).json({ message: 'wrong password' });
+        return res.status(401).json({ message: 'Incorrect password' });
       }
 
     })
@@ -85,7 +86,6 @@ function generateToken(user) {
     // first_name: user.first_name,
     // last_name: user.last_name,
   };
-  //Don't we want the token to last more than a day?
   const options = {
     expiresIn: "1d"
   };
