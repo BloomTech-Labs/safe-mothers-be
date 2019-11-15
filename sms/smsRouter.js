@@ -257,8 +257,12 @@ router.post(
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
 
               let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (Example:915  3)`;
+
+              let motherMessage = `Your request has been accepted. ${driverInfo[0].driver_name} is on his way to pick you up. `;
+
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, phone_number);
               console.log(message);
               console.log(driverMessage);
               res.status(200).json(request);
@@ -267,8 +271,11 @@ router.post(
 
               let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`;
 
+              let motherMessage = `Your request has been accepted. ${driverInfo[0].driver_name} is on his way to pick you up. `;
+
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, phone_number);
               console.log(driverMessage);
               console.log(message);
               res.status(200).json(request);
