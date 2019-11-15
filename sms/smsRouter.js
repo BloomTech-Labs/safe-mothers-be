@@ -339,10 +339,17 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
       ended: moment().format()
     };
 
-    if (rideInfo[0].driver_id !== driverId || rideInfo === undefined) {
+    if ( rideInfo[0] === null || rideInfo[0] === undefined) {
       let message = `Something went wrong. Please try again!`;
+      console.log("Something went wrong.", message)
       smsFunctions.sendDataToFrontlineSMS(message, phone);
       res.status(200).json({message: "Driver Texted"});
+    } 
+    else if (rideInfo[0].driver_id !== driverId) {
+      console.log('Wrong id')
+      let message = `You sent the wrong ride id, please try again.`;
+      smsFunctions.sendDataToFrontlineSMS(message, phone);
+      res.status(200).json({message: "Driver Texted"})
     } else {
       sms
         .updatePendingRequest(answer, data)
