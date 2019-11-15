@@ -363,7 +363,7 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
         .updateDriverAvailability(driverId, { availability: true })
         .then(check => {
           let message = `Ride completed. Thank You.`;
-          // smsFunctions.sendDataToFrontlineSMS(message, phone);
+          smsFunctions.sendDataToFrontlineSMS(message, phone);
         })
         .catch(err => console.log(err));
 
