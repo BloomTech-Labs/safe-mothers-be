@@ -262,7 +262,7 @@ router.post(
 
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
-              smsFunctions.sendDataToFrontlineSMS(motherMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, motherInfo[0].phone_number);
               console.log(message);
               console.log(driverMessage);
               res.status(200).json(request);
@@ -275,7 +275,7 @@ router.post(
 
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
-              smsFunctions.sendDataToFrontlineSMS(motherMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, motherInfo[0].phone_number);
               console.log(driverMessage);
               console.log(message);
               res.status(200).json(request);
