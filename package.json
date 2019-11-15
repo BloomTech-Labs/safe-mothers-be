@@ -49,7 +49,7 @@
   "devDependencies": {
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
-    "nodemon": "^1.19.3",
+    "nodemon": "^1.19.4",
     "supertest": "^4.0.2"
   }
 }

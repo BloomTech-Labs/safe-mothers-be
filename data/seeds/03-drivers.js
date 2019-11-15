@@ -2,7 +2,7 @@ exports.seed = function(knex) {
   return knex("drivers").insert([
     //please correct the phone numbers of the actual drivers
     {
-      driver_name: "Jade Lopez",
+      driver_name: "Jaden Lopez",
       latitude: "0.8683849999999976",
       longitude: "33.382454999999936",
       phone: "+19093794021",

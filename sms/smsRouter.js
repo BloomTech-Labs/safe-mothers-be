@@ -41,7 +41,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .then(request => {
           /** Need to do the 5 minutes response time filter */
           
-          let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (example: yes 12)`;
+          let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (Example: yes 12)`;
           smsFunctions.sendDataToFrontlineSMS(message, drivers.phone);
 
           let messageForMother = `Request has been received. Waiting for boda response.`;
@@ -53,7 +53,7 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
         .catch(err => console.log(err));
     } else {
       //if mother is not registered, take her through a short registration process to gather he basic info: name, phone number, village:
-      let message = `To register name please type 912 and your name. (example: 912 Abbo Zadzisai)`;
+      let message = `To register name please type 912 and your name. (Example: 912 Abbo Zadzisai)`;
       smsFunctions.sendDataToFrontlineSMS(message, phone_number);
       console.log(message);
       res.status(200).json({ message: "Sent text message to mother" });
@@ -256,9 +256,13 @@ router.post(
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
 
-              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`;
+              let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (Example:915  3)`;
+
+              let motherMessage = `Your request has been accepted. ${driverInfo[0].driver_name} is on his way to pick you up. `;
+
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, motherInfo[0].phone_number);
               console.log(message);
               console.log(driverMessage);
               res.status(200).json(request);
@@ -267,8 +271,11 @@ router.post(
 
               let driverMessage = `When this ride is finished please text 915 and the request id ${request_id}. (example:915  3)`;
 
+              let motherMessage = `Your request has been accepted. ${driverInfo[0].driver_name} is on his way to pick you up. `;
+
               smsFunctions.sendDataToFrontlineSMS(message, phone_number);
               smsFunctions.sendDataToFrontlineSMS(driverMessage, phone_number);
+              smsFunctions.sendDataToFrontlineSMS(motherMessage, motherInfo[0].phone_number);
               console.log(driverMessage);
               console.log(message);
               res.status(200).json(request);
@@ -332,10 +339,17 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
       ended: moment().format()
     };
 
-    if (rideInfo[0].driver_id !== driverId) {
-      let message = `You sent the wrong request id. Please try again!`;
+    if ( rideInfo[0] === null || rideInfo[0] === undefined) {
+      let message = `Something went wrong. Please try again!`;
+      console.log("Something went wrong.", message)
       smsFunctions.sendDataToFrontlineSMS(message, phone);
       res.status(200).json({message: "Driver Texted"});
+    } 
+    else if (rideInfo[0].driver_id !== driverId) {
+      console.log('Wrong id')
+      let message = `You sent the wrong ride id, please try again.`;
+      smsFunctions.sendDataToFrontlineSMS(message, phone);
+      res.status(200).json({message: "Driver Texted"})
     } else {
       sms
         .updatePendingRequest(answer, data)
