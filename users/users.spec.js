@@ -21,30 +21,30 @@ const credentials = {
     last_name: "admin"
 };
 
-beforeEach(async () => {
-    await db('users').truncate();
-});
+// beforeEach(async () => {
+//     await db('users').truncate();
+// });
 
-describe('users model', () => {
+// // describe('users model', () => {
 
-        it('Should insert the provided user into the db', async () => {
-            const [user] = await users.addUser(origin_user);
-            expect(user.username).toBe(origin_user.username);
-        });
-        it('Should update the provided user in the db', async () => {
-            const [addedUser] = await users.addUser(origin_user);
-            await db('users')
-                .where({id: addedUser.id})
-                .update(update_user);
-            const [user] = await users.findBy({id: addedUser.id});
-            expect(user.username).toMatch(update_user.username);
-        });
-        it('Should delete the provided user in the db', async () => {
-            const [addedUser] = await users.addUser(origin_user);
-            const [user] = await users.findBy({id: addedUser.id});
-            if (user) {
-                const count = await users.deleteUser(addedUser.id);
-                expect(count).toEqual(1);
-            } else return null;
-        })
-});
+//         it('Should insert the provided user into the db', async () => {
+//             const [user] = await users.addUser(origin_user);
+//             expect(user.username).toBe(origin_user.username);
+//         });
+//         it('Should update the provided user in the db', async () => {
+//             const [addedUser] = await users.addUser(origin_user);
+//             await db('users')
+//                 .where({id: addedUser.id})
+//                 .update(update_user);
+//             const [user] = await users.findBy({id: addedUser.id});
+//             expect(user.username).toMatch(update_user.username);
+//         });
+//         it('Should delete the provided user in the db', async () => {
+//             const [addedUser] = await users.addUser(origin_user);
+//             const [user] = await users.findBy({id: addedUser.id});
+//             if (user) {
+//                 const count = await users.deleteUser(addedUser.id);
+//                 expect(count).toEqual(1);
+//             } else return null;
+//         })
+// });
