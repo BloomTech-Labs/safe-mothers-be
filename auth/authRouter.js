@@ -5,7 +5,7 @@ const Users = require("../users/usersHelper");
 const secrets = require("../config/secrets");
 const mw = require('./registerMiddleware')
 
-router.post("/register",  (req, res) => {
+router.post("/register", mw.validateUniqueUsername, (req, res) => {
   let user = req.body;
 
   if (!user) {
@@ -34,7 +34,7 @@ router.post("/register",  (req, res) => {
 
   Users.addUser(user)
     .then(user => {
-      res.status(201).json({message: `${user} successfully created.`});
+      res.status(201).json(user);
     })
     .catch(error => {
       console.log(error)
