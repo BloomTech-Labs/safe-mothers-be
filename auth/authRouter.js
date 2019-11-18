@@ -35,7 +35,7 @@ router.post("/register", mw.validateUniqueUsername, (req, res) => {
 
   Users.addUser(user)
     .then(user => {
-      res.status(201).json(user);
+      res.status(201).json({message: `${user} successfully created.`});
     })
     .catch(error => {
       console.log(error)
