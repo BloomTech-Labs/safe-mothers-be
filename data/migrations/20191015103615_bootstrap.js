@@ -17,7 +17,7 @@ exports.up = function (knex) {
         users.string("password", 255).notNullable();
       })
 
-      //villages
+      //villages --> provided by stake holder. DO NOT CHANGE or ERASE the Village seed data!!
       .createTable("village", village => {
         //pk
         village
@@ -33,7 +33,7 @@ exports.up = function (knex) {
         village.string("longitude", 255).notNullable();
       })
 
-      //drivers--> village_id may need to be put as obsolete. The drivers that I have plotted (only two) seem to be at crossroads that are not connected to a village
+      //drivers --> based off of odk survey form
       .createTable("drivers", drivers => {
         //primary key
         drivers.increments();
@@ -100,7 +100,7 @@ exports.up = function (knex) {
         
       })
 
-      //mothers
+      //mothers-->based off of odk survey form
       .createTable("mothers", mothers => {
         // primary key
         mothers.increments();
@@ -117,10 +117,9 @@ exports.up = function (knex) {
         mothers.integer("current_multip");
         //registration
         mothers.string("name");
-        //data type Date-time?
         mothers.string("edd");
         mothers.integer("age");
-        //FK---> cannot make the name village_id. Will not match data sent from odk
+        //FK
         mothers
           .integer("village")
           .unsigned()
@@ -129,7 +128,6 @@ exports.up = function (knex) {
           .inTable("village")
           .onDelete("CASCADE")
           .onUpdate("CASCADE");
-        //Does this need to be changed to home_village_other. In excel it is: village_other
         mothers.string("village_other");//
         mothers.integer("own_phone");
         mothers.string("other_phone");
@@ -245,7 +243,7 @@ exports.up = function (knex) {
         rides.datetime("ended");
       })
 
-      //scores (Many to many relationship)
+      //scores (Many to many relationship) 
       .createTable("scores", scores => {
         // primary id
         scores.increments();

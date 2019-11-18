@@ -1,11 +1,11 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const Users = require("../users/usersHelper");
 const secrets = require("../config/secrets");
+const mw = require('./registerMiddleware')
 
-router.post("/register", (req, res) => {
+router.post("/register", mw.validateUniqueUsername, (req, res) => {
   let user = req.body;
 
   if (!user) {
@@ -13,6 +13,7 @@ router.post("/register", (req, res) => {
   }
 
   if (!user.first_name && !user.last_name) {
+    console.log("First and last")
     return res
       .status(400)
       .json({ message: `Your first and last name is required to register` });
@@ -30,23 +31,15 @@ router.post("/register", (req, res) => {
 
   const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
+  console.log(user)
 
   Users.addUser(user)
     .then(user => {
       res.status(201).json(user);
     })
     .catch(error => {
-      //This 400 stuff needs to be moved into the .then(above)
-      usernameTaken =
-        "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.username";
-      if (error.toString().includes(usernameTaken)) {
-        return res
-          .status(400)
-          .json({ message: `the username ${user.username} is already taken.` });
-      }
-      return res
-        .status(500)
-        .json({ message: `Could not add this user` });
+      console.log(error)
+      return res.status(500).json({ message: `Could not add this user` });
     });
 });
 
