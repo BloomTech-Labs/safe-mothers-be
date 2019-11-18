@@ -5,7 +5,7 @@ const Users = require("../users/usersHelper");
 const secrets = require("../config/secrets");
 const mw = require('./registerMiddleware')
 
-router.post("/register", mw.validateUniqueUsername, (req, res) => {
+router.post("/register",  (req, res) => {
   let user = req.body;
 
   if (!user) {
@@ -31,7 +31,6 @@ router.post("/register", mw.validateUniqueUsername, (req, res) => {
 
   const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
-  console.log(user)
 
   Users.addUser(user)
     .then(user => {
