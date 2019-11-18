@@ -31,7 +31,7 @@ server.use("/sms", smsRouter);
 // server.use("/odk", odkRouter);
 
 server.get("/", (req, res) => {
-  res.json({ api: "safe mothers" });
+  res.status(200).json({ api: "safe mothers" });
 });
 
 module.exports = server;

@@ -1,6 +1,6 @@
 const db = require("../data/dbConfig");
 const geo = require("../geolocation/geolib");
-const moment = require('moment');
+const moment = require("moment");
 const smsFunctions = require("./smsFunctions");
 const Mothers = require("../mothers/mothersHelper");
 
@@ -22,7 +22,6 @@ module.exports = {
   statusOffline
 };
 
-
 function checkMotherRegistration(number) {
   return db("mothers")
     .where({ phone_number: number })
@@ -36,7 +35,9 @@ function checkRideRequest(data) {
 }
 
 function updatePendingRequest(id, data) {
-  return db("rides").where({ id: id }).update(data);
+  return db("rides")
+    .where({ id: id })
+    .update(data);
 }
 
 //Had to get rid on village_id
@@ -74,15 +75,14 @@ function updateDriverAvailability(id, data) {
 
 /** DON'T TOUCH THIS */
 function getRideRequest() {
-  return db("rides")
-  .select("*");
+  return db("rides").select("*");
 }
 
 // Get Rides by driver Id
 function getRideByDriverId(id) {
   return db("rides")
-  .where({driver_id:id, assigned: false})
-  .select("*");
+    .where({ driver_id: id, assigned: false })
+    .select("*");
 }
 
 //Driver status:
@@ -111,7 +111,6 @@ function getVillageById(data) {
     .select("id", "name");
 }
 
-
 // In order to do what we need to do, we have to go through a long chain of synchronous
 // queries and updates
 
@@ -121,75 +120,74 @@ function reassignFailedRides() {
   // it isn't completed, it's assigned, and it was initiated longer than 5 minutes
   // ago
   return (
-    db('rides')
-      .where({ completed: false, assigned: false})
+    db("rides")
+      .where({ completed: false, assigned: false })
       // this is where we check if the initiated at time is over 5 minutes ago
       .andWhere(
-        'initiated',
-        '<',
+        "initiated",
+        "<",
         moment()
-        .subtract(5, 'minutes')
-        .format()
+          .subtract(5, "minutes")
+          .format()
       )
-      .select('id', 'mother_id', 'driver_id')
+      .select("id", "mother_id", "driver_id")
       .then(failedRides => {
         // go through the failed rides, mark their drivers as availability: false,
         // mark the ride as failed ( completed: true, but null for ended time)
-        console.log('FAILED RIDES', failedRides.length);
-        return db('drivers')
-          .whereIn('id', failedRides.map(fr => fr.driver_id))
+        console.log("FAILED RIDES", failedRides.length);
+        return db("drivers")
+          .whereIn("id", failedRides.map(fr => fr.driver_id))
           .update({ availability: false })
           .then(() => {
-            console.log('Did it make it here', failedRides.map(fr => fr.id));
-            return db('rides')
+            console.log("Did it make it here", failedRides.map(fr => fr.id));
+            return db("rides")
               .whereIn(
-                'id',
+                "id",
                 failedRides.map(fr => fr.id)
                 // ask how group indicates ride failure
               )
               .update({ pending: true }); // for now a ride that is completed but has no end time is a failed ride
           })
-          .then( (res) => {
-            console.log('Failed Rides completed should be set to true', res);
+          .then(res => {
+            console.log("Failed Rides completed should be set to true", res);
             // here we query the failed rides again, this will prevent us from leaving previous failed rides
             // if we do a query like this, each time we run our checking script, previously failed rides will
             // have a chance to be assigned a driver
 
             // also for situations where there were not enough drivers for moms, they'll have a chance again
-            return db('rides')
+            return db("rides")
               .where({
                 pending: true
               })
-              .whereNull('ended')
-              .select('*')
+              .whereNull("ended")
+              .select("*")
               .then(freshFailedRides => {
-                console.log(' 3');
+                console.log(" 3");
                 // create a promise chain of unknown length, build it through a for loop,
                 // then start it at the end of that loop.
-                console.log('FreshFailed', freshFailedRides.length);
+                console.log("FreshFailed", freshFailedRides.length);
                 // this is one way to synchronously run an unknown number of promises
                 let chain = Promise.resolve();
                 freshFailedRides.forEach(fr => {
                   console.log("Failed Rides Info", fr);
                   //losing the data. undefined
-                  return (
-                  chain = chain.then(res  => {
-                    console.log("failed rides res", res)
+                  return (chain = chain.then(res => {
+                    console.log("failed rides res", res);
                     return (
-                      //Obsolete???? 
+                      //Obsolete????
                       // reAssignMothers(fr)
-                      db('mothers')
+                      db("mothers")
                         .where({ id: fr.mother_id })
                         .then(m => {
-                          console.log(' 4', m[0].village);
+                          console.log(" 4", m[0].village);
                           const mom = m[0].village;
                           return mom;
                         })
-                        .then((mom) => geo.geoLocation(mom))
+                        .then(mom => geo.geoLocation(mom))
                         // restarts the rides
                         .then(driver => {
                           const newDriver = driver;
-                          console.log("New Driver",newDriver)
+                          console.log("New Driver", newDriver);
                           // bail out if there aren't any drivers available
                           // this mom will have another chance when the script runs again
                           if (newDriver === undefined) {
@@ -200,23 +198,26 @@ function reassignFailedRides() {
                           // to re-initiated
 
                           // also update the driver's availability to false
-                          return db('rides')
+                          return db("rides")
                             .where({ id: fr.id })
                             .update({
                               pending: false,
                               driver_id: newDriver.id,
                               initiated: moment().format()
                             })
-                            
-                            .then(async ()  => {
+
+                            .then(async () => {
                               // Here you would also send an SMS to tell this driver he has a new ride
                               // console.log("Finding mother's number", fr.mother_id)
                               // let motherPhone = await Mothers.getMotherForDriver(fr.mother_id)
                               // console.log(motherPhone)
                               let message = `${newDriver.driver_name}, you have a pending pickup request id of  ${fr.id}. To confirm type "yes/no pickupID" (example: yes 12)`;
-                              smsFunctions.sendDataToFrontlineSMS(message, newDriver.phone);
+                              smsFunctions.sendDataToFrontlineSMS(
+                                message,
+                                newDriver.phone
+                              );
 
-                              return db('drivers')
+                              return db("drivers")
                                 .where({ id: newDriver.id })
                                 .update({
                                   availability: false
@@ -224,8 +225,7 @@ function reassignFailedRides() {
                             });
                         })
                     );
-                  })
-                  )
+                  }));
                 });
                 return chain;
               });
@@ -233,5 +233,3 @@ function reassignFailedRides() {
       })
   );
 }
-
-

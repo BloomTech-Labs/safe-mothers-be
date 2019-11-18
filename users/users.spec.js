@@ -1,26 +1,57 @@
-const db = require('../data/dbConfig');
-const users = require('./usersHelper');
-const server = require('../server');
-const request = require('supertest');
+const db = require("../data/dbConfig");
+const users = require("./usersHelper");
+const server = require("../server");
+const request = require("supertest");
 const origin_user = {
-    username: "krik13333",
-    password: "krik13333",
-    first_name: "Sasha",
-    last_name: "Foksman",
+  username: "krik13333",
+  password: "krik13333",
+  first_name: "Sasha",
+  last_name: "Foksman"
 };
 const update_user = {
-    username: "krik16666",
-    password: "krik",
-    first_name: "Sasha11",
-    last_name: "Foksman11",
+  username: "krik16666",
+  password: "krik",
+  first_name: "Sasha11",
+  last_name: "Foksman11"
 };
 const credentials = {
-    username: "admin",
-    password: "$2a$10$/WnLCgLRsGG701RF7Lj2..Y1S9p1Sfz8G1F6oZmZ65ve63P8Jp/BK",
-    first_name: "admin",
-    last_name: "admin"
+  username: "admin",
+  password: "$2a$10$/WnLCgLRsGG701RF7Lj2..Y1S9p1Sfz8G1F6oZmZ65ve63P8Jp/BK",
+  first_name: "admin",
+  last_name: "admin"
 };
 
+let token;
+
+beforeAll(done => {
+  request(server)
+    .post("/auth/login")
+    .send(credentials)
+    .end((err, response) => {
+      token = response.body.token; // save the token!
+      done();
+    });
+});
+
+describe("GET /users", () => {
+  test("It should require authorization", async () => {
+    let response = await request(server).get("/users");
+    expect(response.statusCode).toBe(400);
+  });
+});
+
+describe("GET /users", () => {
+  test("it responds with JSON", async () => {
+    let response = await request(server)
+      .get("/users")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.type).toBe("application/json");
+  });
+});
+
+describe("UPDATE /users");
+
+/*** TO BE REVIEWED AFTER PRESENTATION */
 // beforeEach(async () => {
 //     await db('users').truncate();
 // });
