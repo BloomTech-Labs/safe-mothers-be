@@ -13,6 +13,7 @@ function removeSpecialChar(num) {
   }
   
   /** MAKE SURE YOU HAVE THE .env FILE */
+  //This allows us to trigger and send messages to Frontline Api
   function sendDataToFrontlineSMS(message, phone_number) {
     let payload = {
       apiKey: process.env.FRONTLINE_KEY,
