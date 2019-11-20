@@ -7,11 +7,16 @@ const Fuse = require("fuse.js");
 const geo = require("../geolocation/geolib");
 const moment = require("moment");
 
+/*
+ All numerical values (ie 911, 912), are used as triggers for the sms Frontline app.
+ All messages need to be translated to Lusoga. See PVD for Word doc with all messages that can be sent to stakeholder for translation.
+ */
+
 /****MOTHERS SMS INTERACTIONS****/
-// 1 ---> HELP
+// 1 ---> HELP: mother will use 911 to trigger the Frontline app to send a ride request
 router.get("/mothers/help/:phone_number", async (req, res) => {
   try {
-    // get the phone number from the link
+    // get the phone number from the route 
     let { phone_number } = req.params;
 
     // check if mother is registered
@@ -39,11 +44,11 @@ router.get("/mothers/help/:phone_number", async (req, res) => {
       sms
         .addMotherRideRequest(data)
         .then(request => {
-          /** Need to do the 5 minutes response time filter */
-          
+         //message sent to driver using driverId
           let message = `${drivers.driver_name}, you have a pending pickup request id of  ${request}. To confirm type "yes/no pickupID" (Example: yes 12)`;
           smsFunctions.sendDataToFrontlineSMS(message, drivers.phone);
-
+          
+          //message to mother to let them know that the ride request has been sent to a driver
           let messageForMother = `Request has been received. Waiting for boda response.`;
           smsFunctions.sendDataToFrontlineSMS(messageForMother, phone_number);
           console.log(message);
@@ -85,6 +90,7 @@ router.get("/mothers/register/name/:phone_number", async (req, res) => {
           res.status(201).json(mother);
         })
         .catch(err => console.log(err));
+
     } else if (registered.length !== 0) {
       let message = `To register your village, type 913 and your village name. (Example: 913 Iganga)`;
       smsFunctions.sendDataToFrontlineSMS(message, phone_number);
@@ -129,7 +135,7 @@ router.get("/mothers/register/villageName/:phone_number", async (req, res) => {
         village: result[0].id,
         phone_number: phone_number
       };
-
+      //send mother to start of process to request a boda
       Mothers.updateMother(motherId, mothers_data)
         .then(mother => {
           let message =
@@ -215,6 +221,7 @@ router.post(
   "/drivers/assign/:phone_number/:answer/:request_id",
   async (req, res) => {
     try {
+      //grab driver and ride request information from route
       let { answer, request_id, phone_number } = req.params;
       answer = answer.toLowerCase();
       request_id = parseInt(request_id);
@@ -252,7 +259,7 @@ router.post(
 
             await sms.updateDriverAvailability(driverId, update);
 
-            // send mothers information to driver & a text on how to complete a ride. This will allow for their availability to change to true
+            // Send mothers information to driver & a text on how to complete a ride. This will allow for their availability to change to true
             if (motherInfo[0].name === null) {
               let message = `Emergency pickup request. Mother number is ${motherInfo[0].phone_number} and her village is ${villageInfo[0].name}`;
 
@@ -283,7 +290,7 @@ router.post(
           })
           .catch(err => console.log(err));
       }
-      // if the driver texts no the, availability value will be false so we don't text them again.
+      // if the driver texts no the, availability value will be false so we don't text them again. Need to figure out how to change this after we find a new driver. Otherwise their availability will stay false and they won't be pinged
       else if (answer === "no") {
         let update = {
           availability: false
@@ -316,6 +323,8 @@ router.post(
   }
 );
 
+/*This endpoint is used to find an available driver if the previous driver does not respond in 5 minutes.It is pinged by a dyno called "set-time out" on heroku that is run by a checking script. It is currently shut off, and will need to be turned on to see this function in action. DON'T FORGOT TO TURN THE DYNO OFF WHEN FINISHED TESTING.*/ 
+
 router.get("/drivers/reassign", async (req, res) => {
   sms.reassignFailedRides().then(rides => {
     return res.status(200).json({ message: "Ride Check Complete" });
@@ -325,6 +334,7 @@ router.get("/drivers/reassign", async (req, res) => {
 // Ride Completion
 router.put("/ride/completion/:phone/:answer", async (req, res) => {
   try {
+    //Find driver and ride data from route
     let { phone } = req.params;
     let answer = req.params.answer;
 
@@ -334,23 +344,27 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
 
     let rideInfo = await sms.checkRideRequest({ id: answer });
 
+    //change ride table data
     let data = {
       completed: true,
       ended: moment().format()
     };
-
+    
+    //If driver types in a ride request id that does not exist and they are not assigned to a ride
     if ( rideInfo[0] === null || rideInfo[0] === undefined) {
       let message = `Something went wrong. Please try again!`;
-      console.log("Something went wrong.", message)
+      console.log("That ride id doesn't exist, please try again.", message)
       smsFunctions.sendDataToFrontlineSMS(message, phone);
       res.status(200).json({message: "Driver Texted"});
     } 
+    //If the driver is assigned to a ride but they texted the wrong id
     else if (rideInfo[0].driver_id !== driverId) {
       console.log('Wrong id')
-      let message = `You sent the wrong ride id, please try again.`;
+      let message = `You sent the wrong request id, please try again.`;
       smsFunctions.sendDataToFrontlineSMS(message, phone);
       res.status(200).json({message: "Driver Texted"})
     } else {
+      //If all texted information is correct updated the ride request "completed" to true, give "ended" a timestamp, and change the drivers availability.
       sms
         .updatePendingRequest(answer, data)
         .then(check => {
@@ -373,7 +387,7 @@ router.put("/ride/completion/:phone/:answer", async (req, res) => {
   }
 });
 
-// updating driver online/offline status
+// updating driver online/offline status (clocking in/out)
 router.put("/checkonline/:phone_number/:answer", (req, res) => {
   let { phone_number } = req.params;
   let answer = req.params.answer.toLowerCase();

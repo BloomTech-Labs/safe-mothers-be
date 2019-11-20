@@ -195,8 +195,8 @@ exports.seed = function(knex) {
     {
       id: 99,
       name:"Other",
-      latitude:"1.850",
-      longitude: "50.25",
+      latitude:"",
+      longitude: "",
     }
   ]);
 };

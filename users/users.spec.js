@@ -49,8 +49,6 @@ describe("GET /users", () => {
   });
 });
 
-describe("UPDATE /users");
-
 /*** TO BE REVIEWED AFTER PRESENTATION */
 // beforeEach(async () => {
 //     await db('users').truncate();

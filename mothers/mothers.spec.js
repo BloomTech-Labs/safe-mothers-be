@@ -1,11 +1,10 @@
-const request = require('supertest'); // calling it "request" is a common practice
+const request = require("supertest"); // calling it "request" is a common practice
 // const request = supertest(server)
-const server = require('../server') // Link to your server file
-const mothers = require('../mothers/mothers.spec.js')
-const knex = require('knex');
-const knexConfig = require('../knexfile.js');
-const db = knex(knexConfig.development)
-
+const server = require("../server"); // Link to your server file
+const mothers = require("../mothers/mothers.spec.js");
+const knex = require("knex");
+const knexConfig = require("../knexfile.js");
+const db = knex(knexConfig.development);
 
 // const supertest = require('supertest')
 /*
@@ -14,12 +13,19 @@ const db = knex(knexConfig.development)
   and the following JSON object: `{ api: 'running' }`.
 */
 
-describe('server.js', () => {
+const credentials = {
+  username: "admin",
+  password: "$2a$10$/WnLCgLRsGG701RF7Lj2..Y1S9p1Sfz8G1F6oZmZ65ve63P8Jp/BK",
+  first_name: "admin",
+  last_name: "admin"
+};
+
+describe("server.js", () => {
   // http calls made with supertest return promises, we can use async/await if desired
-  describe('index route', () => {
-    it('should return a a 400 for restricted route (page not found)', async () => {
+  describe("index route", () => {
+    it("should return a a 400 for restricted route (page not found)", async () => {
       // do a get request to our api (server.js) and inspect the response
-      const response = await request(server).get('/users');
+      const response = await request(server).get("/mothers");
       expect(response.status).toBe(400);
 
       // same test using promise .then() instead of async/await
@@ -39,13 +45,12 @@ describe('server.js', () => {
     //       expect(res.status).toBe(200)
     //     })
 
-
-    //   }) 
+    //   })
     // })
-    
+
     // This test fails because 1 !== 2
-    it('Testing to see if Jest works', () => {
-      expect(1).toBe(1)
-    }) 
+    it("Testing to see if Jest works", () => {
+      expect(1).toBe(1);
+    });
   });
 });
