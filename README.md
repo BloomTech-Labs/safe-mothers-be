@@ -1,12 +1,7 @@
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
-
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by.  Make sure to delete the numbers by the end of Labs.
-
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric.  Contributing to docs does NOT count as a PR to meet your weekly requirements.
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+#### Backend delpoyed at [Heroku](https://production-fe-labs17-safe.herokuapp.com/) <br>
 
 ## Getting started
 
@@ -131,8 +126,9 @@ For the following reasons:
 ## DB Helpers
 
 ### Mothers
-
-`getMothers()` -> Returns all mothers
+|Helper         | description |
+|---------------|-------------|
+|`getMothers()` | Returns all mothers |
 
 `getMotherById(id)` -> Returns a single mother by ID
 
@@ -160,13 +156,12 @@ For the following reasons:
 <br>
 
 
-## 3️⃣ Environment Variables
+## Environment Variables
 
 In order for the app to function correctly, the user must set up their own environment variables.
 
 create a .env file that includes the following:
 
-🚫 These are just examples, replace them with the specifics for your app
     
     *  STAGING_DB - optional development db for using functionality not available in SQLite
     *  NODE_ENV - set to "development" until ready for "production"
@@ -212,5 +207,4 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+See [Frontend Documentation](https://github.com/Lambda-School-Labs/safe-mothers-fe/blob/master/README.md) for details on the fronend of our project.
