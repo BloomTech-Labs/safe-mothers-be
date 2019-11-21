@@ -9,7 +9,7 @@ const mothersRouter = require("./mothers/mothersRouter");
 const driversRouter = require("./drivers/driversRouter");
 const labelsRouter = require("./labels/labelsRouter");
 const smsRouter = require("./sms/smsRouter");
-// const odkRouter = require("./odk/odkrouter");
+const odkRouter = require("./odk/odkrouter");
 
 const server = express();
 

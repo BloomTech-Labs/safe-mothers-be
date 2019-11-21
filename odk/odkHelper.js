@@ -1,16 +1,27 @@
 const db = require("../data/dbConfig");
 
 module.exports = {
-  add,
-  findBy
+    getMothers,
+    addMother,
+    addDriver,
 };
 
-function add(user) {
-  return db("users")
-    .insert(user)
-    .returning(["id", "username"]);
+//Used to check if the form was loaded to the backend
+function getMothers(){
+    return db("mothers").select("*")
 }
 
-function findBy(filter) {
-  return db("users").where(filter);
+//add mother form to database
+function addMother(mother){
+    return db('mothers')
+        .insert(mother)
+        .returning(['id',"name"])
 }
+
+//add Driver form to database. Not used yet
+function addDriver(driver){
+    return db('drivers')
+        .insert(driver)
+        .returning(['id',"driver_name"])
+}
+
