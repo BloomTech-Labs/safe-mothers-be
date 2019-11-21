@@ -23,105 +23,12 @@ For the following reasons:
 -    Works with SMS messaging technology.
 -    A number of JS libraries to aid in our vision. 
 
-## Endpoints
+## Endpoints & Data Models
 
 [Non-SMS related endpoint documentation](https://documenter.getpostman.com/view/6290768/SW7UcWoB?version=latest)
 
 [SMS Router Endpoints](https://documenter.getpostman.com/view/8744942/SW7Z4UeK?version=latest#d2e52725-8481-4f6c-97df-4ac21804e987)
 
-# Data Model
-
-#### Users
-
----
-
-```
-{
-  id: UUID
-  username: STRING
-  first_name: STRING
-  last_name: STRING
-  password: STRING
-}
-```
-
-#### Villages
-
----
-
-```
-{
-  id: UUID
-  name: STRING
-  lat: STRING
-  long: STRING
-}
-```
-
-#### Drivers
-
----
-
-```
-{
-  id: UUID
-  first_name: STRING
-  last_name: STRING
-  lat: STRING
-  long: STRING 
-  phone_number: STRING
-  villiage_id: UUID foreign key in VILLIAGE table
-  availability: BOOLEAN
-  reliability: INTEGER
-}
-```
-
-#### Mothers
-
----
-
-```
-{
-  id: UUID
-  first_name: STRING
-  last_name: STRING
-  age: INTEGER
-  phone_number: STRING
-  emergency_contact: STRING
-  villiage_id: UUID foreign key in VILLIAGE  table
-  health_center: STRING
-  lat: STRING
-  long: STRING
-}
-```
-
-#### Scores
-
----
-
-```
-{
-  id: UUID
-  rating: STRING
-  driver_id: UUID foreign key in DRIVERS  table
-  mother_id: UUID foreign key in MOTHERS  table
-}
-```
-
-#### Rides
-
----
-
-```
-{
-  id: UUID
-  mother_id: UUID foreign key in MOTHERS  table
-  driver_id: UUID foreign key in DRIVERS  table
-  initiated: DATETIME
-  ended: DATETIME
-  initiated: DATETIME
-}
-```
 
 ## DB Helpers
 
@@ -130,7 +37,7 @@ For the following reasons:
 |---------------|-------------|
 |`getMothers()` | Returns all mothers |
 
-`getMotherById(id)` -> Returns a single mother by ID
+`getMotherById(id)` Returns a single mother by ID
 
 `addMother(data)` -> Creates a single mother.
 
