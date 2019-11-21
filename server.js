@@ -28,7 +28,7 @@ server.use("/labels", restricted, labelsRouter);
 //sms functionality
 server.use("/sms", smsRouter);
 //odk router
-server.use("/odk", odkRouter);
+// server.use("/odk", odkRouter);
 
 server.get("/", (req, res) => {
   res.json({ api: "safe mothers" });
