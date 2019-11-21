@@ -20,7 +20,8 @@ localhost:5000
 - **npm test** to start server using testing environment
 
 ### Our backend was built using:
-Node JS
+#### Node JS & Express JS Server Framework
+
 For the following reasons:
 -    Familiarity across team.
 -    Scalibility.
@@ -29,52 +30,9 @@ For the following reasons:
 
 ## Endpoints
 
-#### Base URLS
-| Access        | Endpoint                | Access Control | 
-| ------------- | ----------------------- | -------------- | 
-| Authentication| `/auth`                 | Restricted     |
-| Mothers       | `/mothers`              | Restricted     | 
-| Drivers       | `/drivers`              | Restricted     | 
-| Sms           | `/sms`                  | Unrestricted   | 
+[Non-SMS related endpoint documentation](https://documenter.getpostman.com/view/6290768/SW7UcWoB?version=latest)
 
-
-#### Organization Routes
-
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/auth/`                | owners         | Returns admin users of the organization      |
-| PUT    | `/auth/:id`             | owners         | Modify an existing admin member.             |
-| DELETE | `/auth/:id`             | owners         | Delete an organization.                      |
-
-#### Organization User Routes
-
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/mothers/`             | owners              | Returns all mothers in the DB.                     |
-| GET    | `/mothers/:id`          | owners              | Returns all mothers with the specified Id.         |
-| GET    | `/drivers/`             | owners              | Returns all drivers in the DB.                     |
-| GET    | `/drivers/:id`          | owners              | Returns info for a single driver.                  |
-| POST   | `/mothers/register`     | owners              | Creates a new mother.                              |
-| POST   | `/drivers/register`     | owners              | Creates a new driver.                              |
-| PUT    | `/mothers/:id`          | owners              | Edit information of a mother with provided id.     |
-| PUT    | `/drivers/:id`          | owners              | Edit information of a mother with provided id.     |
-| DELETE | `/mothers/:id`          | owners              | Deletes a mother's info from the DB                |
-| DELETE | `/drivers/:id`          | owners              | Deletes a driver's info from the DB                |
-
-#### SMS User Routes
-
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/mothers/`             | sms                 | Returns all mothers in the DB.                     |
-| GET    | `/mothers/:id`          | sms                 | Returns all mothers with the specified Id.         |
-| GET    | `/drivers/`             | sms                 | Returns all drivers in the DB.                     |
-| GET    | `/drivers/:id`          | sms                 | Returns info for a single driver.                  |
-| POST   | `/mothers/register`     | sms                 | Creates a new mother.                              |
-| POST   | `/drivers/register`     | sms                 | Creates a new driver.                              |
-| PUT    | `/mothers/:id`          | sms                 | Edit information of a mother with provided id.     |
-| PUT    | `/drivers/:id`          | sms                 | Edit information of a mother with provided id.     |
-| DELETE | `/mothers/:id`          | sms                 | Deletes a mother's info from the DB                |
-| DELETE | `/drivers/:id`          | sms                 | Deletes a driver's info from the DB                |
+[SMS Router Endpoints](https://documenter.getpostman.com/view/8744942/SW7Z4UeK?version=latest#d2e52725-8481-4f6c-97df-4ac21804e987)
 
 # Data Model
 
