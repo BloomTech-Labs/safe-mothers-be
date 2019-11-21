@@ -210,11 +210,10 @@ create a .env file that includes the following:
 
 🚫 These are just examples, replace them with the specifics for your app
     
-    *  STAGING_DB - optional development db for using functionality not available in SQLite
-    *  NODE_ENV - set to "development" until ready for "production"
-    *  JWT_SECRET - you can generate this by using a python shell and running import random''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#\$%^&amp;*(-*=+)') for i in range(50)])
-    *  SENDGRID_API_KEY - this is generated in your Sendgrid account
-    *  stripe_secret - this is generated in the Stripe dashboard
+  *  DATABASE_URL - switching between localhost and server URL
+  *  DB_ENV - set to "development" until ready for "production"
+  *  JWT_SECRET - This is a secret from the JWT library.
+  *  FRONTLINE_KEY - this is generated in your Frontline SMS account
     
 ## Contributing
 
