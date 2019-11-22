@@ -29,52 +29,9 @@ For the following reasons:
 
 ## Endpoints
 
-#### Base URLS
-| Access        | Endpoint                | Access Control | 
-| ------------- | ----------------------- | -------------- | 
-| Authentication| `/auth`                 | Restricted     |
-| Mothers       | `/mothers`              | Restricted     | 
-| Drivers       | `/drivers`              | Restricted     | 
-| Sms           | `/sms`                  | Unrestricted   | 
+[Non-SMS related endpoint documentation](https://documenter.getpostman.com/view/6290768/SW7UcWoB?version=latest)
 
-
-#### Organization Routes
-
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/auth/`                | owners         | Returns admin users of the organization      |
-| PUT    | `/auth/:id`             | owners         | Modify an existing admin member.             |
-| DELETE | `/auth/:id`             | owners         | Delete an organization.                      |
-
-#### Organization User Routes
-
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/mothers/`             | owners              | Returns all mothers in the DB.                     |
-| GET    | `/mothers/:id`          | owners              | Returns all mothers with the specified Id.         |
-| GET    | `/drivers/`             | owners              | Returns all drivers in the DB.                     |
-| GET    | `/drivers/:id`          | owners              | Returns info for a single driver.                  |
-| POST   | `/mothers/register`     | owners              | Creates a new mother.                              |
-| POST   | `/drivers/register`     | owners              | Creates a new driver.                              |
-| PUT    | `/mothers/:id`          | owners              | Edit information of a mother with provided id.     |
-| PUT    | `/drivers/:id`          | owners              | Edit information of a mother with provided id.     |
-| DELETE | `/mothers/:id`          | owners              | Deletes a mother's info from the DB                |
-| DELETE | `/drivers/:id`          | owners              | Deletes a driver's info from the DB                |
-
-#### SMS User Routes
-
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/mothers/`             | sms                 | Returns all mothers in the DB.                     |
-| GET    | `/mothers/:id`          | sms                 | Returns all mothers with the specified Id.         |
-| GET    | `/drivers/`             | sms                 | Returns all drivers in the DB.                     |
-| GET    | `/drivers/:id`          | sms                 | Returns info for a single driver.                  |
-| POST   | `/mothers/register`     | sms                 | Creates a new mother.                              |
-| POST   | `/drivers/register`     | sms                 | Creates a new driver.                              |
-| PUT    | `/mothers/:id`          | sms                 | Edit information of a mother with provided id.     |
-| PUT    | `/drivers/:id`          | sms                 | Edit information of a mother with provided id.     |
-| DELETE | `/mothers/:id`          | sms                 | Deletes a mother's info from the DB                |
-| DELETE | `/drivers/:id`          | sms                 | Deletes a driver's info from the DB                |
+[SMS Router Endpoints](https://documenter.getpostman.com/view/8744942/SW7Z4UeK?version=latest#d2e52725-8481-4f6c-97df-4ac21804e987)
 
 # Data Model
 
@@ -198,9 +155,41 @@ For the following reasons:
 
 `deleteDriver(id)` -> Delete an organization by ID
 
-
 <br>
 
+### SMS
+`checkMotherRegistration` -> Returns mother by phone #
+
+`findDriverPhone` -> Returns a driver by phone #
+
+`statusOnline` -> Updates driver by phone # to online: true
+
+`statusOffline` -> Updates driver by phone # to offline: false
+
+`getVillages` -> Returns and array of villages
+
+`getVillageById` -> Returns a village by id
+
+`getRidesRequest` -> Returns an array of rides
+
+`addMothersRideRequest` -> Creates a ride request
+
+`addDriverRideRequest` -> Updates ride to assigned: true
+
+`checkRideRequest` -> Return ride by ride Id
+
+`updatePendingRequest` -> Updates the drivers pending status by driver Id
+
+`getRideByDriverId` -> Returns driver by Id and if assigned: false
+
+`updatedDriverAvailability` -> Updates driver availability by Id
+
+`reassignFailedRides` -> Querys the database to find rides that have not been completed and have not been assigned. Then checks if those rides have expired 5 minutes past time of ride initiation.The drivers that failed to respone, their availability is set to false.Then it reassigns those rides with new drivers and messages those drivers to accept the ride request.Next those failed rides, pending is set to true so the system knows the ride is waiting for the new driver to respone.If a new driver responses then pending is set back to false.
+
+
+
+
+<br>
 
 ## 3️⃣ Environment Variables
 
