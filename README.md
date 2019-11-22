@@ -337,5 +337,5 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Front-end](https://github.com/Lambda-School-Labs/safe-mothers-fee) for details on the fronend of our project.
+See [Front-end](https://github.com/Lambda-School-Labs/safe-mothers-fee) for details on the frontend of our project.
 
