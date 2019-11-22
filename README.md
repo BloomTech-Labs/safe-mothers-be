@@ -1,12 +1,8 @@
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
 
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by.  Make sure to delete the numbers by the end of Labs.
-
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric.  Contributing to docs does NOT count as a PR to meet your weekly requirements.
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+#### Backend delpoyed at [Heroku](https://production-fe-labs17-safe.herokuapp.com/) <br>
 
 ## Getting started
 
@@ -55,60 +51,147 @@ For the following reasons:
 
 ```
 {
-  id: UUID
+  id: UID
   name: STRING
-  lat: STRING
-  long: STRING
+  latitude: STRING
+  longitude: STRING
 }
 ```
 
-#### Drivers
+#### Drivers - Based off of Safe Mothers Survey
 
 ---
 
 ```
 {
   id: UUID
-  first_name: STRING
-  last_name: STRING
-  lat: STRING
-  long: STRING 
-  phone_number: STRING
-  villiage_id: UUID foreign key in VILLIAGE table
+  driver_name: STRING
+  phone: STRING
+  carrier: INTEGER
+  another_phone: INTEGER
+  phone_2: STRING
+  carrier_2: INTEGER
+  latitude: STRING
+  longitude: STRING 
+  district: INTEGER
+  district_other: STRING
+  subcounty: INTEGER
+  subcounty_other: STRING
+  stage: INTEGER
+  parish_other: STRING
   availability: BOOLEAN
   reliability: INTEGER
+  online: BOOLEAN
+  timestamp: TIMESTAMPS
+  own_boda: INTERGER
+  boda_night: INTEGER
+  transfers: INTEGER
+  story: STRING
+  motivation: STRING
+  background: STRING
+  married: INTEGER
+  childrean: INTEGER
+  number_kids: INTEGER
+  kid_info: STRING
+  dream: STRING
+  picture: STRING
 }
 ```
 
-#### Mothers
+#### Mothers - Based off of Safe Mothers Survey
 
 ---
 
 ```
 {
   id: UUID
-  first_name: STRING
-  last_name: STRING
+  interviewer: INTEGER
+  interviewer_other: STRING
+  due_now: INTEGER
+  deliver_elsewhere: INTEGER
+  hx_cesarean: INTEGER
+  hx_complication: INTEGER
+  current_multip: INTEGER
+  name: STRING
+  edd: STRING
   age: INTEGER
-  phone_number: STRING
-  emergency_contact: STRING
   villiage_id: UUID foreign key in VILLIAGE  table
-  health_center: STRING
-  lat: STRING
-  long: STRING
-}
-```
-
-#### Scores
-
----
-
-```
-{
-  id: UUID
-  rating: STRING
-  driver_id: UUID foreign key in DRIVERS  table
-  mother_id: UUID foreign key in MOTHERS  table
+  village_other: STRING
+  own_phone: INTEGER
+  other_phone: STRING
+  phone_number: STRING
+  carrier: INTEGER
+  owner_phone: INTEGER
+  owner_phone_other: STRING
+  carrier_other: STRING
+  want_education: INTEGER
+  complications_note: STRING
+  anemia: INTEGER
+  malaria: INTEGER
+  obstructed_labor: INTEGER
+  malpresent: INTEGER
+  aph: INTEGER
+  pph: INTEGER
+  ret_placenta: INTEGER
+  placenta_previa: INTEGER
+  hx_stillbirth: INTEGER
+  no_stillbirths: INTEGER
+  other_complication: INTEGER
+  complication_specify: STRING
+  BP_note: STRING
+  no_anc: INTEGER
+  deliver_place: INTEGER
+  deliver_place_other: STRING
+  deliver_specific: STRING
+  plan_transport: INTEGER
+  plan_transport_other: STRING
+  purchase_supplies: INTEGER
+  name_supplies: STRING
+  supplies_other: STRING
+  mama_kit: INTEGER
+  mackintosh: INTEGER
+  razor: INTEGER
+  pad: INTEGER
+  cotton: INTEGER
+  soap: INTEGER
+  gloves: INTEGER
+  medication: INTEGER
+  baby_clothes: INTEGER
+  blanket: INTEGER
+  sheets: INTEGER
+  other_supply: INTEGER
+  saving_money: INTEGER
+  amt_saved: INTEGER
+  amt_saved_range: INTEGER
+  PH_note: STRING
+  no_pg: INTEGER
+  no_birth: INTEGER
+  no_children: INTEGER
+  no_under5: INTEGER
+  hx_childdeath: INTEGER
+  no_childdeath: INTEGER
+  attend_school: INTEGER
+  education: INTEGER
+  money_control: INTEGER
+  total_house: INTEGER
+  marital_status: INTEGER
+  marital_status_other: STRING
+  spouse_school: INTEGER
+  spouse_education: INTEGER
+  polygamy: INTEGER
+  no_wives: INTEGER
+  no_wives_other: STRING
+  wife_order: INTEGER
+  wife_order_other: STING
+  insurance: INTEGER
+  insurance_type: STING
+  insurance_type_other: STRING
+  insurance_CBO: INTEGER
+  insurance_private: INTEGER
+  insurance_other: INTEGER
+  sell_asset: INTEGER
+  notes:STRING
+ 
 }
 ```
 
@@ -122,8 +205,23 @@ For the following reasons:
   mother_id: UUID foreign key in MOTHERS  table
   driver_id: UUID foreign key in DRIVERS  table
   initiated: DATETIME
+  assigned: BOOLEAN
+  pending: BOOLEAN
+  completed: BOOLEAN
   ended: DATETIME
-  initiated: DATETIME
+}
+```
+
+#### Scores
+
+---
+
+```
+{
+  id: UUID
+  rating: STRING
+  driver_id: UUID foreign key in DRIVERS  table
+  mother_id: UUID foreign key in MOTHERS  table
 }
 ```
 
@@ -158,6 +256,7 @@ For the following reasons:
 <br>
 
 ### SMS
+
 `checkMotherRegistration` -> Returns mother by phone #
 
 `findDriverPhone` -> Returns a driver by phone #
@@ -187,8 +286,6 @@ For the following reasons:
 `reassignFailedRides` -> Querys the database to find rides that have not been completed and have not been assigned. Then checks if those rides have expired 5 minutes past time of ride initiation.The drivers that failed to respone, their availability is set to false.Then it reassigns those rides with new drivers and messages those drivers to accept the ride request.Next those failed rides, pending is set to true so the system knows the ride is waiting for the new driver to respone.If a new driver responses then pending is set back to false.
 
 
-
-
 <br>
 
 ## 3️⃣ Environment Variables
@@ -196,8 +293,6 @@ For the following reasons:
 In order for the app to function correctly, the user must set up their own environment variables.
 
 create a .env file that includes the following:
-
-🚫 These are just examples, replace them with the specifics for your app
     
   *  DATABASE_URL - switching between localhost and server URL
   *  DB_ENV - set to "development" until ready for "production"
